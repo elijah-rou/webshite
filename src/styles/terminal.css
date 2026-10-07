@@ -174,16 +174,22 @@ h2 { margin-bottom: .6em; }
 .terminal-menu a[data-selected='true'] .menu-detail, .terminal-menu a:hover .menu-detail { color: inherit; }
 .terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) .menu-detail { color: var(--muted); }
 .music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
-.article-meta { display: flex; gap: 2ch; margin-bottom: 1em; color: var(--muted); font-size: .86em; }
-.prose { max-width: 64ch; line-height: 1.3; overflow-wrap: anywhere; }
-.prose p, .prose ul, .prose ol, .prose pre, .prose blockquote { margin: 0 0 .9em; }
-.prose h2, .prose h3 { margin: 1.2em 0 .5em; font: inherit; text-transform: uppercase; }
-.prose ul, .prose ol { padding-left: 2ch; }
-.prose a { text-decoration: underline; }
+/* Posts read as one centred column of about 66 characters, like a printed page. */
+.article { max-width: 66ch; margin: 0 auto; }
+.article-meta { display: flex; gap: 2ch; margin-bottom: 1.4em; color: var(--muted); font-size: .86em; }
+.prose { line-height: 1.42; overflow-wrap: anywhere; text-shadow: 0 0 2px #8dffa855; }
+.prose p, .prose ul, .prose ol, .prose pre, .prose blockquote { margin: 0 0 1em; }
+.prose h2, .prose h3 { margin: 1.6em 0 .6em; font: inherit; }
+.prose h2 { text-transform: uppercase; }
+.prose h3 { color: var(--muted); }
+.prose ul, .prose ol { padding-left: 3ch; }
+.prose li + li { margin-top: .3em; }
+.prose a { text-decoration: underline; text-underline-offset: .15em; }
 .prose code { font: inherit; }
-.prose pre { overflow-x: auto; padding: .5em 1ch; border: 1px solid #7cf59a33; text-shadow: none; }
+.prose :not(pre) > code { padding: 0 .3ch; background: #7cf59a1a; }
+.prose pre { overflow-x: auto; padding: .6em 2ch; font: inherit; line-height: 1.25; border: 1px solid #7cf59a40; }
 .prose img { max-width: 100%; height: auto; }
-.prose blockquote { margin-left: 0; padding-left: 1ch; border-left: 1px solid currentColor; color: var(--muted); }
+.prose blockquote { margin-left: 0; padding-left: 2ch; border-left: 2px solid #7cf59a66; color: var(--muted); }
 .skip-link { position: fixed; top: -80px; left: 16px; z-index: 10; padding: 10px; background: var(--phosphor); color: #06140b; }
 .skip-link:focus { top: 8px; }
 

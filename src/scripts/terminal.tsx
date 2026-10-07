@@ -50,6 +50,10 @@ function mount() {
     }
     update_zoom(true);
     reveal();
+    // The window cannot scroll, so keyboard scrolling needs focus inside the screen.
+    if (document.activeElement === document.body) {
+        document.querySelector<HTMLElement>('#content')?.focus({ preventScroll: true });
+    }
 }
 
 // Astro replaces <html> attributes with the incoming document's, which would

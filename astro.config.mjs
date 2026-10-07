@@ -7,5 +7,7 @@ export default defineConfig({
     devToolbar: { enabled: false },
     // The writing index moved from /blog/; keep old links working.
     redirects: { '/blog': '/writing/' },
+    // Code blocks stay monochrome phosphor instead of a coloured highlighter theme.
+    markdown: { syntaxHighlight: false },
     vite: { plugins: [solid({ ssr: false })] },
 });
