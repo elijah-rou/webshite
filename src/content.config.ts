@@ -8,7 +8,7 @@ const writing = defineCollection({
         title: z.string().min(1),
         description: z.string().min(1),
         date: z.coerce.date(),
-        category: z.string().default('NOTES'),
+        category: z.string().min(1).optional(),
         draft: z.boolean().default(false),
     }),
 });

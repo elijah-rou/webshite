@@ -1,11 +1,19 @@
 import { render } from '@solidjs/web';
 import TerminalControls from '../components/TerminalControls';
-import TerminalMenu from '../components/TerminalMenu';
-import GuitarPlayer from '../components/GuitarPlayer';
-import { audio } from './state';
+import TerminalMenu, { MENU_KINDS, type MenuKind } from '../components/TerminalMenu';
+import GuitarJack from '../components/GuitarJack';
+import MusicStatus from '../components/MusicStatus';
+import { audio, stop_track } from './state';
+import { handle_reveal_animation, reveal } from './reveal';
 
 let disposers: (() => void)[] = [];
 let mounted_controls: HTMLElement | null = null;
+
+function menu_kind(value: string | undefined): MenuKind {
+    const kind = MENU_KINDS.find(candidate => candidate === (value ?? 'link'));
+    if (!kind) { throw new Error(`Unknown menu item kind: ${value}`); }
+    return kind;
+}
 
 function dispose() {
     for (const cleanup of disposers) { cleanup(); }
@@ -16,12 +24,17 @@ function dispose() {
 function mount() {
     const menu_root = document.querySelector<HTMLElement>('[data-terminal-menu]');
     const controls_root = document.querySelector<HTMLElement>('[data-terminal-controls]');
-    const guitar_root = document.querySelector<HTMLElement>('[data-guitar-player]');
+    const jack_root = document.querySelector<HTMLElement>('[data-guitar-jack]');
+    const status_root = document.querySelector<HTMLElement>('[data-music-status]');
     if (controls_root && mounted_controls === controls_root) { return; }
     const items = menu_root ? Array.from(menu_root.querySelectorAll<HTMLAnchorElement>('a'))
-        .map(link => ({ label: link.dataset.label ?? link.textContent?.trim() ?? '',
-            href: link.getAttribute('href') ?? '/' })) : [];
-    const label = menu_root?.getAttribute('aria-label') ?? 'Navigation';
+        .map(link => ({
+            label: link.dataset.label ?? link.textContent?.trim() ?? '',
+            href: link.getAttribute('href') ?? '/',
+            kind: menu_kind(link.dataset.kind),
+            detail: link.dataset.detail ?? '',
+        })) : [];
+    const label = menu_root?.querySelector('nav')?.getAttribute('aria-label') ?? 'Navigation';
     dispose();
     if (menu_root) {
         menu_root.replaceChildren();
@@ -32,10 +45,14 @@ function mount() {
         disposers.push(render(() => <TerminalControls />, controls_root));
         mounted_controls = controls_root;
     }
-    if (guitar_root) {
-        guitar_root.replaceChildren();
-        disposers.push(render(() => <GuitarPlayer />, guitar_root));
+    if (status_root) {
+        status_root.replaceChildren();
+        disposers.push(render(() => <MusicStatus />, status_root));
     }
+    if (jack_root) {
+        disposers.push(render(() => <GuitarJack />, jack_root));
+    }
+    reveal();
 }
 
 function handle_click(event: MouseEvent) {
@@ -55,6 +72,8 @@ function handle_visibility() {
 
 function before_swap(event: Event) {
     dispose();
+    // Recordings are controlled from the Music screen, so they stop when it is left.
+    stop_track();
     // The native transition may be cancelled by a second navigation.
     const transition = (event as Event & { viewTransition: ViewTransition }).viewTransition;
     void transition.ready.catch((error: unknown) => {
@@ -73,6 +92,8 @@ document.addEventListener('astro:before-swap', before_swap);
 document.addEventListener('click', handle_click);
 document.addEventListener('keydown', handle_key);
 document.addEventListener('visibilitychange', handle_visibility);
+document.addEventListener('animationstart', handle_reveal_animation);
+document.addEventListener('animationend', handle_reveal_animation);
 mount();
 
 if (import.meta.hot) {
@@ -84,5 +105,7 @@ if (import.meta.hot) {
         document.removeEventListener('click', handle_click);
         document.removeEventListener('keydown', handle_key);
         document.removeEventListener('visibilitychange', handle_visibility);
+        document.removeEventListener('animationstart', handle_reveal_animation);
+        document.removeEventListener('animationend', handle_reveal_animation);
     });
 }

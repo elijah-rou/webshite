@@ -10,6 +10,7 @@ interface Props {
     back?: string;
 }
 const { title, section, description = 'Elijah Roussos. Code, writing and music.', back = '/' } = Astro.props;
+const year = new Date().getFullYear();
 ---
 <!doctype html>
 <html lang="en" data-effects="on">
@@ -28,12 +29,13 @@ const { title, section, description = 'Elijah Roussos. Code, writing and music.'
             <div class="monitor">
                 <img class="monitor-housing" src="/images/terminal-housing.png" alt=""
                     width="1374" height="1145" fetchpriority="high" />
+                <span class="jack-socket" data-jack-socket aria-hidden="true"></span>
                 <div class="screen">
                     <div class="screen-glass" aria-hidden="true"></div>
                     <div class="screen-scroll">
                         <header class="system-header">
-                            <a href="/" aria-label="Elijah Roussos, terminal home">ELIJAH ROUSSOS</a>
-                            <div>PERSONAL TERMINAL</div>
+                            <a href="/" aria-label="Elijah Roussos, terminal home">ELIJAH ROUSSOS UNIFIED OPERATING SYSTEM</a>
+                            <p>COPYRIGHT {year} ELIJAH ROUSSOS</p>
                         </header>
                         <main id="content" tabindex="-1" data-section={section}><slot /></main>
                         {section === 'home' && <div class="command-prompt" aria-hidden="true">&gt;<span class="cursor">█</span></div>}
@@ -41,16 +43,19 @@ const { title, section, description = 'Elijah Roussos. Code, writing and music.'
                     <div class="screen-bottom">
                         {section !== 'home' && <a class="back-link" data-back href={back}>&gt; Back</a>}
                         <div data-terminal-controls>
-                            <div class="terminal-controls">
-                                <button type="button" disabled>[SOUND ON]</button>
-                                <button type="button" disabled>[CRT ON]</button>
+                            <div class="terminal-controls" aria-hidden="true">
+                                <span>[SOUND ON]</span>
+                                <span>[CRT ON]</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="keyboard-hint"><span>↑ ↓ SELECT</span><span>ENTER OPEN</span><span>ESC BACK</span></p>
+            <p class="keyboard-hint" aria-hidden="true">
+                <span>↑ ↓ SELECT</span><span>ENTER OPEN</span>{section !== 'home' && <span>ESC BACK</span>}
+            </p>
         </div>
+        <div data-guitar-jack></div>
         <script>import '../scripts/terminal.tsx';</script>
     </body>
 </html>

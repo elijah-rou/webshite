@@ -1,7 +1,7 @@
 # Personal terminal
 
 A portfolio and blog styled after Fallout 3's desktop terminals. Astro builds the
-pages; Solid 2 controls the menu, sound settings and Les Paul Special interaction.
+pages; Solid 2 controls the menu, sound settings, music playback and guitar jack.
 
 Requires Node.js 22.18 or newer and pnpm 12.10.1:
 
@@ -19,25 +19,42 @@ scripts are disabled; the installed platform binaries are used directly.
 
 Add Markdown posts to `src/content/writing/`. Frontmatter contains `title`,
 `description`, `date`, optional `category`, and optional `draft: true`. Drafts are
-excluded from listings and generated routes. `terminal-online.md` is a site note.
-The existing `/about/`, `/blog/` and `/instagram/` routes remain available.
+excluded from listings and generated routes. `/blog/` redirects to `/writing/`;
+the Photos entry stays at `/instagram/`.
+
+Put music files in `public/music/`. The Music screen lists them at build time,
+recordings first, using the file name without its extension as the title:
+
+| Suffix | Listed as | Selecting it |
+| --- | --- | --- |
+| `.flac`, `.mp3` | Recording | Plays or stops it in the terminal |
+| `.flp` | FL Studio project | Downloads it |
+| `.bwproject` | Bitwig project | Downloads it |
+| `.logicx.zip` | Logic Pro project | Downloads it |
+
+Logic projects are folders, so zip them first. Any other file, except dotfiles,
+stops the build with a list of supported suffixes. Large audio and project files
+are committed and deployed with the site; consider Git LFS before adding many.
 
 ## Controls
 
 Use the mouse, Tab, or arrow keys to select an entry. Enter opens the focused entry;
 Escape goes back. The Back link stays visible when the screen content scrolls.
 Sound begins with a click or keyboard gesture. SOUND and CRT preferences persist
-when browser storage is available. Muting stops active and pending audio.
-Reduced-motion preferences disable the cursor and cable animation.
+when browser storage is available. Muting stops effects and the playing recording.
+CRT OFF removes scanlines, glow and the line-by-line screen reveal. Reduced-motion
+preferences also disable the reveal and the cursor, scan band and plug animations.
 
-On the Music page, plugging in the guitar plays a synthesized E major chord.
-It is not a recording of the owner's instrument. Terminal navigation uses two WAVs
-reported by their uploader to come from Fallout 3, with synthesized clicks as a
-fallback. See [audio sources](public/audio/SOURCES.md).
+The guitar cable lies beside the terminal. Drag its plug into the input jack on the
+housing, or click it or press Enter on it, to plug in; drag it out or click again to
+unplug. Plugging in plays a synthesized amp pop and 50 Hz buzz. Terminal navigation
+uses two WAVs reported by their uploader to come from Fallout 3, with synthesized
+clicks as a fallback. See [audio sources](public/audio/SOURCES.md).
 
 The weathered housing is a generated image; see its prompt and provenance in
 [image sources](public/images/SOURCES.md). The screen text remains selectable HTML.
-Static content and navigation work without JavaScript; the guitar needs JavaScript.
+Static content and navigation work without JavaScript; recordings then open in the
+browser's own player. The guitar cable needs JavaScript.
 
 ## Solid 2
 
