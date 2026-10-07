@@ -14,5 +14,3 @@ Bethesda’s game archive. Original asset ownership is not transferred by the do
 Both are mono PCM16 WAVs. Character scroll is mapped to mouse hover/keyboard focus;
 character enter is mapped to navigation selection. These are terminal effects,
 not the separate Pip-Boy/menu highlight and select assets.
-
-The guitar jack plug and unplug sounds are original synthesized audio.

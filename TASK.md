@@ -1,5 +1,24 @@
 # Personal terminal
 
+## Zoom in on opened screens; remove the guitar jack
+
+Done means: the home menu shows the whole terminal; any opened entry zooms in on
+the screen (animated on client navigation, instant on direct load); the jack,
+its sounds, tests and docs are gone. Keep changes local.
+
+- [x] Remove the jack component, socket, styles, plug sounds and their tests.
+- [x] Zoom: scale the station about the screen centre to fill 94% of the window,
+      capped at 30px text; keep zoom and CRT state on `<html>` across Astro swaps.
+- [x] Verify in headless Chromium at 1440×1000, 1920×1080 and 390×844.
+
+Acceptance: Astro checks 28 files with zero diagnostics; both synthesis tests
+pass. Home shows the full terminal; Writing and About show the screen centred at
+1067×695 (1440×1000 and 1920×1080) and 367×620 on a 390×844 phone, with no
+overflow. Back animates out, and CRT OFF survives navigation. No runtime errors.
+The first attempt mis-centred phones because offsets started inside the monitor
+border, and `offsetParent` changed once the station was transformed; making the
+station the positioned parent fixed both.
+
 ## Review, Fallout 3 refinement, music and jack
 
 Done means: code reviewed for correctness with blockers fixed; the screen reads

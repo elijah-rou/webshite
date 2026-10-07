@@ -1,7 +1,7 @@
 # Personal terminal
 
 A portfolio and blog styled after Fallout 3's desktop terminals. Astro builds the
-pages; Solid 2 controls the menu, sound settings, music playback and guitar jack.
+pages; Solid 2 controls the menu, sound settings, music playback and screen zoom.
 
 Requires Node.js 22.18 or newer and pnpm 12.10.1:
 
@@ -43,18 +43,19 @@ Escape goes back. The Back link stays visible when the screen content scrolls.
 Sound begins with a click or keyboard gesture. SOUND and CRT preferences persist
 when browser storage is available. Muting stops effects and the playing recording.
 CRT OFF removes scanlines, glow and the line-by-line screen reveal. Reduced-motion
-preferences also disable the reveal and the cursor, scan band and plug animations.
+preferences also disable the reveal, the cursor, the scan band and the zoom animation.
 
-The guitar cable lies beside the terminal. Drag its plug into the input jack on the
-housing, or click it or press Enter on it, to plug in; drag it out or click again to
-unplug. Plugging in plays a synthesized amp pop and 50 Hz buzz. Terminal navigation
-uses two WAVs reported by their uploader to come from Fallout 3, with synthesized
-clicks as a fallback. See [audio sources](public/audio/SOURCES.md).
+The home menu shows the whole terminal. Opening any entry zooms in until the screen
+fills most of the window, capped so text is at most 30px tall; Back zooms out again.
+Without JavaScript every page shows the whole terminal.
+
+Terminal navigation uses two WAVs reported by their uploader to come from Fallout 3,
+with synthesized clicks as a fallback. See [audio sources](public/audio/SOURCES.md).
 
 The weathered housing is a generated image; see its prompt and provenance in
 [image sources](public/images/SOURCES.md). The screen text remains selectable HTML.
 Static content and navigation work without JavaScript; recordings then open in the
-browser's own player. The guitar cable needs JavaScript.
+browser's own player.
 
 ## Solid 2
 

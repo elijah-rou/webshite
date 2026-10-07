@@ -11,7 +11,6 @@
 * { box-sizing: border-box; }
 html { background: #11120e; }
 body {
-    position: relative;
     margin: 0;
     min-height: 100svh;
     display: grid;
@@ -31,7 +30,17 @@ a:focus-visible, button:focus-visible { outline: 1px solid var(--phosphor); outl
 ::selection { background: var(--phosphor); color: var(--screen); }
 
 /* The housing is 1374×1145; keep the whole monitor within the viewport height. */
-.terminal-station { width: min(980px, 100%, max(640px, calc((100svh - 70px) * 1.2))); }
+.terminal-station {
+    position: relative;
+    width: min(980px, 100%, max(640px, calc((100svh - 70px) * 1.2)));
+    transform-origin: var(--zoom-origin, 50% 50%);
+}
+/* Set by the client script: every screen except the home menu is viewed close up. */
+html[data-zoom='in'] .terminal-station {
+    transform: translate(var(--zoom-x), var(--zoom-y)) scale(var(--zoom-scale));
+}
+html[data-zoom='in'], html[data-zoom='in'] body { overflow: clip; }
+html[data-zoom-animate] .terminal-station { transition: transform .55s cubic-bezier(.3, .1, .2, 1); }
 .monitor {
     position: relative;
     width: 100%;
@@ -168,59 +177,6 @@ h2 { margin-bottom: .6em; }
 .prose pre { overflow-x: auto; padding: .5em 1ch; border: 1px solid #7cf59a33; text-shadow: none; }
 .prose img { max-width: 100%; height: auto; }
 .prose blockquote { margin-left: 0; padding-left: 1ch; border-left: 1px solid currentColor; color: var(--muted); }
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
-/* The input jack sits on the housing's right edge; the plug enters from the right.
-   The client script reads the custom properties to place the plug and its resting spot. */
-.jack-socket {
-    --jack-angle: 180;
-    --rest-x: 70;
-    --rest-y: 190;
-    --rest-angle: 192;
-    --plug-scale: 1.5;
-    position: absolute;
-    z-index: 1;
-    left: 98.1%;
-    top: 74%;
-    width: .92cqi;
-    height: 2cqi;
-    translate: -50% -50%;
-    border-radius: 2px;
-    background: linear-gradient(to right, #2a2a26, #c9c6b8 45%, #75736a 70%, #1d1d1a);
-    box-shadow: 0 0 0 1px #0008, 1px 2px 3px #0009;
-}
-/* The mount point must not become a second row in the body grid. */
-[data-guitar-jack] { display: contents; }
-.cable-layer { position: absolute; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
-.cable { position: absolute; inset: 0; overflow: visible; filter: drop-shadow(2px 5px 3px #0008); }
-.cable-line, .cable-shine { fill: none; stroke-linecap: round; }
-.cable-line { stroke: #121211; }
-.cable-shine { stroke: #ffffff14; translate: -1px -1.5px; }
-.plug { transform-origin: 0 0; }
-.cable-layer[data-connected='true'] .plug-tip { display: none; }
-.plug-handle {
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    translate: -50% -50%;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    cursor: grab;
-    pointer-events: auto;
-    touch-action: none;
-}
-.plug-handle:active { cursor: grabbing; }
-.plug-handle:focus-visible { outline: 1px dashed #c9c6b8; outline-offset: -8px; }
-
 .skip-link { position: fixed; top: -80px; left: 16px; z-index: 10; padding: 10px; background: var(--phosphor); color: #06140b; }
 .skip-link:focus { top: 8px; }
 
@@ -239,33 +195,7 @@ html[data-effects='off'] .cursor, html[data-effects='off'] .reveal-line { animat
 @media (hover: none) {
     .keyboard-hint { display: none; }
 }
-/* Without room beside the monitor, the jack moves under the bezel and the plug enters from below. */
-@media (max-width: 1180px) {
-    .jack-socket {
-        --jack-angle: -90;
-        --rest-x: -120;
-        --rest-y: 92;
-        --rest-angle: 168;
-        left: 88%;
-        top: 90.6%;
-        width: 2cqi;
-        height: .8cqi;
-        background: linear-gradient(to bottom, #2a2a26, #c9c6b8 45%, #75736a 70%, #1d1d1a);
-    }
-}
 @media (max-width: 700px) {
-    .jack-socket {
-        --plug-scale: 2.2;
-        --rest-x: -260;
-        --rest-y: 170;
-        width: 18px;
-        height: 7px;
-        left: auto;
-        right: 6px;
-        top: auto;
-        bottom: -82px;
-        translate: 50% 50%;
-    }
     body { padding: 12px 3px; }
     .terminal-station { width: 100%; }
     .monitor {
