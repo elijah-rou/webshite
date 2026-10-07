@@ -53,14 +53,21 @@ while Charter ships only on Apple systems.
       detail and the description as the note. Fixed a stale 100ch article limit
       and a 2ch row gap in menu entries. GitHub icon added to the profile links.
 
-## Parked: Instagram sync for Photos
+## Instagram sync for Photos
 
-`pnpm photos:sync` (Instagram API with Instagram Login) lives on branch
-`agent/instagram-sync`, stacked on this branch. Meta's dashboard only offered
-"API setup with Facebook login" for the app created, and the Instagram setup
-page did not load. Photos meanwhile come from `src/content/photos/`. Resume by
-creating a Meta app with the Other use case and the Instagram product, or by
-importing Instagram's "Download your information" export instead.
+- [x] `pnpm photos:sync`: Instagram API with Instagram Login, refreshes the token
+      in `.env.local`, downloads new posts into `src/content/photos/`, keeps edits.
+- [x] Owner set up a Business app (messaging and content use case, Instagram
+      Login setup, Instagram Tester role) and generated a token.
+- [x] First real sync: 8 posts, all albums; the cover of each is downloaded.
+- [ ] Owner: decide whether album images beyond the cover (68 in total) belong
+      on the Photos screen.
+- [ ] Owner: revoke the token pasted in chat (it stays valid after a refresh).
+
+Acceptance: four tests pass against a mock Graph API (pagination, video covers,
+posts without images, idempotent reruns, preserved caption edits, token-free
+errors, env file update). Real run on 2026-10-09: token refreshed, 8 photos and
+captions written, build renders the Photos grid.
 
 ## Photos, projects, resume, menu focus
 
