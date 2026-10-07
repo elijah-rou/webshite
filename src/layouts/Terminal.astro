@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/vt323/400.css';
 import '../styles/terminal.css';
+import SocialLinks from '../components/SocialLinks.astro';
 interface Props {
     title: string;
     section: 'home' | 'about' | 'writing' | 'projects' | 'resume' | 'music' | 'photos';
@@ -40,6 +41,7 @@ const year = new Date().getFullYear();
                     </div>
                     <div class="screen-bottom">
                         {section !== 'home' && <a class="back-link" data-back href={back}>&gt; Back</a>}
+                        <SocialLinks />
                         <div data-terminal-controls>
                             <div class="terminal-controls" aria-hidden="true">
                                 <span>[SOUND ON]</span>

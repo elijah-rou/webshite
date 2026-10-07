@@ -56,6 +56,10 @@ accounts. One-time setup:
 Tokens last 60 days. Each sync refreshes the token in `.env.local`, so running it
 at least every 60 days keeps it valid; after that, generate a new one.
 
+Profile links at the bottom left of the screen are in
+`src/components/SocialLinks.astro`, each drawn as a 12×12 pixel glyph. The
+Mastodon link carries `rel="me"`, so Mastodon can verify the site.
+
 `src/pages/resume.astro` holds the résumé text; the phone number and email from
 the PDF are not published.
 
