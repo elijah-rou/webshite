@@ -1,0 +1,59 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Nav from '../components/Nav.astro';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/vt323/400.css';
+import '../styles/terminal.css';
+
+interface Props { title: string; section: 'home' | 'writing' | 'projects' | 'music' | 'photos'; description?: string }
+const { title, section, description = 'Elijah’s personal terminal. Code, writing, and six strings.' } = Astro.props;
+---
+<!doctype html>
+<html lang="en" data-effects="on">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content={description} />
+        <meta name="theme-color" content="#101a12" />
+        <title>{title} | Elijah’s terminal</title>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <ClientRouter />
+    </head>
+    <body>
+        <a class="skip-link" href="#content">Skip to content</a>
+        <div class="desk-label" aria-hidden="true"><span>PERSONAL COMPUTER</span><span>EST. 2026</span></div>
+        <div class="monitor">
+            <div class="screw screw-tl" aria-hidden="true"></div>
+            <div class="screw screw-tr" aria-hidden="true"></div>
+            <div class="screen-rim">
+                <div class="screen">
+                    <div class="screen-sweep" aria-hidden="true"></div>
+                    <header class="system-header flex items-center justify-between">
+                        <a href="/" class="system-brand" aria-label="Elijah’s terminal home">ER<span> / PERSONAL TERMINAL</span></a>
+                        <span class="online"><span class="status-dot"></span>SYSTEM ONLINE</span>
+                    </header>
+                    <Nav section={section} />
+                    <main id="content" tabindex="-1"><slot /></main>
+                    <footer class="screen-footer">
+                        <span><span class="footer-prompt">&gt;</span> MAKE YOURSELF AT HOME<span class="cursor" aria-hidden="true">_</span></span>
+                        <div class="controls">
+                            <button type="button" data-action="sound" aria-pressed="true">SOUND ON</button>
+                            <button type="button" data-action="effects" aria-pressed="true">CRT ON</button>
+                        </div>
+                    </footer>
+                    <noscript><p class="noscript-note">Reading and navigation work without JavaScript. Guitar and sound controls need it.</p></noscript>
+                </div>
+            </div>
+            <div class="hardware-footer" aria-hidden="true">
+                <div class="hardware-brand">ROU<span>COMPUTER SYSTEMS</span></div>
+                <div class="vents"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="power-light"></div><div class="power-button">⏻</div>
+            </div>
+        </div>
+        <div class="desk-footer"><span>CODE, WORDS & SIX STRINGS.</span><span>A SMALL CORNER OF THE INTERNET.</span></div>
+        <script>
+            import '../scripts/terminal';
+        </script>
+    </body>
+</html>

@@ -1,47 +1,41 @@
-# Astro Starter Kit: Minimal
+# Personal terminal
+
+A local Astro portfolio/blog inspired by Fallout 3 terminals, with a CRT bezel,
+scanlines, Fallout terminal navigation audio, and a Les Paul Special plug-in interaction.
+
+Requires Node.js 22.18 or newer and pnpm 12.10.1. From this directory:
 
 ```sh
-npm create astro@latest -- --template minimal
+pnpm install
+pnpm dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+Open the local address printed by Astro. `pnpm check`, `pnpm test`, and
+`pnpm build` validate the project. `pnpm preview` serves the production build.
+The test launcher supports both Node.js and a Bun-backed node shim.
+Dependency lifecycle scripts are disabled in this project; the installed platform
+binaries are used directly.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Content
 
-## 🚀 Project Structure
+Posts live in `src/content/writing/` as Markdown. Frontmatter includes `title`,
+`description`, `date`, optional `category`, and optional `draft: true` to exclude
+a post from both listings and generated routes. `terminal-online.md` is a starter
+site note. Projects and recordings are intentionally empty until real content exists.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Interaction
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Navigation works without JavaScript. JavaScript enables page transitions, sound,
+and the guitar. Sound begins after a user gesture, never on initial load. The
+SOUND and CRT controls remember preferences when browser storage is available.
+Reduced-motion preferences disable animation. Muting immediately stops active audio.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+The guitar chord is synthesized with a plucked-string model, not recorded from the
+owner’s instrument. Navigation uses two WAVs reported to be extracted from Fallout 3;
+see `public/audio/SOURCES.md` for provenance. Synthesized clicks are a fallback if
+those files cannot be loaded or decoded.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+The existing `/about/`, `/blog/`, and `/instagram/` routes remain available. The
+Instagram route is a photo archive; no external account or gallery has been invented.
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The checkout uses `elijah-rou/webshite`. No changes have been pushed or published.
