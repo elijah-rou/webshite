@@ -1,0 +1,21 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Terminal from '../../layouts/Terminal.astro';
+import Nav from '../../components/Nav.astro';
+export async function getStaticPaths() {
+    const projects = await getCollection('projects');
+    return projects.map(project => ({ params: { id: project.id }, props: { project } }));
+}
+interface Props { project: CollectionEntry<'projects'> }
+const { project } = Astro.props;
+const { Content } = await render(project);
+const repo = project.data.repo.replace(/^https:\/\//, '');
+---
+<Terminal title={project.data.name} section="projects" back="/projects/" description={project.data.summary}>
+    <article class="article">
+        <h1>{project.data.name}</h1>
+        <Nav label="Repository" items={[{ label: repo, href: project.data.repo, detail: project.data.language.toUpperCase() }]} />
+        <div class="prose project-summary"><Content /></div>
+    </article>
+</Terminal>

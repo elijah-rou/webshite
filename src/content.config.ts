@@ -13,4 +13,16 @@ const writing = defineCollection({
     }),
 });
 
-export const collections = { writing };
+// One file per project; the body is a short summary drawn from the repository's README.
+const projects = defineCollection({
+    loader: glob({ pattern: '*.md', base: './src/content/projects' }),
+    schema: z.object({
+        name: z.string().min(1),
+        repo: z.url({ protocol: /^https$/, hostname: /^github\.com$/ }),
+        language: z.string().min(1),
+        summary: z.string().min(1),
+        order: z.number().int(),
+    }),
+});
+
+export const collections = { writing, projects };

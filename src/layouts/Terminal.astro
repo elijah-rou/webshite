@@ -5,7 +5,7 @@ import '@fontsource/vt323/400.css';
 import '../styles/terminal.css';
 interface Props {
     title: string;
-    section: 'home' | 'about' | 'writing' | 'projects' | 'music' | 'photos';
+    section: 'home' | 'about' | 'writing' | 'projects' | 'resume' | 'music' | 'photos';
     description?: string;
     back?: string;
 }
@@ -37,7 +37,6 @@ const year = new Date().getFullYear();
                             <p>COPYRIGHT {year} ELIJAH ROUSSOS</p>
                         </header>
                         <main id="content" tabindex="-1" data-section={section}><slot /></main>
-                        {section === 'home' && <div class="command-prompt" aria-hidden="true">&gt;<span class="cursor">█</span></div>}
                     </div>
                     <div class="screen-bottom">
                         {section !== 'home' && <a class="back-link" data-back href={back}>&gt; Back</a>}

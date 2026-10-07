@@ -124,6 +124,8 @@ h2 { margin-bottom: .6em; }
     text-align: left;
     font: inherit;
 }
+/* The selection bar follows focus, so it replaces the focus outline in menus. */
+.terminal-menu a:focus-visible { outline: none; }
 /* Keeps the two spaces between a date and a title in the writing index. */
 .terminal-menu a { width: min(18em, 100%); white-space: pre-wrap; }
 .terminal-menu a[data-selected='true'], .terminal-menu a:hover,
@@ -143,8 +145,6 @@ h2 { margin-bottom: .6em; }
 .screen-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 8px; }
 .screen-bottom [data-terminal-controls] { margin-left: auto; }
 .back-link { width: fit-content; white-space: nowrap; }
-.command-prompt { margin-top: 1em; }
-.cursor { padding-left: 7px; animation: blink 1.2s step-end infinite; }
 .terminal-controls { display: flex; justify-content: flex-end; gap: 15px; }
 .terminal-controls button, .terminal-controls span {
     background: transparent;
@@ -173,9 +173,23 @@ h2 { margin-bottom: .6em; }
 .menu-detail { flex: none; color: var(--muted); }
 .terminal-menu a[data-selected='true'] .menu-detail, .terminal-menu a:hover .menu-detail { color: inherit; }
 .terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) .menu-detail { color: var(--muted); }
+/* A menu entry with a note puts it on its own line under the label and detail. */
+.terminal-menu a:has(.menu-note) { display: grid; grid-template-columns: 1fr auto; column-gap: 2ch; padding-bottom: 5px; }
+.menu-note { grid-column: 1 / -1; padding-left: 2ch; font-size: .85em; color: var(--muted); white-space: normal; }
+.terminal-menu a[data-selected='true'] .menu-note, .terminal-menu a:hover .menu-note { color: inherit; }
+.terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) .menu-note { color: var(--muted); }
+.terminal-menu:has(.menu-note) { gap: .4em; }
+.project-summary { margin-top: 1.2em; }
+.article-meta a { text-decoration: underline; text-underline-offset: .15em; }
+.resume h2:first-child { margin-top: 0; }
+.resume h3 { color: inherit; margin-bottom: .2em; }
+.resume .resume-when { margin-bottom: .6em; color: var(--muted); font-size: .9em; }
+.resume-skills { margin: 0; }
+.resume-skills dt { color: var(--muted); }
+.resume-skills dd { margin: 0 0 .8em 2ch; }
 .music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
-/* Posts read as one centred column of about 66 characters, like a printed page. */
-.article { max-width: 66ch; margin: 0 auto; }
+/* Posts read as one centred column that widens with the screen, up to 100 characters. */
+.article { max-width: 100ch; margin: 0 auto; }
 .article-meta { display: flex; gap: 2ch; margin-bottom: 1.4em; color: var(--muted); font-size: .86em; }
 .prose { line-height: 1.42; overflow-wrap: anywhere; text-shadow: 0 0 2px #8dffa855; }
 .prose p, .prose ul, .prose ol, .prose pre, .prose blockquote { margin: 0 0 1em; }
@@ -190,6 +204,25 @@ h2 { margin-bottom: .6em; }
 .prose pre { overflow-x: auto; padding: .6em 2ch; font: inherit; line-height: 1.25; border: 1px solid #7cf59a40; }
 .prose img { max-width: 100%; height: auto; }
 .prose blockquote { margin-left: 0; padding-left: 2ch; border-left: 2px solid #7cf59a66; color: var(--muted); }
+/* Photos read as phosphor images while the CRT effects are on. */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(9em, 45%), 1fr));
+    gap: .6em;
+    margin-bottom: 1.2em;
+}
+.photo-grid a { display: block; aspect-ratio: 1; outline-offset: 2px; }
+.photo-grid a:focus { outline: 2px solid var(--phosphor); }
+/* Without JavaScript, hover is the only way the pointer can highlight a thumbnail. */
+.photo-grid:not(:focus-within) a:hover { outline: 2px solid var(--phosphor); }
+.photo-grid img, .photo-view img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.screen-scroll { container-type: size; }
+.photo-view { margin: 0 0 1em; text-align: center; }
+.photo-view img { width: auto; max-width: 100%; height: auto; max-height: calc(100cqh - 6.5em); margin: 0 auto; object-fit: contain; }
+.photo-view figcaption { margin-top: .5em; color: var(--muted); }
+.photo-grid img, .photo-view img { filter: grayscale(1) sepia(1) hue-rotate(68deg) saturate(2.6) brightness(.92) contrast(1.05); }
+html[data-effects='off'] .photo-grid img, html[data-effects='off'] .photo-view img { filter: none; }
+
 .skip-link { position: fixed; top: -80px; left: 16px; z-index: 10; padding: 10px; background: var(--phosphor); color: #06140b; }
 .skip-link:focus { top: 8px; }
 
@@ -201,8 +234,7 @@ h2 { margin-bottom: .6em; }
 html[data-effects='off'] .screen-glass { display: none; }
 html[data-effects='off'] .screen,
 html[data-effects='off'] .terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) { text-shadow: none; }
-html[data-effects='off'] .cursor, html[data-effects='off'] .reveal-line { animation: none; }
-@keyframes blink { 50% { opacity: 0; } }
+html[data-effects='off'] .reveal-line { animation: none; }
 @keyframes scan-roll { to { background-position: 0 140%; } }
 @keyframes type-line { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
 @media (hover: none) {
