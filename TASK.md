@@ -1,13 +1,17 @@
 # Personal terminal
 
-## Parked: Instagram sync for Photos
+## Instagram sync for Photos
 
-`pnpm photos:sync` (Instagram API with Instagram Login) lives on branch
-`agent/instagram-sync`, stacked on this branch. Meta's dashboard only offered
-"API setup with Facebook login" for the app created, and the Instagram setup
-page did not load. Photos meanwhile come from `src/content/photos/`. Resume by
-creating a Meta app with the Other use case and the Instagram product, or by
-importing Instagram's "Download your information" export instead.
+- [x] `pnpm photos:sync`: Instagram API with Instagram Login, refreshes the token
+      in `.env.local`, downloads new posts into `src/content/photos/`, keeps edits.
+- [ ] Owner: switch the account to professional, create a Meta app with the
+      Other use case and the Instagram product (the messaging use case only
+      offered Facebook login), add the token, run the sync and commit the photos.
+
+Acceptance: six tests pass, including a mock Graph API covering pagination,
+video covers, posts without images, idempotent reruns, preserved caption edits,
+token-free error messages and the env file update. Not run against the real API:
+no token is available.
 
 ## Photos, projects, resume, menu focus
 
