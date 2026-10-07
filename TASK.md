@@ -1,5 +1,17 @@
 # Personal terminal
 
+## Instagram sync for Photos
+
+- [x] `pnpm photos:sync`: Instagram API with Instagram Login, refreshes the token
+      in `.env.local`, downloads new posts into `src/content/photos/`, keeps edits.
+- [ ] Owner: switch the account to professional, create the Meta app, add the
+      token, run the sync and commit the photos.
+
+Acceptance: six tests pass, including a mock Graph API covering pagination,
+video covers, posts without images, idempotent reruns, preserved caption edits,
+token-free error messages and the env file update. Not run against the real API:
+no token is available.
+
 ## Photos, projects, resume, menu focus
 
 - [x] Photos from `src/content/photos/` (decision: local folder, not the Instagram

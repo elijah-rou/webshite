@@ -11,7 +11,7 @@ pnpm dev
 ```
 
 Open the address printed by Astro. Run `pnpm build` for type checking and a static
-build, `pnpm test` for audio synthesis tests, and `pnpm preview` to serve the build.
+build, `pnpm test` for the audio synthesis and Instagram sync tests, and `pnpm preview` to serve the build.
 The test launcher supports Node.js and a Bun-backed node shim. Dependency lifecycle
 scripts are disabled; the installed platform binaries are used directly.
 
@@ -33,8 +33,28 @@ Name files with a leading date, such as `2026-10-08-harbour.jpg`, to list them
 newest first; the rest of the name becomes the caption. An optional
 `src/content/photos/photos.json` maps a file name to `caption`, `alt` and its
 `instagram` post URL. The Photos screen stays at `/instagram/` and links to
-[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/); photos are not
-fetched from Instagram. While CRT is on they are tinted phosphor green.
+[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/). While CRT is on
+photos are tinted phosphor green.
+
+### Photos from Instagram
+
+`pnpm photos:sync` downloads posts from Instagram into `src/content/photos/` and
+adds each one's caption (first line, without hashtags) and post link to
+`photos.json`. Existing files and hand edits are kept, so it is safe to rerun.
+Videos contribute their cover image and albums their first image. Commit the
+results; the build itself never contacts Instagram.
+
+It uses the Instagram API with Instagram Login, which only serves professional
+accounts. One-time setup:
+
+1. In the Instagram app, switch @eli_takes_photos to a professional (Creator)
+   account. This is free and can be switched back.
+2. At developers.facebook.com, create an app with the Instagram use case, open
+   "API setup with Instagram login", add the account and generate an access token.
+3. Put `INSTAGRAM_ACCESS_TOKEN=<token>` in `.env.local`, which Git ignores.
+
+Tokens last 60 days. Each sync refreshes the token in `.env.local`, so running it
+at least every 60 days keeps it valid; after that, generate a new one.
 
 `src/pages/resume.astro` holds the résumé text; the phone number and email from
 the PDF are not published.
