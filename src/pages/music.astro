@@ -1,0 +1,28 @@
+---
+import Guitar from '../components/Guitar.astro';
+import Terminal from '../layouts/Terminal.astro';
+---
+<Terminal title="Music" section="music">
+    <div class="file-path">USER://ELIJAH/MUSIC <span>AUX INPUT AVAILABLE</span></div>
+    <section class="music-layout" aria-labelledby="music-title">
+        <div class="music-copy">
+            <p class="eyebrow">A DIFFERENT KIND OF OUTPUT.</p>
+            <h1 id="music-title">SIX STRINGS.<br />MANY RABBIT HOLES.</h1>
+            <p class="hero-description">Gibson Les Paul Special.<br />A cable. A little electricity.</p>
+            <p class="intro-detail">A space for guitar, recordings, and whatever<br class="desktop-break" /> I’m listening to along the way.</p>
+            <div class="connection-panel">
+                <p class="connection-status" role="status" aria-live="polite" data-connection-status><span class="status-dot"></span>INPUT DISCONNECTED</p>
+                <button class="terminal-button" type="button" data-action="plug" aria-pressed="false">[ PLUG IN GUITAR ] <span aria-hidden="true">↗</span></button>
+                <button class="terminal-button strum-button" type="button" data-action="strum" disabled>[ STRUM AGAIN ]</button>
+                <p class="connection-hint">Connect the cable to hear an E chord.<br /><span data-sound-hint>A synthesized preview. Your recordings come next.</span></p>
+            </div>
+        </div>
+        <div class="guitar-display" data-guitar-display>
+            <span class="diagram-label">INSTRUMENT SCHEMATIC / 001</span>
+            <Guitar interactive />
+            <div class="signal-meter" aria-hidden="true"><span>SIGNAL</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+    </section>
+    <div class="section-heading music-recordings"><h2>RECORDINGS</h2><span>00 TRACKS</span></div>
+    <p class="empty-note">No recordings yet. Riffs and covers will appear here when they’re ready.</p>
+</Terminal>

@@ -1,5 +1,16 @@
 ---
-import Nav from "../components/Nav.astro";
+import Terminal from '../layouts/Terminal.astro';
 ---
 
-<Nav />
+<Terminal title="Photos" section="photos">
+    <div class="file-path">USER://ELIJAH/PHOTOS <span>ELITAKESPHOTOS</span></div>
+    <section class="archive-intro">
+        <p class="eyebrow">ANOTHER WAY OF LOOKING.</p>
+        <h1>PHOTO ARCHIVE</h1>
+        <p class="hero-description">A place for photographs.</p>
+    </section>
+    <div class="empty-archive">
+        <h2>NO ALBUMS YET.</h2>
+        <p>Photographs will appear here when the archive is ready.</p>
+    </div>
+</Terminal>

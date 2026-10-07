@@ -1,19 +1,20 @@
 ---
 import { getCollection } from 'astro:content';
-import Terminal from '../layouts/Terminal.astro';
+import Terminal from '../../layouts/Terminal.astro';
 const posts = (await getCollection('writing', ({ data }) => !data.draft))
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
-
-<Terminal title="Blog" section="writing">
-    <div class="file-path">USER://ELIJAH/BLOG <span>ARCHIVE OPEN</span></div>
+<Terminal title="Writing" section="writing">
+    <div class="file-path">USER://ELIJAH/WRITING <span>{String(posts.length).padStart(2, '0')} ENTRIES FOUND</span></div>
     <section class="archive-intro">
         <p class="eyebrow">NOTES FROM THE OTHER SIDE OF THE SCREEN.</p>
         <h1>THE WRITING LOG</h1>
         <p class="hero-description">A place to think out loud.<br />Code, music, and the space between.</p>
     </section>
+    <div class="section-heading"><h2>ALL TRANSMISSIONS</h2><span>NEWEST FIRST</span></div>
     {posts.map(post => <a class="log-row" href={`/writing/${post.id}/`}>
         <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10).replaceAll('-', '.')}</time>
-        <span class="log-title">{post.data.title}</span><span class="log-category">{post.data.category}</span><span aria-hidden="true">↗</span>
+        <span class="log-title">{post.data.title}<span class="log-description">{post.data.description}</span></span>
+        <span class="log-category">{post.data.category}</span><span aria-hidden="true">↗</span>
     </a>)}
 </Terminal>
