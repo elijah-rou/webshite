@@ -46,7 +46,8 @@ CRT OFF removes scanlines, glow and the line-by-line screen reveal. Reduced-moti
 preferences also disable the reveal, the cursor, the scan band and the zoom animation.
 
 The home menu shows the whole terminal. Opening any entry zooms in until the screen
-fills most of the window, capped so text is at most 30px tall; Back zooms out again.
+glass fills the window; Back zooms out again. While zoomed, the screen's text is laid
+out smaller so it reads at 20 to 28px depending on the window size.
 Without JavaScript every page shows the whole terminal.
 
 Terminal navigation uses two WAVs reported by their uploader to come from Fallout 3,

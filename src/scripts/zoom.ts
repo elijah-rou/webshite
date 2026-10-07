@@ -1,7 +1,9 @@
 // Fallout 3 moves the camera onto the screen while a terminal is in use. The home
-// menu shows the whole terminal; every other screen is viewed close up.
-const SCREEN_VIEWPORT_FRACTION = 0.94;
-const ZOOMED_FONT_MAX_PX = 30;
+// menu shows the whole terminal; every other screen fills the window, and its text
+// is laid out smaller so that, once magnified, it reads at a comfortable size.
+const SCREEN_VIEWPORT_FRACTION = 0.98;
+const ZOOMED_TEXT_MIN_PX = 20;
+const ZOOMED_TEXT_MAX_PX = 28;
 const ZOOM_MS = 550;
 
 let settle_timer = 0;
@@ -15,14 +17,16 @@ function measure(station: HTMLElement, screen: HTMLElement) {
     }
     const center_x = monitor.offsetLeft + monitor.clientLeft + screen.offsetLeft + screen.offsetWidth / 2;
     const center_y = monitor.offsetTop + monitor.clientTop + screen.offsetTop + screen.offsetHeight / 2;
-    const font_px = Number.parseFloat(getComputedStyle(screen).fontSize);
     const scale = Math.max(1, Math.min(
         innerWidth * SCREEN_VIEWPORT_FRACTION / screen.offsetWidth,
         innerHeight * SCREEN_VIEWPORT_FRACTION / screen.offsetHeight,
-        ZOOMED_FONT_MAX_PX / font_px,
     ));
+    // Roughly 36 lines tall and 45 characters wide at minimum, within the limits.
+    const text_px = Math.min(ZOOMED_TEXT_MAX_PX,
+        Math.max(ZOOMED_TEXT_MIN_PX, Math.min(innerWidth / 45, innerHeight / 36)));
     return {
         scale,
+        font_px: text_px / scale,
         origin_x: center_x,
         origin_y: center_y,
         x: innerWidth / 2 - (station.offsetLeft + center_x - scrollX),
@@ -39,6 +43,7 @@ export function update_zoom(animate: boolean) {
     const zoom = section === 'home' ? 'out' : 'in';
     const view = measure(station, screen);
     root.style.setProperty('--zoom-scale', String(view.scale));
+    root.style.setProperty('--zoom-font', `${view.font_px}px`);
     root.style.setProperty('--zoom-x', `${view.x}px`);
     root.style.setProperty('--zoom-y', `${view.y}px`);
     root.style.setProperty('--zoom-origin', `${view.origin_x}px ${view.origin_y}px`);

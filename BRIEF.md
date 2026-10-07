@@ -46,8 +46,9 @@ or Pip-Boy sounds as the visitor moves through it. Support arrow-key selection,
 Enter to open, and an obvious way back. Provide sound and CRT-effect controls,
 and respect reduced-motion preferences. Keep the site usable on a phone.
 
-The home menu shows the whole terminal. Opening an entry zooms in on the screen,
-as Fallout 3 does when a terminal is used, so writing is comfortable to read.
+The home menu shows the whole terminal. Opening an entry zooms in until the inner
+screen fills the window, as Fallout 3 does when a terminal is used, so writing is
+comfortable to read.
 
 Elijah removed two earlier guitar interactions: a guitar and chord inside the
 music screen, then a pluggable quarter-inch jack outside the terminal, which he

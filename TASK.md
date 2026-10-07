@@ -10,6 +10,13 @@ its sounds, tests and docs are gone. Keep changes local.
 - [x] Zoom: scale the station about the screen centre to fill 94% of the window,
       capped at 30px text; keep zoom and CRT state on `<html>` across Astro swaps.
 - [x] Verify in headless Chromium at 1440×1000, 1920×1080 and 390×844.
+- [x] Follow-up: zoom until the inner screen fills the window (98% of the limiting
+      side) rather than capping the magnification; lay text out at 20–28px
+      effective size; keep scanlines at device scale.
+
+Follow-up acceptance: the screen measured 1411×920 at 1440×1000, 1623×1058 at
+1920×1080, 1004×654 at 1024×768 and 382×647 at 390×844, with effective text of
+27.8, 28, 21.3 and 20px; no overflow or runtime errors; Back zooms out.
 
 Acceptance: Astro checks 28 files with zero diagnostics; both synthesis tests
 pass. Home shows the full terminal; Writing and About show the screen centred at
