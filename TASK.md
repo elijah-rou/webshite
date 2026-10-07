@@ -1,5 +1,22 @@
 # Personal terminal
 
+## Reading layout for posts
+
+Done means: a mock post exercises paragraphs, headings, lists, code, a quote and a
+link, and reads like the reference blogs: one centred column, roomy lines,
+monochrome code, keyboard scrolling.
+
+- [x] Add `src/content/writing/mock-ring-buffer.md` (category MOCK; delete or
+      mark `draft: true` before publishing real posts).
+- [x] Centre posts in a 66ch column; line-height 1.42; lighter glow on prose;
+      monochrome code blocks in the screen font (Shiki highlighting off).
+- [x] Focus `<main>` on page load so arrow and Page keys scroll the screen.
+
+Acceptance (headless Chromium): at 1440×1000 the column is 733px wide with 27.8px
+text on 39.5px lines; at 390×844, 20px text on 28.4px lines. PageDown scrolled
+357px and 384px respectively, where it previously did nothing. IBM Plex Mono was
+compared for body text; the terminal font was kept.
+
 ## Zoom in on opened screens; remove the guitar jack
 
 Done means: the home menu shows the whole terminal; any opened entry zooms in on
