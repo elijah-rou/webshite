@@ -46,10 +46,12 @@ or Pip-Boy sounds as the visitor moves through it. Support arrow-key selection,
 Enter to open, and an obvious way back. Provide sound and CRT-effect controls,
 and respect reduced-motion preferences. Keep the site usable on a phone.
 
-A quarter-inch guitar jack sits on the outside of the terminal housing, not in
-the music section. Visitors can plug the cable in, and doing so makes the sound
-an electric guitar makes when plugged into a live amp. Elijah corrected the first
-version, which put a guitar and chord inside the music screen.
+The home menu shows the whole terminal. Opening an entry zooms in on the screen,
+as Fallout 3 does when a terminal is used, so writing is comfortable to read.
+
+Elijah removed two earlier guitar interactions: a guitar and chord inside the
+music screen, then a pluggable quarter-inch jack outside the terminal, which he
+found too gimmicky.
 
 The brief called for the game's navigation sounds. Elijah did not have local
 extracted files and suggested finding them online. Keep audio provenance with
@@ -77,13 +79,12 @@ the design.
 ## Agreed stack and prototype choices
 
 Keep **Astro** for pages, routes, and Markdown posts. Use **Solid 2.0** for the
-interactive terminal, including menu selection, sound settings, music playback, and jack state.
+interactive terminal, including menu selection, sound settings, music playback, and zoom.
 Elijah explicitly approved Solid 2 after discussing vanilla JavaScript.
 Use TypeScript for the client code. See the
 [integration decision](docs/decisions/002-solid-terminal.md) for package and
 compatibility details.
 
-The generated CRT housing, SVG plug and cable, and synthesized plug-in sound are
-implementation choices. They are replaceable assets, not additional requirements
-from Elijah. See the
+The generated CRT housing is an implementation choice and a replaceable asset,
+not an additional requirement from Elijah. See the
 [image notes](public/images/SOURCES.md) and [audio notes](public/audio/SOURCES.md).

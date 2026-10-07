@@ -17,7 +17,6 @@ export interface Track { href: string; title: string }
 
 export const [sound, set_sound] = createSignal(read_preference('sound'));
 export const [effects, set_effects] = createSignal(read_preference('effects'));
-export const [connected, set_connected] = createSignal(false);
 export const [audio_unavailable, set_audio_unavailable] = createSignal(false);
 export const [track, set_track] = createSignal<Track | null>(null);
 export const [track_error, set_track_error] = createSignal<string | null>(null);
@@ -38,12 +37,6 @@ export function toggle_effects() {
     set_effects(enabled);
     save_preference('effects', enabled);
     void audio.play('select');
-}
-
-export function set_jack(plugged: boolean) {
-    if (connected() === plugged) { return; }
-    set_connected(plugged);
-    void audio.play(plugged ? 'plug' : 'unplug');
 }
 
 export function stop_track() {

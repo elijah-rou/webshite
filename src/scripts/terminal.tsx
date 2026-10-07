@@ -1,10 +1,10 @@
 import { render } from '@solidjs/web';
 import TerminalControls from '../components/TerminalControls';
 import TerminalMenu, { MENU_KINDS, type MenuKind } from '../components/TerminalMenu';
-import GuitarJack from '../components/GuitarJack';
 import MusicStatus from '../components/MusicStatus';
 import { audio, stop_track } from './state';
 import { handle_reveal_animation, reveal } from './reveal';
+import { update_zoom } from './zoom';
 
 let disposers: (() => void)[] = [];
 let mounted_controls: HTMLElement | null = null;
@@ -24,7 +24,6 @@ function dispose() {
 function mount() {
     const menu_root = document.querySelector<HTMLElement>('[data-terminal-menu]');
     const controls_root = document.querySelector<HTMLElement>('[data-terminal-controls]');
-    const jack_root = document.querySelector<HTMLElement>('[data-guitar-jack]');
     const status_root = document.querySelector<HTMLElement>('[data-music-status]');
     if (controls_root && mounted_controls === controls_root) { return; }
     const items = menu_root ? Array.from(menu_root.querySelectorAll<HTMLAnchorElement>('a'))
@@ -49,11 +48,15 @@ function mount() {
         status_root.replaceChildren();
         disposers.push(render(() => <MusicStatus />, status_root));
     }
-    if (jack_root) {
-        disposers.push(render(() => <GuitarJack />, jack_root));
-    }
+    update_zoom(true);
     reveal();
 }
+
+// Astro replaces <html> attributes with the incoming document's, which would
+// reset CRT OFF and the zoom until the page mounts.
+const ROOT_STATE_ATTRIBUTES = ['data-effects', 'data-zoom', 'style'];
+
+function handle_resize() { update_zoom(false); }
 
 function handle_click(event: MouseEvent) {
     const target = event.target instanceof Element ? event.target.closest('a') : null;
@@ -72,6 +75,11 @@ function handle_visibility() {
 
 function before_swap(event: Event) {
     dispose();
+    const incoming = (event as Event & { newDocument: Document }).newDocument.documentElement;
+    for (const name of ROOT_STATE_ATTRIBUTES) {
+        const value = document.documentElement.getAttribute(name);
+        if (value === null) { incoming.removeAttribute(name); } else { incoming.setAttribute(name, value); }
+    }
     // Recordings are controlled from the Music screen, so they stop when it is left.
     stop_track();
     // The native transition may be cancelled by a second navigation.
@@ -94,6 +102,7 @@ document.addEventListener('keydown', handle_key);
 document.addEventListener('visibilitychange', handle_visibility);
 document.addEventListener('animationstart', handle_reveal_animation);
 document.addEventListener('animationend', handle_reveal_animation);
+window.addEventListener('resize', handle_resize);
 mount();
 
 if (import.meta.hot) {
@@ -107,5 +116,6 @@ if (import.meta.hot) {
         document.removeEventListener('visibilitychange', handle_visibility);
         document.removeEventListener('animationstart', handle_reveal_animation);
         document.removeEventListener('animationend', handle_reveal_animation);
+        window.removeEventListener('resize', handle_resize);
     });
 }

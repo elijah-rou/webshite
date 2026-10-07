@@ -1,6 +1,4 @@
-import { jack_samples, terminal_samples, type JackSound, type TerminalSound } from './synthesis';
-
-type Sound = TerminalSound | JackSound;
+import { terminal_samples, type TerminalSound } from './synthesis';
 const VOICES_MAX = 8;
 const paths = {
     focus: '/audio/ui_hacking_charscroll.wav',
@@ -14,8 +12,8 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
     let epoch = 0;
     let last_focus_ms = 0;
     const sources = new Set<AudioBufferSourceNode>();
-    const buffers = new Map<Sound, AudioBuffer>();
-    const decoding = new Map<Sound, Promise<void>>();
+    const buffers = new Map<TerminalSound, AudioBuffer>();
+    const decoding = new Map<TerminalSound, Promise<void>>();
 
     async function get_context(): Promise<AudioContext | undefined> {
         if (!enabled() || failed) { return; }
@@ -48,12 +46,11 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
         }
     }
 
-    function play_buffer(audio: AudioContext, kind: Sound) {
+    function play_buffer(audio: AudioContext, kind: TerminalSound) {
         if (!enabled() || !output || sources.size >= VOICES_MAX) { return; }
         let buffer = buffers.get(kind);
         if (!buffer) {
-            const samples = kind === 'plug' || kind === 'unplug' ? jack_samples(kind, audio.sampleRate)
-                : terminal_samples(kind, audio.sampleRate);
+            const samples = terminal_samples(kind, audio.sampleRate);
             buffer = audio.createBuffer(1, samples.length, audio.sampleRate);
             buffer.getChannelData(0).set(samples);
             buffers.set(kind, buffer);
@@ -66,7 +63,7 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
         source.start();
     }
 
-    async function play(kind: Sound) {
+    async function play(kind: TerminalSound) {
         const started_epoch = epoch;
         const audio = await get_context();
         if (!audio) { return; }
