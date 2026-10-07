@@ -1,5 +1,23 @@
 # Personal terminal
 
+## Photos, projects, resume, menu focus
+
+- [x] Photos from `src/content/photos/` (decision: local folder, not the Instagram
+      API or scraping), thumbnail grid with arrow keys, per-photo pages, tint.
+- [x] Projects as a content collection; summaries condensed from each README;
+      each opens a page with the GitHub link first.
+- [x] Resume page from the supplied PDF, without phone number or email.
+- [x] Remove the home cursor; widen posts to a 100ch column.
+- [x] Fix: hover and arrow keys could highlight different menu entries, and
+      Enter opened the focused one; hover now moves focus and the bar is the
+      only indicator.
+
+Acceptance (headless Chromium, 1440×1000 and 390×844): with sample images
+(since removed), the grid, arrow keys, Enter, viewer, tint and CRT OFF worked
+with no overflow. Arrow keys to Projects, hover About, ArrowDown, Enter opened
+Writing with one highlighted entry at every step. Project and resume pages
+render and PageDown scrolls them.
+
 ## Reading layout for posts
 
 Done means: a mock post exercises paragraphs, headings, lists, code, a quote and a

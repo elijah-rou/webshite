@@ -1,12 +1,13 @@
 ---
+import { getCollection } from 'astro:content';
 import Terminal from '../layouts/Terminal.astro';
 import Nav from '../components/Nav.astro';
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const items = projects.map(({ id, data }) => ({
+    label: data.name, href: `/projects/${id}/`, detail: data.language.toUpperCase(), note: data.summary,
+}));
 ---
 <Terminal title="Projects" section="projects">
     <h1>PROJECTS</h1>
-    <div class="record">
-        <h2>webshite</h2>
-        <p>This site. Built with Astro and Solid 2.</p>
-        <Nav label="Project links" items={[{ label: 'View source', href: 'https://github.com/elijah-rou/webshite' }]} />
-    </div>
+    <Nav label="Projects" items={items} />
 </Terminal>

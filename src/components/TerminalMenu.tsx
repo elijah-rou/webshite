@@ -3,7 +3,7 @@ import { audio, toggle_track, track } from '../scripts/state';
 
 export const MENU_KINDS = ['link', 'recording', 'download'] as const;
 export type MenuKind = typeof MENU_KINDS[number];
-export interface MenuItem { label: string; href: string; kind: MenuKind; detail: string }
+export interface MenuItem { label: string; href: string; kind: MenuKind; detail: string; note: string }
 interface Props { items: MenuItem[]; label: string }
 
 export default function TerminalMenu(props: Props) {
@@ -15,6 +15,13 @@ export default function TerminalMenu(props: Props) {
         if (selected() === index) { return; }
         flush(() => set_selected(index));
         if (keyboard) { void audio.play('focus'); } else { audio.focus(); }
+    }
+
+    // The selection bar is the only indicator, so the pointer moves keyboard focus
+    // with it; otherwise Enter would open an entry other than the highlighted one.
+    function hover(index: number) {
+        select(index);
+        links[index]?.focus({ preventScroll: true });
     }
 
     function handle_key(event: KeyboardEvent) {
@@ -57,12 +64,13 @@ export default function TerminalMenu(props: Props) {
             <a ref={element => { links[untrack(index)] = element; }}
                 href={item.href} download={item.kind === 'download' ? '' : undefined}
                 data-label={item.label} data-selected={selected() === index() ? 'true' : 'false'}
-                onPointerEnter={() => select(index())} onFocus={() => select(index())}
+                onPointerEnter={() => hover(index())} onFocus={() => select(index())}
                 onClick={event => activate(item, event)}>
                 <span class="menu-label"><span aria-hidden="true">&gt; </span>{item.label}</span>
                 {item.detail && <span class="menu-detail">
                     {item.kind === 'recording' && track()?.href === item.href ? 'PLAYING' : item.detail}
                 </span>}
+                {item.note && <span class="menu-note">{item.note}</span>}
             </a>
         }</For>
     </nav>;

@@ -4,7 +4,7 @@ import { audio } from './state';
 // without changing their text, so selection and assistive technology are unaffected.
 const REVEAL_SELECTOR = [
     '.system-header > *', 'main h1', 'main h2', 'main h3', 'main p',
-    'main li', 'main pre', 'main img', '.terminal-menu a', '.command-prompt', '.screen-bottom',
+    'main li', 'main pre', 'main img', '.terminal-menu a', '.screen-bottom',
 ].join(', ');
 const REVEAL_TOTAL_MS = 900;
 const REVEAL_LINE_MS = 60;

@@ -1,16 +1,17 @@
 ---
 import type { MenuKind } from './TerminalMenu';
-interface Item { label: string; href: string; kind?: MenuKind; detail?: string }
+interface Item { label: string; href: string; kind?: MenuKind; detail?: string; note?: string }
 interface Props { items: Item[]; label?: string }
 const { items, label = 'Main menu' } = Astro.props;
 ---
 <div data-terminal-menu>
     <nav class="terminal-menu" aria-label={label}>
-        {items.map(({ label, href, kind = 'link', detail = '' }, index) =>
+        {items.map(({ label, href, kind = 'link', detail = '', note = '' }, index) =>
             <a href={href} download={kind === 'download' ? '' : undefined} data-label={label}
-                data-kind={kind} data-detail={detail} data-selected={index === 0}>
+                data-kind={kind} data-detail={detail} data-note={note} data-selected={index === 0}>
                 <span class="menu-label"><span aria-hidden="true">&gt; </span>{label}</span>
                 {detail && <span class="menu-detail">{detail}</span>}
+                {note && <span class="menu-note">{note}</span>}
             </a>)}
     </nav>
 </div>

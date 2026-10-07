@@ -19,8 +19,25 @@ scripts are disabled; the installed platform binaries are used directly.
 
 Add Markdown posts to `src/content/writing/`. Frontmatter contains `title`,
 `description`, `date`, optional `category`, and optional `draft: true`. Drafts are
-excluded from listings and generated routes. `/blog/` redirects to `/writing/`;
-the Photos entry stays at `/instagram/`.
+excluded from listings and generated routes. `/blog/` redirects to `/writing/`.
+`mock-ring-buffer.md` is a placeholder for checking layout; delete it or set
+`draft: true` before publishing.
+
+Projects live in `src/content/projects/`, one Markdown file per repository with
+`name`, `repo`, `language`, `summary` and `order` in the frontmatter. The list
+shows the summary; each project's page shows the GitHub link first, then the body.
+The current summaries are condensed from each repository's README.
+
+Photos come from images placed in `src/content/photos/` (JPEG, PNG, WebP or AVIF).
+Name files with a leading date, such as `2026-10-08-harbour.jpg`, to list them
+newest first; the rest of the name becomes the caption. An optional
+`src/content/photos/photos.json` maps a file name to `caption`, `alt` and its
+`instagram` post URL. The Photos screen stays at `/instagram/` and links to
+[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/); photos are not
+fetched from Instagram. While CRT is on they are tinted phosphor green.
+
+`src/pages/resume.astro` holds the résumé text; the phone number and email from
+the PDF are not published.
 
 Put music files in `public/music/`. The Music screen lists them at build time,
 recordings first, using the file name without its extension as the title:
@@ -43,7 +60,7 @@ Escape goes back. The Back link stays visible when the screen content scrolls.
 Sound begins with a click or keyboard gesture. SOUND and CRT preferences persist
 when browser storage is available. Muting stops effects and the playing recording.
 CRT OFF removes scanlines, glow and the line-by-line screen reveal. Reduced-motion
-preferences also disable the reveal, the cursor, the scan band and the zoom animation.
+preferences also disable the reveal, the scan band and the zoom animation.
 
 The home menu shows the whole terminal. Opening any entry zooms in until the screen
 glass fills the window; Back zooms out again. While zoomed, the screen's text is laid

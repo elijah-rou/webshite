@@ -32,6 +32,7 @@ function mount() {
             href: link.getAttribute('href') ?? '/',
             kind: menu_kind(link.dataset.kind),
             detail: link.dataset.detail ?? '',
+            note: link.dataset.note ?? '',
         })) : [];
     const label = menu_root?.querySelector('nav')?.getAttribute('aria-label') ?? 'Navigation';
     dispose();
@@ -65,6 +66,41 @@ function handle_resize() { update_zoom(false); }
 function handle_click(event: MouseEvent) {
     const target = event.target instanceof Element ? event.target.closest('a') : null;
     if (target && !target.classList.contains('skip-link')) { void audio.play('select'); }
+}
+
+// Arrow keys move between photo thumbnails by their on-screen position.
+function handle_grid_key(event: KeyboardEvent) {
+    const grid = document.querySelector<HTMLElement>('[data-photo-grid]');
+    if (!grid || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) { return; }
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) { return; }
+    const tiles = Array.from(grid.querySelectorAll<HTMLAnchorElement>('a'));
+    const active = document.activeElement;
+    const current = tiles.findIndex(tile => tile === active);
+    let target: HTMLAnchorElement | undefined;
+    if (current < 0) {
+        if (active !== document.body && active?.id !== 'content') { return; }
+        target = tiles[0];
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        target = tiles[current + (event.key === 'ArrowRight' ? 1 : -1)];
+    } else {
+        const from = tiles[current];
+        if (!from) { return; }
+        const below = event.key === 'ArrowDown';
+        const rows = tiles.filter(tile => below ? tile.offsetTop > from.offsetTop : tile.offsetTop < from.offsetTop);
+        const row_top = below ? Math.min(...rows.map(tile => tile.offsetTop)) : Math.max(...rows.map(tile => tile.offsetTop));
+        target = rows.filter(tile => tile.offsetTop === row_top)
+            .sort((a, b) => Math.abs(a.offsetLeft - from.offsetLeft) - Math.abs(b.offsetLeft - from.offsetLeft))[0];
+    }
+    event.preventDefault();
+    if (!target) { return; }
+    target.focus();
+    void audio.play('focus');
+}
+
+// As in the menus, the pointer moves focus so one thumbnail is ever highlighted.
+function handle_grid_pointer(event: PointerEvent) {
+    const tile = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('[data-photo-grid] a') : null;
+    if (tile && tile !== document.activeElement) { tile.focus({ preventScroll: true }); audio.focus(); }
 }
 
 function handle_key(event: KeyboardEvent) {
@@ -103,6 +139,8 @@ document.addEventListener('astro:page-load', mount);
 document.addEventListener('astro:before-swap', before_swap);
 document.addEventListener('click', handle_click);
 document.addEventListener('keydown', handle_key);
+document.addEventListener('keydown', handle_grid_key);
+document.addEventListener('pointerover', handle_grid_pointer);
 document.addEventListener('visibilitychange', handle_visibility);
 document.addEventListener('animationstart', handle_reveal_animation);
 document.addEventListener('animationend', handle_reveal_animation);
@@ -117,6 +155,8 @@ if (import.meta.hot) {
         document.removeEventListener('astro:before-swap', before_swap);
         document.removeEventListener('click', handle_click);
         document.removeEventListener('keydown', handle_key);
+        document.removeEventListener('keydown', handle_grid_key);
+        document.removeEventListener('pointerover', handle_grid_pointer);
         document.removeEventListener('visibilitychange', handle_visibility);
         document.removeEventListener('animationstart', handle_reveal_animation);
         document.removeEventListener('animationend', handle_reveal_animation);
