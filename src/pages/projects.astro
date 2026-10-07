@@ -1,17 +1,12 @@
 ---
 import Terminal from '../layouts/Terminal.astro';
+import Nav from '../components/Nav.astro';
 ---
 <Terminal title="Projects" section="projects">
-    <div class="file-path">USER://ELIJAH/PROJECTS <span>ARCHIVE OPEN</span></div>
-    <section class="archive-intro">
-        <p class="eyebrow">THINGS BUILT. THINGS LEARNED.</p>
-        <h1>PROJECT LOG</h1>
-        <p class="hero-description">Experiments, useful tools,<br />and things made out of curiosity.</p>
-    </section>
-    <div class="empty-archive">
-        <span class="archive-symbol" aria-hidden="true">[ + ]</span>
-        <h2>THE ARCHIVE IS JUST GETTING STARTED.</h2>
-        <p>Project write-ups will appear here as they’re ready.</p>
-        <a href="/writing/" class="terminal-link">[ VISIT THE WRITING LOG ] ↗</a>
+    <h1>PROJECTS</h1>
+    <div class="record">
+        <h2>webshite</h2>
+        <p>This site. Built with Astro and Solid 2.</p>
+        <Nav label="Project links" items={[{ label: 'View source', href: 'https://github.com/elijah-rou/webshite' }]} />
     </div>
 </Terminal>

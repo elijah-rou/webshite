@@ -10,12 +10,10 @@ interface Props { post: CollectionEntry<'writing'> }
 const { post } = Astro.props;
 const { Content } = await render(post);
 ---
-<Terminal title={post.data.title} section="writing" description={post.data.description}>
-    <div class="file-path">USER://ELIJAH/WRITING/{post.id.toUpperCase()} <span>{post.data.category}</span></div>
+<Terminal title={post.data.title} section="writing" back="/writing/" description={post.data.description}>
     <article class="article">
-        <a class="back-link" href="/writing/">← BACK TO THE LOG</a>
-        <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10).replaceAll('-', '.')}</time>
         <h1>{post.data.title}</h1>
+        <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10)}</time>
         <div class="prose"><Content /></div>
     </article>
 </Terminal>

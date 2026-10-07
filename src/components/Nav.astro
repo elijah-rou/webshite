@@ -1,17 +1,11 @@
 ---
-interface Props { section: string }
-const { section } = Astro.props;
-const navigation = [
-    { label: 'PROFILE', path: '/', section: 'home' },
-    { label: 'WRITING', path: '/writing/', section: 'writing' },
-    { label: 'PROJECTS', path: '/projects/', section: 'projects' },
-    { label: 'MUSIC', path: '/music/', section: 'music' },
-    { label: 'PHOTOS', path: '/instagram/', section: 'photos' },
-];
+interface Props { items: { label: string; href: string }[]; label?: string }
+const { items, label = 'Main menu' } = Astro.props;
 ---
-<nav class="navigation" aria-label="Main navigation">
-    {navigation.map((item, index) => <a href={item.path}
-        aria-current={section === item.section ? 'page' : undefined}>
-        <span class="nav-index">0{index + 1}</span><span>{item.label}</span>
-    </a>)}
-</nav>
+<div data-terminal-menu aria-label={label}>
+    <nav class="terminal-menu" aria-label={label}>
+        {items.map((item, index) => <a href={item.href} data-label={item.label} data-selected={index === 0}>
+            <span aria-hidden="true">&gt; </span>{item.label}
+        </a>)}
+    </nav>
+</div>
