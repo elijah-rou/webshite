@@ -28,8 +28,7 @@ The supplied game screenshots are the main visual reference.
   a solid green highlight with dark text.
 - Plain headers, prompts, and thin rules. Leave unused screen space where the
   content does not need it.
-- Compact inventory-style presentation for the guitar, drawing on the Pip-Boy's
-  item lists, monochrome illustrations, and short descriptions.
+- Compact file-list presentation for music, drawing on the Pip-Boy's item lists.
 
 Remove the first prototype's oversized headings, polished cards, decorative
 status labels, slogans, and generic portfolio copy. Writing should remain easy
@@ -37,8 +36,9 @@ to read inside the terminal.
 
 ## Content and interaction
 
-The portfolio and blog are the main content. Include a music section centred on
-Elijah's **Gibson Les Paul Special**. About and Photos are supporting pages;
+The portfolio and blog are the main content. Include a music section listing
+Elijah's production files (FL Studio, Bitwig, Logic) and portfolio recordings
+(FLAC or MP3). About and Photos are supporting pages;
 preserve the repository's existing routes when reorganising the site.
 
 Navigation should respond to mouse and keyboard input, with Fallout 3 terminal
@@ -46,10 +46,10 @@ or Pip-Boy sounds as the visitor moves through it. Support arrow-key selection,
 Enter to open, and an obvious way back. Provide sound and CRT-effect controls,
 and respect reduced-motion preferences. Keep the site usable on a phone.
 
-In the music section, visitors should be able to "plug in" the Les Paul Special.
-Show the cable connecting, make the connected state clear, and let the visitor
-hear and replay a chord. This is an on-screen interaction; it does not require
-the visitor to connect a physical instrument.
+A quarter-inch guitar jack sits on the outside of the terminal housing, not in
+the music section. Visitors can plug the cable in, and doing so makes the sound
+an electric guitar makes when plugged into a live amp. Elijah corrected the first
+version, which put a guitar and chord inside the music screen.
 
 The brief called for the game's navigation sounds. Elijah did not have local
 extracted files and suggested finding them online. Keep audio provenance with
@@ -77,14 +77,13 @@ the design.
 ## Agreed stack and prototype choices
 
 Keep **Astro** for pages, routes, and Markdown posts. Use **Solid 2.0** for the
-interactive terminal, including menu selection, sound settings, and guitar state.
+interactive terminal, including menu selection, sound settings, music playback, and jack state.
 Elijah explicitly approved Solid 2 after discussing vanilla JavaScript.
 Use TypeScript for the client code. See the
 [integration decision](docs/decisions/002-solid-terminal.md) for package and
 compatibility details.
 
-The generated CRT housing, SVG guitar drawing, and synthesized E major chord
-are prototype implementation choices. They are replaceable assets, not additional
-requirements from Elijah. The chord should be identified as synthesized rather
-than presented as a recording of his guitar. See the
+The generated CRT housing, SVG plug and cable, and synthesized plug-in sound are
+implementation choices. They are replaceable assets, not additional requirements
+from Elijah. See the
 [image notes](public/images/SOURCES.md) and [audio notes](public/audio/SOURCES.md).
