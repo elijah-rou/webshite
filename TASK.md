@@ -1,5 +1,39 @@
 # Personal terminal
 
+## Review, Fallout 3 refinement, music and jack
+
+Done means: code reviewed for correctness with blockers fixed; the screen reads
+closer to a Fallout 3 terminal; agent-written filler removed; the Music screen
+lists the owner's recordings (play in place) and FL Studio, Bitwig and Logic
+project files (download) from `public/music/`; a 1/4" guitar cable outside the
+screen plugs into a jack on the housing by drag, click or keyboard, with an amp
+plug-in sound. Keep changes local.
+
+- [x] Review code; fix invalid ARIA, visible disabled controls without JS, arrow
+      keys ignored after the skip link, collapsed date spacing, unused `category`.
+- [x] Fallout 3 styling: centered RobCo-style header, phosphor bloom, glowing
+      selection bar, rolling scan band, line-by-line reveal with the charscroll
+      WAV, terminal font for prose, monitor sized to the viewport height.
+- [x] Remove the agent-written "Terminal online" post; redirect `/blog/`.
+- [x] Replace the on-screen Les Paul and chord with the music file menu.
+- [x] Guitar jack: drag, click and keyboard; side entry on wide screens, bottom
+      entry below 1180px; synthesized plug and unplug sounds with tests.
+- [x] Verify build, tests, desktop/mid/mobile layouts, playback, keyboard paths.
+- [x] Fresh review of the integrated diff; fix blockers; commit locally.
+
+Acceptance: Astro checks 28 files with zero diagnostics and builds seven pages
+plus the `/blog/` redirect; three synthesis tests pass. Browser checks at
+1440×1000, 1024×768 and 390×844: plug by click, drag in, drag out and Enter;
+socket and resting plug placed on load; no horizontal overflow; arrow, Enter and
+Escape navigation; jack state kept across client navigation; CRT OFF removes the
+glass and the reveal. With temporary fixtures (since deleted), a FLAC played and
+stopped from the menu, muting stopped it, projects carried `download`, and a test
+post rendered in the terminal font. The review found the jack mount point adding
+a second body grid row, which pushed the monitor 31–131px above centre; fixed and
+measured centred at 1440×1400. Recordings now stop when leaving the Music screen,
+and CRT OFF clears unfinished reveal lines. With no posts, the build warns that
+`src/content/writing` has no Markdown files.
+
 ## Rebuild
 
 Done means: Solid 2 owns interactive state; the compact, worn CRT and vertical

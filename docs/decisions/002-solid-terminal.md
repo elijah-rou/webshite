@@ -6,12 +6,12 @@ The matching compiler plugin is `@solidjs/vite-plugin@3.0.0-next.47`.
 
 `@astrojs/solid-js@7.0.2` supports Solid 1.9, not Solid 2. Instead, Astro's Vite
 configuration loads Solid's own plugin with SSR disabled. A browser entry mounts
-the menu, settings and guitar components. Astro renders content and ordinary links
+the menu, settings, music status and guitar jack components. Astro renders content and ordinary links
 at build time; these remain usable before JavaScript loads or if it is disabled.
 
 The browser entry disposes each component before Astro swaps the document and
 mounts the new page's controls afterward. Shared signals retain preferences and
-guitar state during navigation. The audio player owns its context and cancels
+guitar jack state during navigation. The audio player owns its context and cancels
 pending playback when muted. Preferences persist in localStorage when available.
 
 Alternatives were to retain vanilla TypeScript, use Solid 1 through Astro's

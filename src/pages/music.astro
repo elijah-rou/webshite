@@ -1,25 +1,18 @@
 ---
 import Terminal from '../layouts/Terminal.astro';
+import Nav from '../components/Nav.astro';
+import { read_music_files } from '../lib/music';
+const items = read_music_files().map(file => ({
+    label: file.title,
+    href: file.href,
+    kind: file.kind === 'recording' ? 'recording' as const : 'download' as const,
+    detail: `${file.format}  ${file.size}`,
+}));
 ---
 <Terminal title="Music" section="music">
     <h1>MUSIC</h1>
-    <div class="music-inventory">
-        <div class="instrument-details">
-            <h2>Gibson Les Paul Special</h2>
-            <dl>
-                <div><dt>Pickups</dt><dd>2 × P-90</dd></div>
-                <div><dt>Tuning</dt><dd>E standard</dd></div>
-            </dl>
-            <p class="recordings">No recordings yet.</p>
-        </div>
-        <div data-guitar-player>
-            <div class="guitar-player">
-                <div class="instrument-image">
-                    <img src="/images/les-paul-special.svg" width="420" height="500"
-                        alt="Gibson Les Paul Special with two P-90 pickups" />
-                </div>
-                <noscript><p>Enable JavaScript to plug in the guitar.</p></noscript>
-            </div>
-        </div>
-    </div>
+    {items.length > 0 ? <>
+        <Nav label="Music files" items={items} />
+        <div data-music-status><p class="music-status"></p></div>
+    </> : <p>No files yet.</p>}
 </Terminal>

@@ -2,13 +2,16 @@
 
 :root {
     color-scheme: dark;
-    --phosphor: #76ec88;
+    --phosphor: #7cf59a;
+    --phosphor-ink: #052010;
     --screen: #06140b;
-    --muted: #62bb70;
+    --muted: #5fb873;
+    --glow: 0 0 2px #8dffa899, 0 0 9px #3dff7a3d;
 }
 * { box-sizing: border-box; }
 html { background: #11120e; }
 body {
+    position: relative;
     margin: 0;
     min-height: 100svh;
     display: grid;
@@ -26,11 +29,14 @@ button:disabled { cursor: default; opacity: .45; }
 a { color: inherit; text-decoration: none; }
 a:focus-visible, button:focus-visible { outline: 1px solid var(--phosphor); outline-offset: 3px; }
 ::selection { background: var(--phosphor); color: var(--screen); }
-.terminal-station { width: min(980px, 100%); }
+
+/* The housing is 1374×1145; keep the whole monitor within the viewport height. */
+.terminal-station { width: min(980px, 100%, max(640px, calc((100svh - 70px) * 1.2))); }
 .monitor {
     position: relative;
     width: 100%;
     aspect-ratio: 1374 / 1145;
+    container-type: inline-size;
     filter: drop-shadow(0 28px 25px #0009);
 }
 .monitor-housing { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -45,12 +51,12 @@ a:focus-visible, button:focus-visible { outline: 1px solid var(--phosphor); outl
     overflow: hidden;
     padding: 3.5% 4.6% 2.5%;
     border-radius: 8% / 10%;
-    background: radial-gradient(ellipse at 52% 35%, #0c2916 0%, #07180e 52%, #020904 100%);
+    background: radial-gradient(ellipse at 50% 42%, #113520 0%, #0a2313 45%, #04110a 82%, #020804 100%);
     color: var(--phosphor);
     font-family: 'VT323', monospace;
-    font-size: 21px;
+    font-size: clamp(15px, 2.15cqi, 21px);
     line-height: 1.22;
-    text-shadow: 0 0 3px #65ef7b66;
+    text-shadow: var(--glow);
     box-shadow: inset 0 0 40px 8px #000b;
 }
 .screen-glass {
@@ -64,6 +70,14 @@ a:focus-visible, button:focus-visible { outline: 1px solid var(--phosphor); outl
         radial-gradient(ellipse at 67% 8%, #c1ffc009, transparent 48%);
     box-shadow: inset 0 0 30px 14px #0008;
 }
+/* The slow bright band that rolls down Fallout 3 terminal screens. */
+.screen-glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, #0000, #9dffb00b 45%, #9dffb014 50%, #0000) 0 -40% / 100% 22% no-repeat;
+    animation: scan-roll 9s linear infinite;
+}
 .screen-scroll {
     overflow: auto;
     overscroll-behavior: contain;
@@ -73,15 +87,16 @@ a:focus-visible, button:focus-visible { outline: 1px solid var(--phosphor); outl
     min-height: 0;
     padding: 0 5px 8px 2px;
 }
-.system-header { margin-bottom: 20px; letter-spacing: .5px; font-size: 19px; }
+.system-header { margin-bottom: 1.1em; text-align: center; font-size: .9em; letter-spacing: .04em; }
+.system-header a { display: block; }
 .system-header a:hover { text-decoration: underline; }
 h1, h2, p { margin: 0; font: inherit; }
-h1 { margin-bottom: 13px; padding-bottom: 5px; border-bottom: 1px solid #76ec8860; }
-h2 { margin-bottom: 12px; }
+h1 { margin-bottom: .6em; padding-bottom: .25em; border-bottom: 1px solid #7cf59a60; }
+h2 { margin-bottom: .6em; }
 #content:focus { outline: none; }
-.terminal-greeting { margin-bottom: 12px; }
+.terminal-greeting { margin-bottom: .6em; }
 .terminal-menu { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-.terminal-menu a, .menu-action, .back-link {
+.terminal-menu a, .back-link {
     display: block;
     padding: 2px 5px 3px;
     max-width: 100%;
@@ -93,84 +108,166 @@ h2 { margin-bottom: 12px; }
     text-align: left;
     font: inherit;
 }
-.terminal-menu a { width: min(380px, 100%); }
-.terminal-menu a[data-selected='true'],
-.menu-action:hover:not(:disabled), .menu-action:focus-visible,
+/* Keeps the two spaces between a date and a title in the writing index. */
+.terminal-menu a { width: min(18em, 100%); white-space: pre-wrap; }
+.terminal-menu a[data-selected='true'], .terminal-menu a:hover,
 .back-link:hover, .back-link:focus-visible {
-    color: #06270e;
+    color: var(--phosphor-ink);
     background: var(--phosphor);
     text-shadow: none;
+    box-shadow: 0 0 9px #6dff8f50;
     outline-offset: 1px;
 }
-.terminal-menu a:hover { background: var(--phosphor); color: #06270e; text-shadow: none; }
-.terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) { background: transparent; color: inherit; }
+.terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) {
+    background: transparent;
+    color: inherit;
+    text-shadow: var(--glow);
+    box-shadow: none;
+}
 .screen-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 8px; }
 .screen-bottom [data-terminal-controls] { margin-left: auto; }
 .back-link { width: fit-content; white-space: nowrap; }
-.command-prompt { margin-top: 22px; }
+.command-prompt { margin-top: 1em; }
 .cursor { padding-left: 7px; animation: blink 1.2s step-end infinite; }
 .terminal-controls { display: flex; justify-content: flex-end; gap: 15px; }
-.terminal-controls button {
+.terminal-controls button, .terminal-controls span {
     background: transparent;
     color: var(--muted);
-    font-size: 15px;
+    font-size: .72em;
     border: 0;
     padding: 3px 0;
 }
-.terminal-controls button:hover { color: var(--phosphor); }
+/* Server-rendered placeholder that reserves space until Solid mounts the controls. */
+.terminal-controls[aria-hidden='true'] { visibility: hidden; }
+.terminal-controls button:hover:not(:disabled) { color: var(--phosphor); }
 .keyboard-hint {
     display: flex;
     justify-content: center;
     gap: 26px;
-    margin-top: 4px;
+    margin: 4px 0 0;
     color: #838273;
     font: 10px 'IBM Plex Mono', monospace;
     letter-spacing: .5px;
 }
 .record { max-width: 48ch; }
-.record p + p { margin-top: 17px; }
-.record .text-link { display: inline-block; margin-top: 18px; text-decoration: underline; }
-.music-inventory { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; }
-.music-inventory [data-guitar-player], .guitar-player { display: contents; }
-.instrument-details { grid-column: 1; grid-row: 1; }
-.guitar-actions { grid-column: 1; grid-row: 2; }
-.instrument-image { grid-column: 2; grid-row: 1 / 3; }
-.instrument-details { padding-top: 0; }
-.instrument-details h2 { max-width: none; }
-dl { margin: 12px 0 0; font-size: 18px; }
-dl div { display: flex; gap: 12px; margin-bottom: 6px; }
-dt { color: var(--muted); min-width: 7ch; }
-dd { margin: 0; }
-.recordings { margin-top: 12px; font-size: 18px; color: var(--muted); }
-.recordings span { display: inline-block; margin-top: 6px; color: var(--muted); }
-.guitar-player { min-width: 0; }
-.instrument-image { position: relative; height: 240px; margin-top: -12px; }
-.instrument-image img, .guitar-cable { width: 100%; height: 100%; }
-.guitar-cable { position: absolute; inset: 0; stroke: var(--phosphor); stroke-width: 2; fill: none; }
-.cable-plug { transform: translate(60px, 28px); transition: transform .25s ease; }
-.cable-connected { opacity: 0; }
-[data-connected='true'] .cable-plug { transform: none; }
-[data-connected='true'] .cable-connected { opacity: 1; }
-[data-connected='true'] .cable-disconnected { opacity: 0; }
-.connection-status { margin: 0 0 7px; font-size: 16px; }
-.guitar-actions { font-size: 19px; }
-.audio-note { font-size: 15px; color: var(--muted); margin-top: 9px; }
-.article time { display: block; color: var(--muted); margin-bottom: 20px; font-size: 17px; }
-.prose { font: 14px/1.65 'IBM Plex Mono', monospace; color: #93d69b; overflow-wrap: anywhere; }
-.prose p + p { margin-top: 18px; }
-.prose h2 { margin: 25px 0 10px; font-weight: 500; }
+.record p + p { margin-top: .8em; }
+.record .text-link { display: inline-block; margin-top: .85em; text-decoration: underline; }
+/* Menus with a detail column, such as music files, span the screen. */
+.terminal-menu a:has(.menu-detail) { display: flex; justify-content: space-between; gap: 2ch; width: 100%; }
+.menu-detail { flex: none; color: var(--muted); }
+.terminal-menu a[data-selected='true'] .menu-detail, .terminal-menu a:hover .menu-detail { color: inherit; }
+.terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) .menu-detail { color: var(--muted); }
+.music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
+.article-meta { display: flex; gap: 2ch; margin-bottom: 1em; color: var(--muted); font-size: .86em; }
+.prose { max-width: 64ch; line-height: 1.3; overflow-wrap: anywhere; }
+.prose p, .prose ul, .prose ol, .prose pre, .prose blockquote { margin: 0 0 .9em; }
+.prose h2, .prose h3 { margin: 1.2em 0 .5em; font: inherit; text-transform: uppercase; }
+.prose ul, .prose ol { padding-left: 2ch; }
 .prose a { text-decoration: underline; }
-.prose pre { overflow-x: auto; padding: 12px; border: 1px solid #76ec8833; text-shadow: none; }
+.prose code { font: inherit; }
+.prose pre { overflow-x: auto; padding: .5em 1ch; border: 1px solid #7cf59a33; text-shadow: none; }
 .prose img { max-width: 100%; height: auto; }
-.prose blockquote { margin-left: 0; padding-left: 15px; border-left: 1px solid currentColor; }
+.prose blockquote { margin-left: 0; padding-left: 1ch; border-left: 1px solid currentColor; color: var(--muted); }
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* The input jack sits on the housing's right edge; the plug enters from the right.
+   The client script reads the custom properties to place the plug and its resting spot. */
+.jack-socket {
+    --jack-angle: 180;
+    --rest-x: 70;
+    --rest-y: 190;
+    --rest-angle: 192;
+    --plug-scale: 1.5;
+    position: absolute;
+    z-index: 1;
+    left: 98.1%;
+    top: 74%;
+    width: .92cqi;
+    height: 2cqi;
+    translate: -50% -50%;
+    border-radius: 2px;
+    background: linear-gradient(to right, #2a2a26, #c9c6b8 45%, #75736a 70%, #1d1d1a);
+    box-shadow: 0 0 0 1px #0008, 1px 2px 3px #0009;
+}
+/* The mount point must not become a second row in the body grid. */
+[data-guitar-jack] { display: contents; }
+.cable-layer { position: absolute; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
+.cable { position: absolute; inset: 0; overflow: visible; filter: drop-shadow(2px 5px 3px #0008); }
+.cable-line, .cable-shine { fill: none; stroke-linecap: round; }
+.cable-line { stroke: #121211; }
+.cable-shine { stroke: #ffffff14; translate: -1px -1.5px; }
+.plug { transform-origin: 0 0; }
+.cable-layer[data-connected='true'] .plug-tip { display: none; }
+.plug-handle {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    translate: -50% -50%;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: grab;
+    pointer-events: auto;
+    touch-action: none;
+}
+.plug-handle:active { cursor: grabbing; }
+.plug-handle:focus-visible { outline: 1px dashed #c9c6b8; outline-offset: -8px; }
+
 .skip-link { position: fixed; top: -80px; left: 16px; z-index: 10; padding: 10px; background: var(--phosphor); color: #06140b; }
 .skip-link:focus { top: 8px; }
+
+/* Added per element by the client script, which removes it when the line finishes. */
+.reveal-line {
+    animation: type-line var(--reveal-ms, 60ms) steps(var(--reveal-steps, 20), end) var(--reveal-delay, 0ms) both;
+}
+
 html[data-effects='off'] .screen-glass { display: none; }
-html[data-effects='off'] .screen { text-shadow: none; }
-html[data-effects='off'] .cursor { animation: none; }
+html[data-effects='off'] .screen,
+html[data-effects='off'] .terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) { text-shadow: none; }
+html[data-effects='off'] .cursor, html[data-effects='off'] .reveal-line { animation: none; }
 @keyframes blink { 50% { opacity: 0; } }
+@keyframes scan-roll { to { background-position: 0 140%; } }
+@keyframes type-line { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+@media (hover: none) {
+    .keyboard-hint { display: none; }
+}
+/* Without room beside the monitor, the jack moves under the bezel and the plug enters from below. */
+@media (max-width: 1180px) {
+    .jack-socket {
+        --jack-angle: -90;
+        --rest-x: -120;
+        --rest-y: 92;
+        --rest-angle: 168;
+        left: 88%;
+        top: 90.6%;
+        width: 2cqi;
+        height: .8cqi;
+        background: linear-gradient(to bottom, #2a2a26, #c9c6b8 45%, #75736a 70%, #1d1d1a);
+    }
+}
 @media (max-width: 700px) {
+    .jack-socket {
+        --plug-scale: 2.2;
+        --rest-x: -260;
+        --rest-y: 170;
+        width: 18px;
+        height: 7px;
+        left: auto;
+        right: 6px;
+        top: auto;
+        bottom: -82px;
+        translate: 50% 50%;
+    }
     body { padding: 12px 3px; }
+    .terminal-station { width: 100%; }
     .monitor {
         aspect-ratio: auto;
         height: 700px;
@@ -180,21 +277,11 @@ html[data-effects='off'] .cursor { animation: none; }
     }
     .monitor-housing { display: none; }
     .screen { left: 6px; right: 7px; top: 9px; bottom: 25px; padding: 24px 16px 17px; font-size: 20px; }
-    .system-header { font-size: 17px; margin-bottom: 18px; }
+    .system-header { font-size: .7em; }
     .terminal-controls { gap: 12px; }
-    .terminal-controls button { font-size: 14px; min-height: 28px; }
-    .music-inventory { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .instrument-details { display: contents; }
-    .instrument-details h2 { grid-column: 1 / -1; grid-row: 1; margin-bottom: 0; }
-    dl { grid-column: 1; grid-row: 2; font-size: 16px; margin-top: 12px; }
-    dl div { gap: 5px; }
-    dt { min-width: 6ch; }
-    .recordings { grid-column: 1; grid-row: 3; margin: 0; font-size: 16px; }
-    .instrument-image { grid-column: 2; grid-row: 2 / 4; height: 170px; margin-top: -8px; }
-    .guitar-actions { grid-column: 1 / -1; grid-row: 4; padding: 0; }
+    .terminal-controls button { min-height: 28px; }
     .keyboard-hint { gap: 18px; font-size: 8px; }
     .screen-scroll { padding-right: 7px; }
-    .prose { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }

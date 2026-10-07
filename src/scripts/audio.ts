@@ -1,6 +1,6 @@
-import { guitar_samples, terminal_samples, type TerminalSound } from './synthesis';
+import { jack_samples, terminal_samples, type JackSound, type TerminalSound } from './synthesis';
 
-type Sound = TerminalSound | 'guitar';
+type Sound = TerminalSound | JackSound;
 const VOICES_MAX = 8;
 const paths = {
     focus: '/audio/ui_hacking_charscroll.wav',
@@ -52,7 +52,7 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
         if (!enabled() || !output || sources.size >= VOICES_MAX) { return; }
         let buffer = buffers.get(kind);
         if (!buffer) {
-            const samples = kind === 'guitar' ? guitar_samples(audio.sampleRate)
+            const samples = kind === 'plug' || kind === 'unplug' ? jack_samples(kind, audio.sampleRate)
                 : terminal_samples(kind, audio.sampleRate);
             buffer = audio.createBuffer(1, samples.length, audio.sampleRate);
             buffer.getChannelData(0).set(samples);

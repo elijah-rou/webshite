@@ -1,7 +1,9 @@
 import { createSignal, flush, For, onCleanup, untrack } from 'solid-js';
-import { audio } from '../scripts/state';
+import { audio, toggle_track, track } from '../scripts/state';
 
-export interface MenuItem { label: string; href: string }
+export const MENU_KINDS = ['link', 'recording', 'download'] as const;
+export type MenuKind = typeof MENU_KINDS[number];
+export interface MenuItem { label: string; href: string; kind: MenuKind; detail: string }
 interface Props { items: MenuItem[]; label: string }
 
 export default function TerminalMenu(props: Props) {
@@ -18,7 +20,8 @@ export default function TerminalMenu(props: Props) {
     function handle_key(event: KeyboardEvent) {
         if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) { return; }
         const target = document.activeElement;
-        if (target !== document.body && !menu?.contains(target)) { return; }
+        // The skip link and Astro navigation leave focus on the body or <main>.
+        if (target !== document.body && target?.id !== 'content' && !menu?.contains(target)) { return; }
         const count = props.items.length;
         if (count === 0) { return; }
         const focused_index = links.findIndex(link => link === target);
@@ -40,15 +43,26 @@ export default function TerminalMenu(props: Props) {
         links[index]?.focus();
     }
 
+    function activate(item: MenuItem, event: MouseEvent) {
+        if (item.kind !== 'recording') { return; }
+        event.preventDefault();
+        toggle_track({ href: item.href, title: item.label });
+    }
+
     document.addEventListener('keydown', handle_key);
     onCleanup(() => document.removeEventListener('keydown', handle_key));
 
     return <nav ref={menu} class="terminal-menu" aria-label={props.label}>
         <For each={props.items}>{(item, index) =>
             <a ref={element => { links[untrack(index)] = element; }}
-                href={item.href} data-label={item.label} data-selected={selected() === index() ? 'true' : 'false'}
-                onPointerEnter={() => select(index())} onFocus={() => select(index())}>
-                <span aria-hidden="true">&gt; </span>{item.label}
+                href={item.href} download={item.kind === 'download' ? '' : undefined}
+                data-label={item.label} data-selected={selected() === index() ? 'true' : 'false'}
+                onPointerEnter={() => select(index())} onFocus={() => select(index())}
+                onClick={event => activate(item, event)}>
+                <span class="menu-label"><span aria-hidden="true">&gt; </span>{item.label}</span>
+                {item.detail && <span class="menu-detail">
+                    {item.kind === 'recording' && track()?.href === item.href ? 'PLAYING' : item.detail}
+                </span>}
             </a>
         }</For>
     </nav>;

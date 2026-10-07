@@ -13,7 +13,10 @@ const { Content } = await render(post);
 <Terminal title={post.data.title} section="writing" back="/writing/" description={post.data.description}>
     <article class="article">
         <h1>{post.data.title}</h1>
-        <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10)}</time>
+        <p class="article-meta">
+            <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10)}</time>
+            {post.data.category && <span>{post.data.category}</span>}
+        </p>
         <div class="prose"><Content /></div>
     </article>
 </Terminal>
