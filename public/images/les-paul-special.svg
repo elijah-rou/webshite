@@ -1,20 +1,9 @@
----
-interface Props { interactive?: boolean }
-const { interactive = false } = Astro.props;
----
-
-<svg class:list={['guitar', { 'guitar-interactive': interactive }]} viewBox="0 0 420 500"
-    role="img" aria-label="Line drawing of a single-cut Gibson Les Paul Special with two P-90 pickups">
-    <g class="guitar-grid" stroke="currentColor" fill="none" opacity=".12">
-        <path d="M40 100H380M40 200H380M40 300H380M40 400H380M100 40V460M200 40V460M300 40V460"/>
-        <circle cx="210" cy="255" r="170" stroke-dasharray="3 9"/>
-        <path d="M35 45h16m-8-8v16M369 455h16m-8-8v16"/>
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 500" color="#76ec88">
     <g class="instrument" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round">
         <path class="guitar-body" d="M186 277 C169 266 149 267 141 285 C132 307 150 320 137 336
             C111 356 96 379 106 411 C115 450 163 465 210 454 C253 448 280 421 281 389
             C284 363 267 348 261 328 C253 310 261 296 264 276 C249 280 242 298 221 298
-            L221 280 Z" fill="var(--screen)"/>
+            L221 280 Z" fill="#06140b"/>
         <path d="M186 281 194 104 211 104 221 283"/>
         <path d="M194 106 188 74 191 39 203 27 214 33 222 29 229 41 223 76 211 106Z"/>
         <path d="M196 38q12 9 23 0M198 53l17 1M196 65l18 1" stroke-width="1"/>
@@ -38,18 +27,4 @@ const { interactive = false } = Astro.props;
         <path d="M141 448v10M263 357l8 1" stroke-width="4"/>
         <circle class="jack" cx="278" cy="396" r="5"/>
     </g>
-    <g class="guitar-annotations" fill="currentColor" font-family="IBM Plex Mono, monospace" font-size="9">
-        <text x="40" y="171">6 STRINGS</text><path d="M100 168h42l41 25" fill="none" stroke="currentColor" opacity=".45"/>
-        <text x="286" y="310">2 × P-90</text><path d="M283 316h-24l-27 35" fill="none" stroke="currentColor" opacity=".45"/>
-        <text x="36" y="481">GIBSON / LES PAUL SPECIAL</text>
-    </g>
-    {interactive && <g class="guitar-cable" fill="none" stroke="currentColor" stroke-width="2">
-        <path class="cable-disconnected" d="M393 489C339 465 368 459 358 437"/>
-        <path class="cable-connected" d="M393 489C302 473 352 435 301 409"/>
-        <g class="cable-plug">
-            <path d="M278 396l14 7" stroke-width="4"/>
-            <path d="M291 402l16 8" stroke-width="8"/>
-            <path d="M307 410l5 3"/>
-        </g>
-    </g>}
 </svg>

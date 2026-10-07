@@ -1,41 +1,47 @@
 # Personal terminal
 
-A local Astro portfolio/blog inspired by Fallout 3 terminals, with a CRT bezel,
-scanlines, Fallout terminal navigation audio, and a Les Paul Special plug-in interaction.
+A portfolio and blog styled after Fallout 3's desktop terminals. Astro builds the
+pages; Solid 2 controls the menu, sound settings and Les Paul Special interaction.
 
-Requires Node.js 22.18 or newer and pnpm 12.10.1. From this directory:
+Requires Node.js 22.18 or newer and pnpm 12.10.1:
 
 ```sh
 pnpm install
 pnpm dev
 ```
 
-Open the local address printed by Astro. `pnpm check`, `pnpm test`, and
-`pnpm build` validate the project. `pnpm preview` serves the production build.
-The test launcher supports both Node.js and a Bun-backed node shim.
-Dependency lifecycle scripts are disabled in this project; the installed platform
-binaries are used directly.
+Open the address printed by Astro. Run `pnpm build` for type checking and a static
+build, `pnpm test` for audio synthesis tests, and `pnpm preview` to serve the build.
+The test launcher supports Node.js and a Bun-backed node shim. Dependency lifecycle
+scripts are disabled; the installed platform binaries are used directly.
 
 ## Content
 
-Posts live in `src/content/writing/` as Markdown. Frontmatter includes `title`,
-`description`, `date`, optional `category`, and optional `draft: true` to exclude
-a post from both listings and generated routes. `terminal-online.md` is a starter
-site note. Projects and recordings are intentionally empty until real content exists.
+Add Markdown posts to `src/content/writing/`. Frontmatter contains `title`,
+`description`, `date`, optional `category`, and optional `draft: true`. Drafts are
+excluded from listings and generated routes. `terminal-online.md` is a site note.
+The existing `/about/`, `/blog/` and `/instagram/` routes remain available.
 
-## Interaction
+## Controls
 
-Navigation works without JavaScript. JavaScript enables page transitions, sound,
-and the guitar. Sound begins after a user gesture, never on initial load. The
-SOUND and CRT controls remember preferences when browser storage is available.
-Reduced-motion preferences disable animation. Muting immediately stops active audio.
+Use the mouse, Tab, or arrow keys to select an entry. Enter opens the focused entry;
+Escape goes back. The Back link stays visible when the screen content scrolls.
+Sound begins with a click or keyboard gesture. SOUND and CRT preferences persist
+when browser storage is available. Muting stops active and pending audio.
+Reduced-motion preferences disable the cursor and cable animation.
 
-The guitar chord is synthesized with a plucked-string model, not recorded from the
-owner’s instrument. Navigation uses two WAVs reported to be extracted from Fallout 3;
-see `public/audio/SOURCES.md` for provenance. Synthesized clicks are a fallback if
-those files cannot be loaded or decoded.
+On the Music page, plugging in the guitar plays a synthesized E major chord.
+It is not a recording of the owner's instrument. Terminal navigation uses two WAVs
+reported by their uploader to come from Fallout 3, with synthesized clicks as a
+fallback. See [audio sources](public/audio/SOURCES.md).
 
-The existing `/about/`, `/blog/`, and `/instagram/` routes remain available. The
-Instagram route is a photo archive; no external account or gallery has been invented.
+The weathered housing is a generated image; see its prompt and provenance in
+[image sources](public/images/SOURCES.md). The screen text remains selectable HTML.
+Static content and navigation work without JavaScript; the guitar needs JavaScript.
 
-The checkout uses `elijah-rou/webshite`. No changes have been pushed or published.
+## Solid 2
+
+Solid is pinned to `2.0.0-rc.13`. Astro's official integration currently supports
+Solid 1, so this project uses Solid 2's Vite plugin and a browser mount entry.
+See [the integration decision](docs/decisions/002-solid-terminal.md) for lifecycle
+and compatibility details.

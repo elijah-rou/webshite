@@ -1,31 +1,15 @@
 ---
-import { getCollection } from 'astro:content';
-import Guitar from '../components/Guitar.astro';
 import Terminal from '../layouts/Terminal.astro';
-const posts = (await getCollection('writing', ({ data }) => !data.draft))
-    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 2);
+import Nav from '../components/Nav.astro';
+const items = [
+    { label: 'About', href: '/about/' },
+    { label: 'Writing', href: '/writing/' },
+    { label: 'Projects', href: '/projects/' },
+    { label: 'Music', href: '/music/' },
+    { label: 'Photos', href: '/instagram/' },
+];
 ---
-<Terminal title="Profile" section="home">
-    <div class="file-path">USER://ELIJAH/PROFILE <span>ACCESS GRANTED</span></div>
-    <section class="profile-hero" aria-labelledby="profile-title">
-        <div class="profile-copy">
-            <p class="eyebrow">HELLO, WANDERER.</p>
-            <h1 id="profile-title">I’M ELIJAH<span class="heading-cursor" aria-hidden="true">▌</span></h1>
-            <p class="hero-description">I build things, play guitar,<br class="desktop-break" /> and write down what I learn.</p>
-            <p class="intro-detail">Software, rabbit holes, and the occasional riff.<br />Welcome to my little corner of the wasteland.</p>
-            <a href="/writing/" class="terminal-link">[ READ THE LOG ] <span aria-hidden="true">↗</span></a>
-        </div>
-        <a href="/music/" class="instrument-card" aria-label="Explore music and plug in the Les Paul Special">
-            <span class="diagram-label">PERSONAL INVENTORY / 001</span>
-            <Guitar />
-            <span class="diagram-bottom"><span>LES PAUL SPECIAL</span><span aria-hidden="true">[ INSPECT ↗ ]</span></span>
-        </a>
-    </section>
-    <section class="recent-log" aria-labelledby="recent-title">
-        <div class="section-heading"><h2 id="recent-title">RECENT TRANSMISSIONS</h2><a href="/writing/">ALL ENTRIES ↗</a></div>
-        {posts.map(post => <a class="log-row" href={`/writing/${post.id}/`}>
-            <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10).replaceAll('-', '.')}</time>
-            <span class="log-title">{post.data.title}</span><span class="log-category">{post.data.category}</span><span aria-hidden="true">↗</span>
-        </a>)}
-    </section>
+<Terminal title="Home" section="home">
+    <p class="terminal-greeting">Welcome. Please select an entry.</p>
+    <Nav items={items} />
 </Terminal>

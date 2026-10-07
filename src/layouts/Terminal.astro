@@ -1,13 +1,15 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import Nav from '../components/Nav.astro';
 import '@fontsource/ibm-plex-mono/400.css';
-import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/vt323/400.css';
 import '../styles/terminal.css';
-
-interface Props { title: string; section: 'home' | 'writing' | 'projects' | 'music' | 'photos'; description?: string }
-const { title, section, description = 'Elijah’s personal terminal. Code, writing, and six strings.' } = Astro.props;
+interface Props {
+    title: string;
+    section: 'home' | 'about' | 'writing' | 'projects' | 'music' | 'photos';
+    description?: string;
+    back?: string;
+}
+const { title, section, description = 'Elijah Roussos. Code, writing and music.', back = '/' } = Astro.props;
 ---
 <!doctype html>
 <html lang="en" data-effects="on">
@@ -15,45 +17,40 @@ const { title, section, description = 'Elijah’s personal terminal. Code, writi
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content={description} />
-        <meta name="theme-color" content="#101a12" />
-        <title>{title} | Elijah’s terminal</title>
+        <meta name="theme-color" content="#11120e" />
+        <title>{title} | Elijah Roussos</title>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <ClientRouter />
     </head>
-    <body>
+    <body transition:animate="none">
         <a class="skip-link" href="#content">Skip to content</a>
-        <div class="desk-label" aria-hidden="true"><span>PERSONAL COMPUTER</span><span>EST. 2026</span></div>
-        <div class="monitor">
-            <div class="screw screw-tl" aria-hidden="true"></div>
-            <div class="screw screw-tr" aria-hidden="true"></div>
-            <div class="screen-rim">
+        <div class="terminal-station">
+            <div class="monitor">
+                <img class="monitor-housing" src="/images/terminal-housing.png" alt=""
+                    width="1374" height="1145" fetchpriority="high" />
                 <div class="screen">
-                    <div class="screen-sweep" aria-hidden="true"></div>
-                    <header class="system-header flex items-center justify-between">
-                        <a href="/" class="system-brand" aria-label="Elijah’s terminal home">ER<span> / PERSONAL TERMINAL</span></a>
-                        <span class="online"><span class="status-dot"></span>SYSTEM ONLINE</span>
-                    </header>
-                    <Nav section={section} />
-                    <main id="content" tabindex="-1"><slot /></main>
-                    <footer class="screen-footer">
-                        <span><span class="footer-prompt">&gt;</span> MAKE YOURSELF AT HOME<span class="cursor" aria-hidden="true">_</span></span>
-                        <div class="controls">
-                            <button type="button" data-action="sound" aria-pressed="true">SOUND ON</button>
-                            <button type="button" data-action="effects" aria-pressed="true">CRT ON</button>
+                    <div class="screen-glass" aria-hidden="true"></div>
+                    <div class="screen-scroll">
+                        <header class="system-header">
+                            <a href="/" aria-label="Elijah Roussos, terminal home">ELIJAH ROUSSOS</a>
+                            <div>PERSONAL TERMINAL</div>
+                        </header>
+                        <main id="content" tabindex="-1" data-section={section}><slot /></main>
+                        {section === 'home' && <div class="command-prompt" aria-hidden="true">&gt;<span class="cursor">█</span></div>}
+                    </div>
+                    <div class="screen-bottom">
+                        {section !== 'home' && <a class="back-link" data-back href={back}>&gt; Back</a>}
+                        <div data-terminal-controls>
+                            <div class="terminal-controls">
+                                <button type="button" disabled>[SOUND ON]</button>
+                                <button type="button" disabled>[CRT ON]</button>
+                            </div>
                         </div>
-                    </footer>
-                    <noscript><p class="noscript-note">Reading and navigation work without JavaScript. Guitar and sound controls need it.</p></noscript>
+                    </div>
                 </div>
             </div>
-            <div class="hardware-footer" aria-hidden="true">
-                <div class="hardware-brand">ROU<span>COMPUTER SYSTEMS</span></div>
-                <div class="vents"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-                <div class="power-light"></div><div class="power-button">⏻</div>
-            </div>
+            <p class="keyboard-hint"><span>↑ ↓ SELECT</span><span>ENTER OPEN</span><span>ESC BACK</span></p>
         </div>
-        <div class="desk-footer"><span>CODE, WORDS & SIX STRINGS.</span><span>A SMALL CORNER OF THE INTERNET.</span></div>
-        <script>
-            import '../scripts/terminal';
-        </script>
+        <script>import '../scripts/terminal.tsx';</script>
     </body>
 </html>
