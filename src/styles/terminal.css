@@ -230,7 +230,8 @@ html[data-effects='off'] .social-links svg { filter: none; }
 p.menu-search { visibility: hidden; }
 .menu-empty { padding: 2px 5px; color: var(--muted); }
 /* About: a personnel record with the portrait drawn in phosphor pixels. */
-.personnel { display: grid; grid-template-columns: minmax(7em, 12em) 1fr; gap: 1.2em 1.6em; align-items: start; margin-bottom: 1.4em; }
+.personnel { display: grid; grid-template-columns: minmax(6em, 9em) 1fr; gap: 1.2em 1.6em; align-items: start; }
+.personnel-body { display: grid; gap: 1.1em; min-width: 0; }
 .portrait {
     --corner: linear-gradient(var(--phosphor), var(--phosphor));
     position: relative;
@@ -260,8 +261,11 @@ p.menu-search { visibility: hidden; }
 html[data-effects='off'] .portrait::after { display: none; }
 html[data-effects='off'] .portrait img { filter: none; }
 @media (max-width: 700px) {
-    .personnel { grid-template-columns: 1fr; }
-    .portrait { width: min(13em, 70%); }
+    /* Portrait beside the record; the text runs full width underneath. */
+    .personnel { grid-template-columns: 6.5em 1fr; gap: 1em; }
+    .personnel-body { display: contents; }
+    .personnel-body .prose { grid-column: 1 / -1; }
+    .portrait figcaption { display: none; }
     .personnel-record div { grid-template-columns: 1fr; gap: 0; }
 }
 .music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
