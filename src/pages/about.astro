@@ -17,11 +17,11 @@ const record = [
                 alt="Elijah Roussos, rendered in green terminal pixels" />
             <figcaption>IMG-0001 · ROUSSOS, E.</figcaption>
         </figure>
-        <dl class="personnel-record">
-            {record.map(([field, value]) => <div><dt>{field}</dt><dd>{value}</dd></div>)}
-        </dl>
-    </section>
-    <div class="prose">
+        <div class="personnel-body">
+            <dl class="personnel-record">
+                {record.map(([field, value]) => <div><dt>{field}</dt><dd>{value}</dd></div>)}
+            </dl>
+            <div class="prose">
         <p>I'm Elijah. I split my time between New York and Cape Town, and most of my days go to programming.</p>
         <p>
             Away from the keyboard I play guitar, a Gibson Les Paul Special, and make music in FL Studio,
@@ -32,5 +32,7 @@ const record = [
             Each December I use Advent of Code to learn a new language: Elixir, then Zig, then OCaml. And I
             play games, which is how this site ended up looking like a terminal from Fallout 3.
         </p>
-    </div>
+            </div>
+        </div>
+    </section>
 </Terminal>
