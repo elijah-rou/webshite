@@ -1,5 +1,17 @@
 # Personal terminal
 
+## Reading mode for opened sections
+
+Iterating on the mock post first, then other sections. Variants compared in
+headless Chromium (scratch CSS, not committed): A current VT323 with CRT effects;
+B pale green IBM Plex Mono; C system sans on near-black; D Charter serif. C and D
+read best; C chosen because system sans renders consistently on every platform,
+while Charter ships only on Apple systems.
+
+- [x] Iteration 1 on posts (`data-reading`): ~76 characters per line at 20.5px on
+      1440×1000, 17px minimum on a 390px phone, no CRT effects or reveal.
+- [ ] Apply to project pages, resume and about once the post treatment is agreed.
+
 ## Parked: Instagram sync for Photos
 
 `pnpm photos:sync` (Instagram API with Instagram Login) lives on branch
