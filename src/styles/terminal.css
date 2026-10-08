@@ -245,7 +245,8 @@ html[data-effects='off'] .photo-grid img, html[data-effects='off'] .photo-view i
 /* Reading pages favour legibility: Zilla Slab across the screen's width in pale
    phosphor with a faint glow, under the usual CRT effects, without the line reveal.
    Headings, links and code keep the full phosphor green. */
-.article[data-reading] { max-width: none; }
+/* 2px narrower than the screen's content width as seen on screen, centred. */
+.article[data-reading] { max-width: calc(100% - 2px / var(--zoom-scale, 1)); }
 [data-reading] h1 { font-size: 1.35em; color: var(--phosphor); border-bottom-color: #7cf59a40; }
 [data-reading] .prose {
     font-family: 'Zilla Slab', Georgia, serif;
