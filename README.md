@@ -36,9 +36,9 @@ newest first; the rest of the name becomes the caption. An optional
 [@eli_takes_photos](https://www.instagram.com/eli_takes_photos/); photos are not
 fetched from Instagram. While CRT is on they are tinted phosphor green.
 
-Profile links at the bottom left of the screen are in
-`src/components/SocialLinks.astro`, each drawn as a 12×12 pixel glyph. The
-Mastodon link carries `rel="me"`, so Mastodon can verify the site.
+Profile links (GitHub, Mastodon, X, LinkedIn, Instagram) at the bottom left of the
+screen are in `src/components/SocialLinks.astro`, each drawn as a 12×12 pixel
+glyph. The GitHub and Mastodon links carry `rel="me"` for profile verification.
 
 `src/pages/resume.astro` holds the résumé text; the phone number and email from
 the PDF are not published.
@@ -72,13 +72,14 @@ zooms out again. The header and the Back bar always stay in view. While zoomed, 
 out smaller so it reads at 20 to 28px depending on the window size.
 Without JavaScript every page shows the whole terminal.
 
-Posts favour legibility: Zilla Slab across the screen's width (about 27px on a
-1440px window, at least 18px on screen) in pale phosphor. Code uses a Latin subset
-of Iosevka Term Slab (see `src/fonts/SOURCES.md`; rebuild with
-`scripts/subset-iosevka.sh`). The usual CRT effects apply and CRT OFF removes them; the
-line-by-line reveal is off. Headings, links, list markers and code stay phosphor
-green.
-Pages mark themselves for this with `data-reading` on their `.article`.
+Every screen opened from the home menu is a reading page (`data-reading` on
+`<main>`, set by the layout): a column at 94% of the screen's width with body text
+in Zilla Slab (about 27px on a 1440px window, at least 18px on screen) in pale
+phosphor. Menu entries keep the terminal font and selection bar; their descriptions
+are in Zilla Slab. Code uses a Latin subset of Iosevka Term Slab (see
+`src/fonts/SOURCES.md`; rebuild with `scripts/subset-iosevka.sh`). The usual CRT
+effects apply and CRT OFF removes them; the line-by-line reveal runs only on the
+home menu. Headings, links, list markers and code stay phosphor green.
 
 Terminal navigation uses two WAVs reported by their uploader to come from Fallout 3,
 with synthesized clicks as a fallback. See [audio sources](public/audio/SOURCES.md).

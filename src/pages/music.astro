@@ -14,5 +14,5 @@ const items = read_music_files().map(file => ({
     {items.length > 0 ? <>
         <Nav label="Music files" items={items} />
         <div data-music-status><p class="music-status"></p></div>
-    </> : <p>No files yet.</p>}
+    </> : <p class="prose">No files yet.</p>}
 </Terminal>

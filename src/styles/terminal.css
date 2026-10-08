@@ -160,6 +160,7 @@ h2 { margin-bottom: .6em; }
 .screen-bottom [data-terminal-controls] { margin-left: auto; }
 .back-link { width: fit-content; white-space: nowrap; }
 .social-links { display: flex; align-items: center; gap: .55em; }
+.terminal-controls button, .terminal-controls span { white-space: nowrap; }
 .social-links a { display: block; padding: 3px; color: var(--muted); }
 .social-links svg { display: block; width: .8em; height: .8em; fill: currentColor; filter: drop-shadow(0 0 2px #6dff8f66); }
 .social-links a:hover, .social-links a:focus-visible { color: var(--phosphor); }
@@ -184,31 +185,29 @@ html[data-effects='off'] .social-links svg { filter: none; }
     font: 10px 'IBM Plex Mono', monospace;
     letter-spacing: .5px;
 }
-.record { max-width: 48ch; }
-.record p + p { margin-top: .8em; }
-.record .text-link { display: inline-block; margin-top: .85em; text-decoration: underline; }
 /* Menus with a detail column, such as music files, span the screen. */
 .terminal-menu a:has(.menu-detail) { display: flex; justify-content: space-between; gap: 2ch; width: 100%; }
 .menu-detail { flex: none; color: var(--muted); }
 .terminal-menu a[data-selected='true'] .menu-detail, .terminal-menu a:hover .menu-detail { color: inherit; }
 .terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) .menu-detail { color: var(--muted); }
 /* A menu entry with a note puts it on its own line under the label and detail. */
-.terminal-menu a:has(.menu-note) { display: grid; grid-template-columns: 1fr auto; column-gap: 2ch; padding-bottom: 5px; }
+.terminal-menu a:has(.menu-note) { display: grid; grid-template-columns: 1fr auto; gap: .15em 2ch; width: 100%; padding-bottom: 5px; }
 .menu-note { grid-column: 1 / -1; padding-left: 2ch; font-size: .85em; color: var(--muted); white-space: normal; }
+/* On reading pages, entry descriptions are prose: Zilla Slab, not the terminal face. */
+[data-reading] .menu-note { font-family: 'Zilla Slab', Georgia, serif; font-size: .78em; line-height: 1.45; text-shadow: 0 0 1px #9dffb02e; }
+[data-reading] .terminal-menu a[data-selected='true'] .menu-note, [data-reading] .terminal-menu a:hover .menu-note { text-shadow: none; }
 .terminal-menu a[data-selected='true'] .menu-note, .terminal-menu a:hover .menu-note { color: inherit; }
 .terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) .menu-note { color: var(--muted); }
 .terminal-menu:has(.menu-note) { gap: .4em; }
 .project-summary { margin-top: 1.2em; }
 .article-meta a { text-decoration: underline; text-underline-offset: .15em; }
 .resume h2:first-child { margin-top: 0; }
-.resume h3 { color: inherit; margin-bottom: .2em; }
+.resume h3 { margin-bottom: .2em; font-size: 1.1em; }
 .resume .resume-when { margin-bottom: .6em; color: var(--muted); font-size: .9em; }
 .resume-skills { margin: 0; }
 .resume-skills dt { color: var(--muted); }
 .resume-skills dd { margin: 0 0 .8em 2ch; }
 .music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
-/* Posts read as one centred column that widens with the screen, up to 100 characters. */
-.article { max-width: 100ch; margin: 0 auto; }
 .article-meta { display: flex; gap: 2ch; margin-bottom: 1.4em; color: var(--muted); font-size: .86em; }
 .prose { line-height: 1.42; overflow-wrap: anywhere; text-shadow: 0 0 2px #8dffa855; }
 .prose p, .prose ul, .prose ol, .prose pre, .prose blockquote { margin: 0 0 1em; }
@@ -242,11 +241,12 @@ html[data-effects='off'] .social-links svg { filter: none; }
 .photo-grid img, .photo-view img { filter: grayscale(1) sepia(1) hue-rotate(68deg) saturate(2.6) brightness(.92) contrast(1.05); }
 html[data-effects='off'] .photo-grid img, html[data-effects='off'] .photo-view img { filter: none; }
 
-/* Reading pages favour legibility: Zilla Slab across the screen's width in pale
+/* Every screen opened from the home menu is a reading page (data-reading on <main>):
+   Zilla Slab across the screen's width in pale
    phosphor with a faint glow, under the usual CRT effects, without the line reveal.
    Headings, links and code keep the full phosphor green. */
 /* Slightly inset from the screen's content width, centred. */
-.article[data-reading] { max-width: 94%; }
+main[data-reading] { width: 94%; margin: 0 auto; }
 [data-reading] h1 { font-size: 1.35em; color: var(--phosphor); border-bottom-color: #7cf59a40; }
 [data-reading] .prose {
     font-family: 'Zilla Slab', Georgia, serif;
@@ -300,7 +300,9 @@ html[data-effects='off'] .reveal-line { animation: none; }
     .monitor-housing { display: none; }
     .screen { left: 6px; right: 7px; top: 9px; bottom: 25px; padding: 24px 16px 17px; font-size: 20px; }
     .system-header { font-size: .7em; }
-    .terminal-controls { gap: 12px; }
+    .terminal-controls { gap: 10px; }
+    .social-links { gap: .2em; }
+    .screen-bottom { gap: 8px; }
     .terminal-controls button { min-height: 28px; }
     .keyboard-hint { gap: 18px; font-size: 8px; }
     .screen-scroll { padding-right: 7px; }

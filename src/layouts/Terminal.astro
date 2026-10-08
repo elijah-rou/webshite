@@ -40,7 +40,7 @@ const year = new Date().getFullYear();
                             <a href="/" aria-label="Elijah Roussos, terminal home">ELIJAH ROUSSOS UNIFIED OPERATING SYSTEM</a>
                             <p>COPYRIGHT {year} ELIJAH ROUSSOS</p>
                         </header>
-                        <main id="content" tabindex="-1" data-section={section}><slot /></main>
+                        <main id="content" tabindex="-1" data-section={section} data-reading={section !== 'home' ? '' : undefined}><slot /></main>
                     </div>
                     <div class="screen-bottom">
                         {section !== 'home' && <a class="back-link" data-back href={back}>&gt; Back</a>}
