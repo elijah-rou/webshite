@@ -16,6 +16,10 @@ while Charter ships only on Apple systems.
 - [x] Iteration 3: owner preferred the stronger step and asked for more width and
       a serif. System serif (Charter on Apple), ~1000px column, 23.3px text and
       ~86 characters per line on 1440×1000; 17px minimum on a 390px phone.
+- [x] Iteration 4: use the screen's width (full width beat a margin-headings
+      layout, which clipped headings): 1227px column, 25.5px serif, ~96 characters
+      on 1440×1000; 18.4px on a phone. Normal CRT effects restored on posts
+      (owner request); line reveal stays off.
 - [ ] Apply to project pages, resume and about once the post treatment is agreed.
 
 ## Parked: Instagram sync for Photos
