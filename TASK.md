@@ -13,6 +13,9 @@ while Charter ships only on Apple systems.
 - [x] Iteration 2 ("lean a little more into the style"): dim green screen, pale
       phosphor text with faint glow, faint scanlines, `>` on headings and list
       markers. A stronger step with IBM Plex Mono body text was shown, not applied.
+- [x] Iteration 3: owner preferred the stronger step and asked for more width and
+      a serif. System serif (Charter on Apple), ~1000px column, 23.3px text and
+      ~86 characters per line on 1440×1000; 17px minimum on a 390px phone.
 - [ ] Apply to project pages, resume and about once the post treatment is agreed.
 
 ## Parked: Instagram sync for Photos
