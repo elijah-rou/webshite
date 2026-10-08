@@ -1,5 +1,18 @@
 # Personal terminal
 
+## Fuzzy search for Writing, Projects and Music
+
+- [x] `src/scripts/fuzzy.ts` (tested): substring or word-start subsequence per term
+      over title, detail, note; exact-only for numeric terms and long body text.
+- [x] Search box in `TerminalMenu` (`searchable` on `Nav`): typing starts it, `/`
+      focuses it, arrows/Enter act on results, Escape clears then goes back.
+
+Acceptance (headless Chromium, real key events): "zig" 3/8 ranked turso-zig,
+hivemind, advent-of-code; ArrowDown moved the selection; Escape cleared, then went
+home; "kube" found surfsk8s via its page text and Enter opened it; "2026-10" and
+"garbage" found the mock post; "2025" showed "No matches."; no runtime errors.
+Not checked on iOS Safari, which may zoom when a small input gains focus.
+
 ## Reading mode for opened sections
 
 Iterating on the mock post first, then other sections. Variants compared in

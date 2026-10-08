@@ -59,6 +59,14 @@ are committed and deployed with the site; consider Git LFS before adding many.
 
 ## Controls
 
+Writing, Projects and Music have a fuzzy search. Typing anywhere on those screens
+starts it, and `/` jumps to it. Each term must appear in an entry's title, date or
+format, or description, either as a substring or as letters in order from the
+start of a word (`rbuf` finds "ring buffer"). Numbers and dates match exactly, so
+`2026-10` finds October 2026. Post and project text also match exact words. Arrow
+keys move through results, Enter opens one, and Escape clears the search before it
+goes back. The search needs JavaScript; without it the full lists are shown.
+
 Use the mouse, Tab, or arrow keys to select an entry. Enter opens the focused entry;
 Escape goes back. The Back link stays visible when the screen content scrolls.
 Sound begins with a click or keyboard gesture. SOUND and CRT preferences persist

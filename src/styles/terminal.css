@@ -207,6 +207,28 @@ html[data-effects='off'] .social-links svg { filter: none; }
 .resume-skills { margin: 0; }
 .resume-skills dt { color: var(--muted); }
 .resume-skills dd { margin: 0 0 .8em 2ch; }
+/* Fuzzy search above searchable menus, styled as a terminal prompt. */
+.menu-search { display: flex; align-items: baseline; gap: .3ch; margin: 0 0 .7em; padding: 0 5px; color: var(--phosphor); }
+.menu-search input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    color: var(--phosphor);
+    background: transparent;
+    font: inherit;
+    text-shadow: inherit;
+    caret-color: var(--phosphor);
+    -webkit-appearance: none;
+    appearance: none;
+}
+.menu-search input::-webkit-search-cancel-button { display: none; }
+.menu-search:focus-within { background: #7cf59a14; }
+.menu-search-count { color: var(--muted); font-size: .85em; }
+/* Server-rendered placeholder that reserves the line until the client mounts the box. */
+p.menu-search { visibility: hidden; }
+.menu-empty { padding: 2px 5px; color: var(--muted); }
 .music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
 .article-meta { display: flex; gap: 2ch; margin-bottom: 1.4em; color: var(--muted); font-size: .86em; }
 .prose { line-height: 1.42; overflow-wrap: anywhere; text-shadow: 0 0 2px #8dffa855; }
