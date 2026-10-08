@@ -71,9 +71,10 @@ glass fills the window; Back zooms out again. While zoomed, the screen's text is
 out smaller so it reads at 20 to 28px depending on the window size.
 Without JavaScript every page shows the whole terminal.
 
-Posts favour legibility over the terminal look: a system sans-serif column of about
-75 characters, light grey on near-black, at least 17px on screen, with no glow,
-scanlines or line-by-line reveal. Headings, links and code stay phosphor green.
+Posts favour legibility: a system sans-serif column of about 75 characters in pale
+phosphor on a dim green screen, at least 17px on screen. Scanlines and glow are
+faint, and the rolling band and line-by-line reveal are off. Headings, links, list
+markers and code stay phosphor green.
 Pages mark themselves for this with `data-reading` on their `.article`.
 
 Terminal navigation uses two WAVs reported by their uploader to come from Fallout 3,

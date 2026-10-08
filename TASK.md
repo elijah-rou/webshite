@@ -10,6 +10,9 @@ while Charter ships only on Apple systems.
 
 - [x] Iteration 1 on posts (`data-reading`): ~76 characters per line at 20.5px on
       1440×1000, 17px minimum on a 390px phone, no CRT effects or reveal.
+- [x] Iteration 2 ("lean a little more into the style"): dim green screen, pale
+      phosphor text with faint glow, faint scanlines, `>` on headings and list
+      markers. A stronger step with IBM Plex Mono body text was shown, not applied.
 - [ ] Apply to project pages, resume and about once the post treatment is agreed.
 
 ## Parked: Instagram sync for Photos
