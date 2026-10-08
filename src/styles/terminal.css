@@ -228,11 +228,17 @@ html[data-effects='off'] .social-links svg { filter: none; }
 .photo-grid img, .photo-view img { filter: grayscale(1) sepia(1) hue-rotate(68deg) saturate(2.6) brightness(.92) contrast(1.05); }
 html[data-effects='off'] .photo-grid img, html[data-effects='off'] .photo-view img { filter: none; }
 
-/* Reading pages favour legibility over the terminal look: a plain sans-serif column
-   of about 75 characters, light grey on near-black, with no CRT effects over it.
-   Headings, links and code keep the phosphor green. */
-.screen:has([data-reading]) { background: #0f1210; text-shadow: none; }
-.screen:has([data-reading]) .screen-glass { background: none; box-shadow: inset 0 0 24px 6px #0006; }
+/* Reading pages favour legibility: a sans-serif column of about 75 characters in pale
+   phosphor on a dim green screen. Scanlines and glow stay faint, and the rolling band
+   and line reveal are off. Headings, links and code keep the full phosphor green. */
+.screen:has([data-reading]) {
+    background: radial-gradient(ellipse at 50% 40%, #0e2416 0%, #0a1b10 55%, #06110a 100%);
+}
+.screen:has([data-reading]) .screen-glass {
+    background: repeating-linear-gradient(to bottom, #0000 0, #0000 calc(2 * var(--scan-px, 1px)),
+        #00000016 calc(3 * var(--scan-px, 1px)), #0000 calc(4 * var(--scan-px, 1px)));
+    box-shadow: inset 0 0 28px 8px #0007;
+}
 .screen:has([data-reading]) .screen-glass::after { display: none; }
 .article[data-reading] { max-width: 28em; }
 [data-reading] h1 { font-size: 1.35em; color: var(--phosphor); border-bottom-color: #7cf59a40; }
@@ -240,20 +246,23 @@ html[data-effects='off'] .photo-grid img, html[data-effects='off'] .photo-view i
     font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     font-size: .74em;
     line-height: 1.65;
-    color: #e3e6df;
-    text-shadow: none;
+    color: #d3ecd6;
+    text-shadow: 0 0 1px #9dffb02e, 0 0 7px #3dff7a12;
 }
+html[data-effects='off'] [data-reading] .prose { text-shadow: none; }
 /* At least 17px on screen once magnified, which matters on phones. */
 html[data-zoom='in'] [data-reading] .prose { font-size: max(.74em, calc(17px / var(--zoom-scale))); }
-[data-reading] .prose pre, [data-reading] .prose code { font-family: 'IBM Plex Mono', monospace; font-size: .88em; color: #bfeac7; }
+[data-reading] .prose pre, [data-reading] .prose code { font-family: 'IBM Plex Mono', monospace; font-size: .88em; color: #aef2bd; }
 [data-reading] .prose pre code { font-size: 1em; }
-[data-reading] .prose pre { line-height: 1.5; border-color: #ffffff22; background: #ffffff08; }
-[data-reading] .prose :not(pre) > code { background: #ffffff10; }
+[data-reading] .prose pre { line-height: 1.5; border-color: #7cf59a33; background: #7cf59a0a; }
+[data-reading] .prose :not(pre) > code { background: #7cf59a14; }
 [data-reading] .prose h2, [data-reading] .prose h3 { font-family: 'VT323', monospace; font-size: 1.4em; line-height: 1.2; color: var(--phosphor); }
+[data-reading] .prose h2::before { content: '> '; }
 [data-reading] .prose h3 { text-transform: none; }
 [data-reading] .prose a { color: #8ff0a4; }
-[data-reading] .prose blockquote { color: #b8bdb5; border-left-color: #ffffff33; }
-[data-reading] .prose li::marker { color: var(--muted); }
+[data-reading] .prose blockquote { color: #a9cbaf; border-left-color: #7cf59a59; }
+[data-reading] .prose ul > li::marker { content: '>  '; font-family: 'VT323', monospace; color: var(--phosphor); }
+[data-reading] .prose ol > li::marker { font-family: 'VT323', monospace; color: var(--phosphor); }
 
 .skip-link { position: fixed; top: -80px; left: 16px; z-index: 10; padding: 10px; background: var(--phosphor); color: #06140b; }
 .skip-link:focus { top: 8px; }
