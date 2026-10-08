@@ -6,7 +6,7 @@ summary: Deterministic workload-orchestration prototype for serverless platforms
 order: 3
 ---
 A prototype of a deterministic workload-orchestration system for running
-serverless platforms. Each component is written in the language that suits it:
+serverless platforms. It has four parts:
 
 - `core/`: the control plane in Zig, with consensus, scheduling, persistence,
   gossip and simulation testing

@@ -2,7 +2,7 @@
 name: surfsk8s
 repo: https://github.com/elijah-rou/surfsk8s
 language: Go
-summary: Multi-cluster Kubernetes TUI built for fleet scale.
+summary: Kubernetes TUI that stays fast across many clusters and thousands of pods.
 order: 1
 ---
 A terminal UI for Kubernetes that stays fast across many clusters at once. It is
