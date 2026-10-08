@@ -2,12 +2,14 @@
 import { getCollection } from 'astro:content';
 import Terminal from '../layouts/Terminal.astro';
 import Nav from '../components/Nav.astro';
+import { markdown_plain_text } from '../lib/plain-text';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
-const items = projects.map(({ id, data }) => ({
+const items = projects.map(({ id, data, body }) => ({
     label: data.name, href: `/projects/${id}/`, detail: data.language.toUpperCase(), note: data.summary,
+    body: markdown_plain_text(body ?? ''),
 }));
 ---
 <Terminal title="Projects" section="projects">
     <h1>PROJECTS</h1>
-    <Nav label="Projects" items={items} />
+    <Nav label="Projects" items={items} searchable />
 </Terminal>

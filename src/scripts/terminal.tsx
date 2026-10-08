@@ -33,12 +33,14 @@ function mount() {
             kind: menu_kind(link.dataset.kind),
             detail: link.dataset.detail ?? '',
             note: link.dataset.note ?? '',
+            body: link.dataset.body ?? '',
         })) : [];
+    const searchable = menu_root?.hasAttribute('data-searchable') ?? false;
     const label = menu_root?.querySelector('nav')?.getAttribute('aria-label') ?? 'Navigation';
     dispose();
     if (menu_root) {
         menu_root.replaceChildren();
-        disposers.push(render(() => <TerminalMenu items={items} label={label} />, menu_root));
+        disposers.push(render(() => <TerminalMenu items={items} label={label} searchable={searchable} />, menu_root));
     }
     if (controls_root) {
         controls_root.replaceChildren();
