@@ -25,7 +25,11 @@ while Charter ships only on Apple systems.
       Slab, bundled as `@fontsource/zilla-slab` 5.3.0.
 - [x] Code font: Iosevka Term Slab, subset from the owner's installed Nerd Font
       (Iosevka 34.8.0) to ~17 KB WOFF2 per weight, OFL licence included.
-- [ ] Apply to project pages, resume and about once the post treatment is agreed.
+- [x] Applied to every opened screen via `data-reading` on `<main>`: About,
+      Writing, Projects and project pages, Resume, Music, Photos. Menu labels keep
+      VT323; descriptions use Zilla Slab. Writing entries show the date as the
+      detail and the description as the note. Fixed a stale 100ch article limit
+      and a 2ch row gap in menu entries. GitHub icon added to the profile links.
 
 ## Parked: Instagram sync for Photos
 

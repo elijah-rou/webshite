@@ -13,6 +13,6 @@ const photos = read_photos();
                     loading={index < 6 ? 'eager' : 'lazy'} />
             </a>)}
         </div>
-        : <p>No photos yet.</p>}
-    <a class="text-link" href={INSTAGRAM_PROFILE}>instagram.com/eli_takes_photos</a>
+        : <p class="prose">No photos yet.</p>}
+    <p class="prose"><a href={INSTAGRAM_PROFILE}>instagram.com/eli_takes_photos</a></p>
 </Terminal>

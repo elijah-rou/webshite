@@ -11,7 +11,7 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 <Terminal title={post.data.title} section="writing" back="/writing/" description={post.data.description}>
-    <article class="article" data-reading>
+    <article class="article">
         <h1>{post.data.title}</h1>
         <p class="article-meta">
             <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10)}</time>
