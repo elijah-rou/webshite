@@ -6,7 +6,7 @@
       replace it); personnel record (name, location, role, education, languages,
       instrument).
 - [x] Portrait from the public LinkedIn photo (only 200×200 is public; larger
-      sizes return 403), dithered to four phosphor shades by `scripts/portrait.mjs`,
+      sizes return 403), dithered to eight phosphor shades at 144px by `scripts/portrait.mjs`,
       framed with corner brackets and scanlines; CRT OFF removes the glow and lines.
 
 ## Fuzzy search for Writing, Projects and Music
