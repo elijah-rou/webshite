@@ -13,7 +13,9 @@ export function reveal() {
     const screen = document.querySelector<HTMLElement>('.screen');
     if (!screen || document.documentElement.dataset.effects === 'off'
         || matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
-    const lines = Array.from(screen.querySelectorAll<HTMLElement>(REVEAL_SELECTOR));
+    // Reading pages show their text at once.
+    const lines = Array.from(screen.querySelectorAll<HTMLElement>(REVEAL_SELECTOR))
+        .filter(line => !line.closest('[data-reading]'));
     const step_ms = Math.min(REVEAL_LINE_MS, REVEAL_TOTAL_MS / Math.max(lines.length, 1));
     lines.forEach((line, index) => {
         line.style.setProperty('--reveal-delay', `${Math.round(index * step_ms)}ms`);
