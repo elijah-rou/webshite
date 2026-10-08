@@ -20,6 +20,9 @@ while Charter ships only on Apple systems.
       layout, which clipped headings): 1227px column, 25.5px serif, ~96 characters
       on 1440×1000; 18.4px on a phone. Normal CRT effects restored on posts
       (owner request); line reveal stays off.
+- [x] Iteration 5: serif candidates compared (Courier Prime, IBM Plex Serif, Zilla
+      Slab, Roboto Slab); owner ruled out monospace for body text and chose Zilla
+      Slab, bundled as `@fontsource/zilla-slab` 5.3.0.
 - [ ] Apply to project pages, resume and about once the post treatment is agreed.
 
 ## Parked: Instagram sync for Photos
