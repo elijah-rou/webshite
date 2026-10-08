@@ -229,6 +229,41 @@ html[data-effects='off'] .social-links svg { filter: none; }
 /* Server-rendered placeholder that reserves the line until the client mounts the box. */
 p.menu-search { visibility: hidden; }
 .menu-empty { padding: 2px 5px; color: var(--muted); }
+/* About: a personnel record with the portrait drawn in phosphor pixels. */
+.personnel { display: grid; grid-template-columns: minmax(7em, 12em) 1fr; gap: 1.2em 1.6em; align-items: start; margin-bottom: 1.4em; }
+.portrait {
+    --corner: linear-gradient(var(--phosphor), var(--phosphor));
+    position: relative;
+    margin: 0;
+    padding: .45em;
+    /* Corner brackets frame the image like a terminal viewport. */
+    background:
+        var(--corner) left top / 1.2em 2px no-repeat, var(--corner) left top / 2px 1.2em no-repeat,
+        var(--corner) right top / 1.2em 2px no-repeat, var(--corner) right top / 2px 1.2em no-repeat,
+        var(--corner) left bottom / 1.2em 2px no-repeat, var(--corner) left bottom / 2px 1.2em no-repeat,
+        var(--corner) right bottom / 1.2em 2px no-repeat, var(--corner) right bottom / 2px 1.2em no-repeat;
+}
+.portrait::after {
+    content: '';
+    position: absolute;
+    inset: .45em .45em auto;
+    aspect-ratio: 1;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, #0000 0 2px, #0004 2px 3px);
+}
+.portrait img { display: block; width: 100%; height: auto; image-rendering: pixelated; filter: drop-shadow(0 0 6px #4dff7a40); }
+.portrait figcaption { margin-top: .4em; color: var(--muted); font-size: .72em; letter-spacing: .05em; }
+.personnel-record { margin: 0; display: grid; gap: .25em; }
+.personnel-record div { display: grid; grid-template-columns: 11ch 1fr; gap: 1ch; padding-bottom: .25em; border-bottom: 1px dashed #7cf59a26; }
+.personnel-record dt { color: var(--muted); }
+.personnel-record dd { margin: 0; }
+html[data-effects='off'] .portrait::after { display: none; }
+html[data-effects='off'] .portrait img { filter: none; }
+@media (max-width: 700px) {
+    .personnel { grid-template-columns: 1fr; }
+    .portrait { width: min(13em, 70%); }
+    .personnel-record div { grid-template-columns: 1fr; gap: 0; }
+}
 .music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
 .article-meta { display: flex; gap: 2ch; margin-bottom: 1.4em; color: var(--muted); font-size: .86em; }
 .prose { line-height: 1.42; overflow-wrap: anywhere; text-shadow: 0 0 2px #8dffa855; }

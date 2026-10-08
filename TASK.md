@@ -1,5 +1,14 @@
 # Personal terminal
 
+## About placeholder with portrait
+
+- [x] Placeholder About copy from résumé and projects facts only (owner will
+      replace it); personnel record (name, location, role, education, languages,
+      instrument).
+- [x] Portrait from the public LinkedIn photo (only 200×200 is public; larger
+      sizes return 403), dithered to four phosphor shades by `scripts/portrait.mjs`,
+      framed with corner brackets and scanlines; CRT OFF removes the glow and lines.
+
 ## Fuzzy search for Writing, Projects and Music
 
 - [x] `src/scripts/fuzzy.ts` (tested): substring or word-start subsequence per term
