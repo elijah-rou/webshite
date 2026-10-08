@@ -71,10 +71,9 @@ glass fills the window; Back zooms out again. While zoomed, the screen's text is
 out smaller so it reads at 20 to 28px depending on the window size.
 Without JavaScript every page shows the whole terminal.
 
-Posts favour legibility: serif text across the screen's width (about 96 characters
-on a 1440px window) in pale phosphor, at least 17px on screen. The serif is the
-system's own (Charter on Apple devices, Cambria or Georgia on Windows); code stays
-in IBM Plex Mono. The usual CRT effects apply and CRT OFF removes them; the
+Posts favour legibility: Zilla Slab across the screen's width (about 27px on a
+1440px window, at least 18px on screen) in pale phosphor; code stays in IBM Plex
+Mono. The usual CRT effects apply and CRT OFF removes them; the
 line-by-line reveal is off. Headings, links, list markers and code stay phosphor
 green.
 Pages mark themselves for this with `data-reading` on their `.article`.
