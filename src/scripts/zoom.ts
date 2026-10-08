@@ -1,7 +1,9 @@
 // Fallout 3 moves the camera onto the screen while a terminal is in use. The home
-// menu shows the whole terminal; every other screen fills the window, and its text
+// menu shows the whole terminal; every other screen is magnified until its content
+// fills the window, cropping part of the glass margin and the housing, and its text
 // is laid out smaller so that, once magnified, it reads at a comfortable size.
-const SCREEN_VIEWPORT_FRACTION = 0.98;
+// Fraction of the screen's inner padding that stays in view around the content.
+const PADDING_KEPT = 0.4;
 const ZOOMED_TEXT_MIN_PX = 20;
 const ZOOMED_TEXT_MAX_PX = 28;
 const ZOOM_MS = 550;
@@ -17,10 +19,11 @@ function measure(station: HTMLElement, screen: HTMLElement) {
     }
     const center_x = monitor.offsetLeft + monitor.clientLeft + screen.offsetLeft + screen.offsetWidth / 2;
     const center_y = monitor.offsetTop + monitor.clientTop + screen.offsetTop + screen.offsetHeight / 2;
-    const scale = Math.max(1, Math.min(
-        innerWidth * SCREEN_VIEWPORT_FRACTION / screen.offsetWidth,
-        innerHeight * SCREEN_VIEWPORT_FRACTION / screen.offsetHeight,
-    ));
+    const padding = getComputedStyle(screen);
+    const crop = (sides: number) => (1 - PADDING_KEPT) * sides;
+    const visible_width = screen.offsetWidth - crop(parseFloat(padding.paddingLeft) + parseFloat(padding.paddingRight));
+    const visible_height = screen.offsetHeight - crop(parseFloat(padding.paddingTop) + parseFloat(padding.paddingBottom));
+    const scale = Math.max(1, Math.min(innerWidth / visible_width, innerHeight / visible_height));
     // Roughly 36 lines tall and 45 characters wide at minimum, within the limits.
     const text_px = Math.min(ZOOMED_TEXT_MAX_PX,
         Math.max(ZOOMED_TEXT_MIN_PX, Math.min(innerWidth / 45, innerHeight / 36)));
