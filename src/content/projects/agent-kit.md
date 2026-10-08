@@ -2,7 +2,7 @@
 name: agent-kit
 repo: https://github.com/elijah-rou/agent-kit
 language: TypeScript
-summary: Instructions, skills, Pi extensions and Claude Code mods for Pi, Codex and Claude Code.
+summary: Shared instructions, skills and extensions for the Pi, Codex and Claude Code agents.
 order: 2
 ---
 Instructions, skills, Pi extensions and Claude Code mods shared by three coding

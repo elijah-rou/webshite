@@ -84,6 +84,6 @@ A ring buffer has few states, so the useful tests walk it through all of them:
 3. Interleave pushes and shifts for several times the capacity, so the indices wrap
    more than once.
 
-The third test catches most off-by-one mistakes in the modulo arithmetic. Comparing
-against a plain array used as a queue over a few thousand random operations catches
-the rest.
+The third test catches most off-by-one mistakes in the modulo arithmetic. For the
+rest, compare it with a plain array used as a queue over a few thousand random
+operations.
