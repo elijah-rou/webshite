@@ -36,7 +36,7 @@ newest first; the rest of the name becomes the caption. An optional
 [@eli_takes_photos](https://www.instagram.com/eli_takes_photos/); photos are not
 fetched from Instagram. While CRT is on they are tinted phosphor green.
 
-Profile links (GitHub, Mastodon, X, LinkedIn, Instagram) at the bottom left of the
+Profile links (GitHub, LinkedIn, Instagram, X, Mastodon) at the bottom left of the
 screen are in `src/components/SocialLinks.astro`, each drawn as a 12×12 pixel
 glyph. The GitHub and Mastodon links carry `rel="me"` for profile verification.
 
