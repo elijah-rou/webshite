@@ -72,8 +72,9 @@ out smaller so it reads at 20 to 28px depending on the window size.
 Without JavaScript every page shows the whole terminal.
 
 Posts favour legibility: Zilla Slab across the screen's width (about 27px on a
-1440px window, at least 18px on screen) in pale phosphor; code stays in IBM Plex
-Mono. The usual CRT effects apply and CRT OFF removes them; the
+1440px window, at least 18px on screen) in pale phosphor. Code uses a Latin subset
+of Iosevka Term Slab (see `src/fonts/SOURCES.md`; rebuild with
+`scripts/subset-iosevka.sh`). The usual CRT effects apply and CRT OFF removes them; the
 line-by-line reveal is off. Headings, links, list markers and code stay phosphor
 green.
 Pages mark themselves for this with `data-reading` on their `.article`.
