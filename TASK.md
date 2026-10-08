@@ -23,6 +23,8 @@ while Charter ships only on Apple systems.
 - [x] Iteration 5: serif candidates compared (Courier Prime, IBM Plex Serif, Zilla
       Slab, Roboto Slab); owner ruled out monospace for body text and chose Zilla
       Slab, bundled as `@fontsource/zilla-slab` 5.3.0.
+- [x] Code font: Iosevka Term Slab, subset from the owner's installed Nerd Font
+      (Iosevka 34.8.0) to ~17 KB WOFF2 per weight, OFL licence included.
 - [ ] Apply to project pages, resume and about once the post treatment is agreed.
 
 ## Parked: Instagram sync for Photos
