@@ -8,7 +8,7 @@ const REVEAL_SELECTOR = [
 ].join(', ');
 const READING_REVEAL_SELECTOR = '.menu-search, .terminal-menu a, .photo-grid a';
 // Every screen prints at the same rate: one line, menu entry or picture per step.
-const REVEAL_LINE_MS = 60;
+export const REVEAL_LINE_MS = 60;
 // A picture appears whole once its image is ready, waiting at most this long so an
 // image that is slow or not yet loading cannot stall the rest.
 const IMAGE_WAIT_MS = 500;
@@ -33,12 +33,17 @@ export function reveal() {
         const at_ms = (below ? Math.max(step - 1, 0) : step) * REVEAL_LINE_MS;
         if (!below) { step += 1; }
         if (line.querySelector('img')) { pictures.push({ picture: line, at_ms }); continue; }
-        line.style.setProperty('--reveal-delay', `${at_ms}ms`);
-        line.style.setProperty('--reveal-ms', `${REVEAL_LINE_MS}ms`);
-        line.style.setProperty('--reveal-steps', String(Math.min(Math.max(line.textContent?.length ?? 1, 1), 40)));
-        line.classList.add('reveal-line');
+        print_line(line, at_ms);
     }
     void show_pictures(pictures);
+}
+
+// Types one line out over a step, starting at_ms from now.
+export function print_line(line: HTMLElement, at_ms: number) {
+    line.style.setProperty('--reveal-delay', `${Math.round(at_ms)}ms`);
+    line.style.setProperty('--reveal-ms', `${REVEAL_LINE_MS}ms`);
+    line.style.setProperty('--reveal-steps', String(Math.min(Math.max(line.textContent?.length ?? 1, 1), 40)));
+    line.classList.add('reveal-line');
 }
 
 async function show_pictures(pictures: { picture: HTMLElement; at_ms: number }[]) {

@@ -66,6 +66,13 @@ accounts. One-time setup:
 Tokens last 60 days. Each sync refreshes the token in `.env.local`, so running it
 at least every 60 days keeps it valid; after that, generate a new one.
 
+The first visit to the site, if it lands on the home page, plays a Fallout 3
+style hack (`src/components/HackIntro.tsx`, puzzle logic in `src/scripts/hack.ts`):
+the memory dump prints, two wrong guesses are scored, the password matches and
+access is granted, then the menu prints. Any key or tap skips it. A
+`terminal-intro` entry in local storage marks the visit; `/?intro` replays it.
+Visitors who prefer reduced motion skip it.
+
 Profile links (GitHub, LinkedIn, Instagram, X, Mastodon) at the bottom left of the
 screen are in `src/components/SocialLinks.astro`, each drawn as a 12×12 pixel
 glyph. The GitHub and Mastodon links carry `rel="me"` for profile verification.

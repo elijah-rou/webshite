@@ -2,6 +2,7 @@ import { render } from '@solidjs/web';
 import TerminalControls from '../components/TerminalControls';
 import TerminalMenu, { MENU_KINDS, type MenuKind } from '../components/TerminalMenu';
 import MusicStatus from '../components/MusicStatus';
+import HackIntro from '../components/HackIntro';
 import { audio, stop_track } from './state';
 import { mount_photo_viewer } from './photo-viewer';
 import { handle_reveal_animation, reveal } from './reveal';
@@ -55,11 +56,33 @@ function mount() {
     const viewer = mount_photo_viewer();
     if (viewer) { disposers.push(viewer); }
     update_zoom(true);
-    reveal();
+    const intro_root = document.querySelector<HTMLElement>('[data-intro-root]');
+    if (intro_root && document.documentElement.hasAttribute('data-intro')) {
+        play_intro(intro_root);
+    } else {
+        reveal();
+    }
     // The window cannot scroll, so keyboard scrolling needs focus inside the screen.
     if (document.activeElement === document.body) {
         document.querySelector<HTMLElement>('#content')?.focus({ preventScroll: true });
     }
+}
+
+// The first-visit hack runs in place of the home menu, which then prints as usual.
+function play_intro(root: HTMLElement) {
+    let stop_intro: (() => void) | undefined;
+    const end_intro = () => {
+        document.documentElement.removeAttribute('data-intro');
+        // Disposed after the current event, since the intro calls this from its own handlers.
+        queueMicrotask(() => {
+            stop_intro?.();
+            disposers = disposers.filter(cleanup => cleanup !== stop_intro);
+            root.replaceChildren();
+        });
+        reveal();
+    };
+    stop_intro = render(() => <HackIntro seed={Math.floor(Math.random() * 2 ** 32)} on_done={end_intro} />, root);
+    disposers.push(stop_intro);
 }
 
 // Astro replaces <html> attributes with the incoming document's, which would
