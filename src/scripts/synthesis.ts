@@ -1,4 +1,11 @@
-export type TerminalSound = 'focus' | 'select';
+export type TerminalSound = 'focus' | 'select' | 'granted';
+
+// The fallback when a sound's WAV is missing: a short noisy tone per sound.
+const VOICES: Record<TerminalSound, { duration: number; frequency: number }> = {
+    focus: { duration: 0.025, frequency: 1450 },
+    select: { duration: 0.095, frequency: 820 },
+    granted: { duration: 0.17, frequency: 1180 },
+};
 
 function check_sample_rate(sample_rate: number) {
     if (!Number.isInteger(sample_rate) || sample_rate < 8000 || sample_rate > 192000) {
@@ -16,8 +23,7 @@ function noise_source(seed: number): () => number {
 
 export function terminal_samples(kind: TerminalSound, sample_rate: number): Float32Array {
     check_sample_rate(sample_rate);
-    const duration = kind === 'focus' ? 0.025 : 0.095;
-    const frequency = kind === 'focus' ? 1450 : 820;
+    const { duration, frequency } = VOICES[kind];
     const samples = new Float32Array(Math.ceil(sample_rate * duration));
     const noise = noise_source(719);
     for (let index = 0; index < samples.length; index++) {

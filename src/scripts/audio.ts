@@ -1,9 +1,10 @@
 import { terminal_samples, type TerminalSound } from './synthesis';
 const VOICES_MAX = 8;
-const paths = {
+const paths: Record<TerminalSound, string> = {
     focus: '/audio/ui_hacking_charscroll.wav',
     select: '/audio/ui_hacking_charenter_01.wav',
-} as const;
+    granted: '/audio/ui_hacking_passgood.wav',
+};
 
 export function create_audio_player(enabled: () => boolean, unavailable: () => void) {
     let context: AudioContext | undefined;
@@ -33,7 +34,7 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
         }
     }
 
-    async function decode_original(audio: AudioContext, kind: 'focus' | 'select') {
+    async function decode_original(audio: AudioContext, kind: TerminalSound) {
         try {
             const response = await fetch(paths[kind], {
                 cache: 'force-cache', signal: AbortSignal.timeout(4000),
@@ -67,7 +68,7 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
         const started_epoch = epoch;
         const audio = await get_context();
         if (!audio) { return; }
-        if ((kind === 'focus' || kind === 'select') && !buffers.has(kind)) {
+        if (!buffers.has(kind)) {
             let pending = decoding.get(kind);
             if (!pending) {
                 pending = decode_original(audio, kind);

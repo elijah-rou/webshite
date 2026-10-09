@@ -19,6 +19,9 @@
       press or tap, so the intro opens on ">PRESS ANY KEY OR TAP TO LOG IN"; that
       press unlocks sound and starts the hack. Escape at the prompt skips it.
       Taps are taken on click (the event phones accept for sound) and stopped.
+- [x] The match plays Fallout 3's successful-hack sound (ui_hacking_passgood.wav,
+      same source as the other sounds), and the pause after it is 750ms (was
+      450ms). Checked: the 168ms sound starts at the match; intro 5.4s.
 - [x] The dump font fits the screen (measured after VT323 loads); narrow screens
       put the log under the dump.
 
