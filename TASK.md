@@ -9,7 +9,15 @@
 - [x] CI workflow pushed after the owner granted the `workflow` scope; first run
       passed (install, check, build, 18 tests on Ubuntu, Node 22.18).
 - [x] Owner created the `webshite` Worker in Cloudflare (2026-10-09).
-- [ ] Preview build of the PR branch on Cloudflare before merging.
+- [x] Preview build of the PR branch on Cloudflare: builds and deploys after
+      adding `previews: {}` (needed by `wrangler preview`) and enabling preview
+      URLs. Live at https://agent-fallout-terminal-webshite.elijah-rou.workers.dev.
+      Every route, the intro with sound, reveal rate, photo viewer, logout,
+      footer sounds, sound start-up and captions pass against it in Chromium.
+- [ ] Unknown addresses on the preview return a bare "Not found" instead of the
+      404 page (/404 itself serves); `wrangler dev` honours not_found_handling,
+      so this looks specific to the beta `wrangler preview`. Check production
+      after merging.
 - [ ] Owner: replace placeholder content in a follow-up commit, then merge PR #1.
 
 Acceptance: `wrangler dev` (under Node; Bun hangs its proxy) served /, /about/,
