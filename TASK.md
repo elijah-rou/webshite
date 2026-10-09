@@ -1,5 +1,15 @@
 # Personal terminal
 
+## Random password each run
+
+- [x] The intro's password is drawn at random from 15 fourteen-letter words each
+      run; the dump shows 8 of them, and two random wrong guesses always come
+      before the password (owner request). The dump's characters and word
+      positions were already random per run. Tests cover 200 seeds: words spelled
+      once, layouts all distinct, nearly every word serving as the password, and
+      the guess order fail, fail, pass. Three replays in Chromium gave three
+      passwords (ACCOMPLISHMENT, REPRESENTATIVE, CONSIDERATIONS).
+
 ## Fix: hack screen flashed before printing
 
 Symptom: after the log-in press, the whole hack screen showed for ~150ms, vanished
