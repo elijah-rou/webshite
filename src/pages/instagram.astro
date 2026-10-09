@@ -10,9 +10,12 @@ const posts = read_posts();
         ? <div class="photo-grid" data-photo-grid>
             {posts.map((post, index) => <a href={`/instagram/${post.id}/`}
                 aria-label={post.images.length > 1 ? `${post.title}, ${post.images.length} images` : post.title}>
-                <Image src={post.cover} alt="" widths={[240, 480]} sizes="240px"
-                    loading={index < 6 ? 'eager' : 'lazy'} />
-                {post.images.length > 1 && <span class="photo-count" aria-hidden="true">{post.images.length}</span>}
+                <span class="photo-thumb">
+                    <Image src={post.cover} alt="" widths={[240, 480]} sizes="240px"
+                        loading={index < 6 ? 'eager' : 'lazy'} />
+                    {post.images.length > 1 && <span class="photo-count" aria-hidden="true">{post.images.length}</span>}
+                </span>
+                <span class="photo-tile-caption" aria-hidden="true">{post.title}</span>
             </a>)}
         </div>
         : <p class="prose">No photos yet.</p>}
