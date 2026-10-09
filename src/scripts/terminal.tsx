@@ -5,6 +5,7 @@ import MusicStatus from '../components/MusicStatus';
 import HackIntro from '../components/HackIntro';
 import { audio, stop_track, take_intro_request } from './state';
 import { mount_photo_viewer } from './photo-viewer';
+import { prefetch_link, use_prefetched } from './prefetch';
 import { handle_reveal_animation, reveal } from './reveal';
 import { update_zoom } from './zoom';
 
@@ -159,6 +160,13 @@ function handle_footer_focus(event: FocusEvent) {
     if (event.target instanceof Element && event.target.matches(FOOTER_LINKS)) { audio.focus(); }
 }
 
+// Menu entries, photo tiles and footer links take focus when hovered or selected;
+// a touch is seen as pointerover before its click.
+function handle_prefetch(event: Event) {
+    const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
+    if (link) { prefetch_link(link); }
+}
+
 function handle_key(event: KeyboardEvent) {
     if (event.key !== 'Escape' || event.altKey || event.ctrlKey || event.metaKey) { return; }
     const back = document.querySelector<HTMLAnchorElement>('[data-back]');
@@ -195,6 +203,9 @@ function before_swap(event: Event) {
 
 document.addEventListener('astro:page-load', mount);
 document.addEventListener('astro:before-swap', before_swap);
+document.addEventListener('astro:before-preparation', use_prefetched);
+document.addEventListener('pointerover', handle_prefetch);
+document.addEventListener('focusin', handle_prefetch);
 document.addEventListener('click', handle_click);
 for (const type of ['pointerdown', 'keydown', 'click'] as const) { document.addEventListener(type, handle_first_gesture, { capture: true }); }
 document.addEventListener('keydown', handle_key);
@@ -214,6 +225,9 @@ if (import.meta.hot) {
         audio.stop();
         document.removeEventListener('astro:page-load', mount);
         document.removeEventListener('astro:before-swap', before_swap);
+        document.removeEventListener('astro:before-preparation', use_prefetched);
+        document.removeEventListener('pointerover', handle_prefetch);
+        document.removeEventListener('focusin', handle_prefetch);
         document.removeEventListener('click', handle_click);
         for (const type of ['pointerdown', 'keydown', 'click'] as const) { document.removeEventListener(type, handle_first_gesture, { capture: true }); }
         document.removeEventListener('keydown', handle_key);
