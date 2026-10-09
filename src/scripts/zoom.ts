@@ -37,6 +37,15 @@ function measure(station: HTMLElement, screen: HTMLElement) {
     };
 }
 
+// The magnification once any zoom animation settles: 1 on the home menu.
+export function zoom_scale(): number {
+    const root = document.documentElement;
+    if (root.dataset.zoom !== 'in') { return 1; }
+    const scale = parseFloat(root.style.getPropertyValue('--zoom-scale'));
+    if (!(scale >= 1)) { throw new Error(`Zoomed in with a scale of ${scale}`); }
+    return scale;
+}
+
 export function update_zoom(animate: boolean) {
     const root = document.documentElement;
     const station = document.querySelector<HTMLElement>('.terminal-station');
