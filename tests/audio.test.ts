@@ -6,6 +6,7 @@ test('sounds produce finite, audible waveforms without clipping at supported dev
     for (const sample_rate of [8000, 44100, 48000, 192000]) {
         const waveforms = [
             terminal_samples('focus', sample_rate), terminal_samples('select', sample_rate),
+            terminal_samples('granted', sample_rate),
         ];
         for (const samples of waveforms) {
             let peak = 0;
