@@ -5,12 +5,28 @@
 Goal: faster loads with no change in look or behaviour. Measured first, then each
 change is re-measured with the identical method. Owner approved items 1-4, then 5-6.
 
-- [ ] 1. Housing image as AVIF/WebP, with a smaller copy for phones.
-- [ ] 2. `public/_headers`: `/_astro/*` immutable for a year; audio a shorter lifetime.
-- [ ] 3. Prefetched pages are actually used when an entry is opened.
-- [ ] 4. Photo viewer picks its image by on-screen size.
-- [ ] 5. First-click delay (profile first).
-- [ ] 6. VT323 without a fallback swap.
+- [x] 1. Housing as Astro-built AVIF (159 KB), WebP fallback (294 KB). The phone copy
+      was built, then dropped: the phone layout's border image stretches the sides
+      vertically, so a 3/4-width copy was visibly softer on the rails at 2x (review
+      finding); it saved 58 KB on 2x phones only.
+- [x] 2. `public/_headers`: `/_astro/*` immutable for a year, `/audio/*` a day. Pages
+      keep `max-age=0` so a deploy shows at once. `/images/` no longer exists.
+- [x] 3. `src/scripts/prefetch.ts`: Chrome reused neither Astro's `<link rel=prefetch>`
+      nor a prefetch `fetch()` (pages have `max-age=0` and no ETag), so the router
+      downloaded each page twice. Pages are now fetched on hover, focus or touch and
+      on menu mount for the highlighted entry, and handed to the router through
+      `astro:before-preparation`'s loader; anything unusual falls back to the
+      router's loader. Astro's prefetch is off. Never recordings, downloads, other
+      sites or the viewer's in-place steps. A prefetched page is used for 30 s.
+- [x] 4. Viewer `sizes`: a static per-photo bound in the page (45vw per unit of aspect
+      ratio, 76vw on phones; measured across 14 windows) and the exact on-screen
+      width (layout max size × settled zoom scale, after fonts load, again on resize)
+      for photos the viewer loads. srcset gains 480-1200 px steps.
+- [x] 5. Profiled: 110-120 ms in `new AudioContext()` inside the first gesture. The
+      context is built while idle after the reveal; the first press only resumes it.
+      Sound still needs a press even where the browser allows autoplay (review finding).
+- [x] 6. VT323 latin woff2 preloaded. IBM Plex Mono is kept: the key hints under the
+      monitor use it (`terminal.css` `.keyboard-hint`).
 
 ### Method
 
@@ -75,6 +91,66 @@ already prefetch the entry's HTML (Astro's `ClientRouter` turns on `prefetchAll`
 but the router then fetches it again in full, so the prefetch saves nothing. The
 first press after a load, of any kind (click, Enter, arrow key in the viewer), is
 delayed about 130 ms before navigation or the step starts; later presses take 1-2 ms.
+
+### Results, commit c5b4572 (2026-10-09)
+
+Same method as the baseline; final run on the branch preview. The VT323 fallback
+count is a per-frame check added during the work (before each paint: is the header's
+VT323 text visible while VT323 is not loaded?); its baseline was measured with it on
+f5083fa's own preview, https://297da516-webshite.elijah-rou.workers.dev. Menu entries
+are now found by label. Median (min-max) of 5.
+
+| Metric | Baseline f5083fa | Final c5b4572 |
+| --- | --- | --- |
+| Home desktop: first-visit bytes / housing | 2,069 KB / 1,992 KB | 239 KB / 158 KB |
+| Home phone: first-visit bytes / housing | 2,055 KB / 1,992 KB | 224 KB / 158 KB |
+| Home desktop load event | 1,873 ms (528-2,626) | 290 ms (177-428) |
+| Home desktop load event, throttled | 2,514 ms (2,493-2,766) | 619 ms (609-757) |
+| Home phone load event, throttled | 2,634 ms (2,496-2,761) | 589 ms (589-639) |
+| Home desktop housing done, throttled | 2,513 ms (2,492-2,766) | 594 ms (586-737) |
+| Repeat visit: 304s | 7 | 0 |
+| Repeat visit desktop load | 368 ms (239-399) | 117 ms (78-198) |
+| Repeat visit desktop load, throttled | 486 ms (483-583) | 185 ms (177-186) |
+| `cache-control` on `/_astro/*` | `public, max-age=0, must-revalidate` | `public, max-age=31536000, immutable` |
+| Hover then click, press to page-load (4 pages) | 287-342 ms | 17-22 ms |
+| Same, throttled | 387-404 ms | 18-19 ms |
+| Arrow keys then Enter, to page-load (4 pages) | 106-249 ms | 17-21 ms |
+| Same, throttled | 177-335 ms | 14-20 ms |
+| HTML wait after hover or arrow keys, throttled | 161-163 ms | 0-1 ms |
+| Script click without hover, press to before-preparation | 121-134 ms | 1 ms |
+| First click, pointerdown to before-preparation | 206 ms (202-219) | 4 ms (2-4) |
+| Same, throttled | 207 ms (203-213) | 3 ms (3-4) |
+| Viewer desktop: displayed photo / file px for 622 needed | 112 KB / 1,440 | 29 KB / 800 |
+| Viewer desktop: photo bytes, load plus 3 steps | 1,050 KB | 376 KB (-64%) |
+| Viewer desktop: time to show, throttled | 769 ms (697-829) | 499 ms (483-545) |
+| Viewer phone 3x: displayed / file px for 845 needed | 112 KB / 1,440 | 45 KB / 960 |
+| Viewer phone: photo bytes, load plus 3 steps | 1,050 KB | 473 KB (-55%) |
+| Viewer: first step | 126 ms (126-134) | 2 ms (2-3) |
+| VT323 fallback frames, desktop / throttled | 4 (4-12) / 13 (12-15) | 0 / 0 |
+| VT323 fallback frames, phone / throttled | 4 (3-9) / 12 (11-12) | 0 / 0 |
+| Header first visible, desktop throttled | 405 ms (400-595) | 445 ms (433-583) |
+
+Regressions and caveats:
+- Throttled, the header appears ~40 ms later (it now waits for VT323 rather than
+  showing the fallback first); unthrottled it appears earlier.
+- The audio context is built in one ~110 ms idle task; a press landing during it
+  waits (seen once in 15 later-click runs: 93 ms, and twice in 40 navigations).
+- The baseline's "fallback drawn" flag (first paint before VT323's `loadingdone`)
+  still reads 1 on throttled desktop, because that event waits for IBM Plex Mono
+  too; the per-frame count above is the reliable measure.
+- Phone browsers without `image-set(... type())` (Safari before 17) download the
+  WebP for the border image and the AVIF for the hidden `<img>`.
+- The 2 MB source PNG is still emitted into `dist/_astro/` by Astro; nothing requests it.
+- Only Chromium was measured; Safari and Firefox were not.
+
+Verification on c5b4572: CI `Build` and `Workers Builds` green; gate2, viewer,
+logout, footsound, soundbug2, rate and tilecap pass with no page errors; with
+autoplay fully allowed nothing sounds before a press; screenshots of Home, About,
+Photos and the viewer at 1440×1000, 390×844 @2x and @3x differ from f5083fa by under
+0.6 levels per channel on average (the viewer's photo is now a smaller file; the
+densest difference is the magnified housing's grain). Every window from 360×740 to
+3440×1440 at 1-3x gets a photo file at least on-screen width × DPR (or the 1440 px
+source). Two fresh reviews (full diff, then the fixes) left no blocking findings.
 
 ## Deploy on Cloudflare Workers
 
