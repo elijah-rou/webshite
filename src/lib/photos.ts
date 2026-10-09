@@ -14,6 +14,15 @@ export function image_href(post: Post, index: number): string {
     return index === 0 ? `/instagram/${post.id}/` : `/instagram/${post.id}/${index + 1}/`;
 }
 
+// Instagram opens an album at a given image with img_index, counted from 1.
+export function instagram_image_url(post: Post, index: number): string | undefined {
+    if (!post.instagram) { return undefined; }
+    if (post.images.length < 2) { return post.instagram; }
+    const url = new URL(post.instagram);
+    url.searchParams.set('img_index', String(index + 1));
+    return url.toString();
+}
+
 const images = import.meta.glob<{ default: ImageMetadata }>(
     ['../content/photos/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}',
         '../content/photos/*/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}'], { eager: true });

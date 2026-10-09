@@ -1,9 +1,9 @@
-import { navigate } from 'astro:transitions/client';
 import { render } from '@solidjs/web';
 import TerminalControls from '../components/TerminalControls';
 import TerminalMenu, { MENU_KINDS, type MenuKind } from '../components/TerminalMenu';
 import MusicStatus from '../components/MusicStatus';
 import { audio, stop_track } from './state';
+import { mount_photo_viewer } from './photo-viewer';
 import { handle_reveal_animation, reveal } from './reveal';
 import { update_zoom } from './zoom';
 
@@ -52,6 +52,8 @@ function mount() {
         status_root.replaceChildren();
         disposers.push(render(() => <MusicStatus />, status_root));
     }
+    const viewer = mount_photo_viewer();
+    if (viewer) { disposers.push(viewer); }
     update_zoom(true);
     reveal();
     // The window cannot scroll, so keyboard scrolling needs focus inside the screen.
@@ -68,7 +70,7 @@ function handle_resize() { update_zoom(false); }
 
 function handle_click(event: MouseEvent) {
     const target = event.target instanceof Element ? event.target.closest('a') : null;
-    if (target && !target.classList.contains('skip-link')) { void audio.play('select'); }
+    if (target?.hasAttribute('href') && !target.classList.contains('skip-link')) { void audio.play('select'); }
 }
 
 // Arrow keys move between photo thumbnails by their on-screen position.
@@ -104,19 +106,6 @@ function handle_grid_key(event: KeyboardEvent) {
 function handle_grid_pointer(event: PointerEvent) {
     const tile = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('[data-photo-grid] a') : null;
     if (tile && tile !== document.activeElement) { tile.focus({ preventScroll: true }); audio.focus(); }
-}
-
-// On a photo page, left and right step through the images, crossing between posts.
-function handle_photo_step(event: KeyboardEvent) {
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') { return; }
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) { return; }
-    if (document.activeElement instanceof HTMLInputElement) { return; }
-    const view = document.querySelector<HTMLElement>('.photo-view');
-    const href = event.key === 'ArrowRight' ? view?.dataset['photoNext'] : view?.dataset['photoPrevious'];
-    if (!href) { return; }
-    event.preventDefault();
-    void audio.play('select');
-    void navigate(href);
 }
 
 function handle_key(event: KeyboardEvent) {
@@ -156,7 +145,6 @@ document.addEventListener('astro:before-swap', before_swap);
 document.addEventListener('click', handle_click);
 document.addEventListener('keydown', handle_key);
 document.addEventListener('keydown', handle_grid_key);
-document.addEventListener('keydown', handle_photo_step);
 document.addEventListener('pointerover', handle_grid_pointer);
 document.addEventListener('visibilitychange', handle_visibility);
 document.addEventListener('animationstart', handle_reveal_animation);
@@ -173,7 +161,6 @@ if (import.meta.hot) {
         document.removeEventListener('click', handle_click);
         document.removeEventListener('keydown', handle_key);
         document.removeEventListener('keydown', handle_grid_key);
-        document.removeEventListener('keydown', handle_photo_step);
         document.removeEventListener('pointerover', handle_grid_pointer);
         document.removeEventListener('visibilitychange', handle_visibility);
         document.removeEventListener('animationstart', handle_reveal_animation);

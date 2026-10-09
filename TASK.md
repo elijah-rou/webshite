@@ -66,6 +66,12 @@ while Charter ships only on Apple systems.
 - [x] Photos keep their colour under the CRT effects (owner request).
 - [x] `<` and `>` against the sides of an album image replace the Next image and
       Previous image menu entries (owner request); hidden at the album's ends.
+- [x] Viewer without page loads (owner request): stepping swaps the image in
+      place, so the header, footer and scrollbar stay; a constant frame shows
+      "Loading..." until an image arrives; neighbours are fetched ahead. No
+      scrolling: the image (thin green border) links to the image on Instagram
+      (`img_index`), Previous post and Next post split the row below, greyed out
+      at the ends. The address follows with replaceState, so Back leaves the viewer.
 - [ ] Owner: revoke the token pasted in chat (it stays valid after a refresh).
 
 Acceptance: four tests pass against a mock Graph API (pagination, video covers,
@@ -73,6 +79,10 @@ posts without images, idempotent reruns, preserved caption edits, token-free
 errors, env file update). Real run on 2026-10-09: 8 posts, 68 images. Headless
 Chromium at 1440×1000 and 390×844: no filter on images, badges 10,9,7,10,4,10,8,10,
 right arrow 1/4 to 2/4, 4/4 to the next post, left back, no overflow or errors.
+Viewer (same sizes): header and footer are the same elements after clicks and
+keys; screen scroll height equals its height; frame and buttons keep their boxes
+across posts, captions and a throttled uncached load, which shows "Loading...";
+history.back() returns to /instagram/; the newest post greys out Previous post.
 
 ## Photos, projects, resume, menu focus
 
