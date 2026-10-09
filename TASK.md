@@ -58,12 +58,15 @@ while Charter ships only on Apple systems.
 - [x] Menu entries and the search line on opened screens (Writing, Projects,
       Music, project pages) print one by one like the home menu (owner request);
       prose and headings still appear at once.
-- [x] Photo grid tiles draw in one by one, each in 12 steps (owner request); the
-      photo viewer's image still appears at once.
+- [x] Photo grid tiles appear whole, one at a time (owner request: no wipe): each
+      waits for its image (up to 500ms) and follows the previous by at least
+      100ms. The photo viewer's image still appears at once.
 
 Acceptance (headless Chromium, opened from the home menu): Projects' 8 entries
 carry staggered delays and finish within about a second; Photos' 8 tiles likewise
-(60ms apart after the header); the mock post shows no reveal; no errors.
+appear 100ms apart, never part-drawn, each with its image loaded (cold cache and
+throttled network, checked every frame); CRT OFF mid-reveal shows them all; the
+mock post shows no reveal; no errors.
 
 ## Instagram sync for Photos
 
