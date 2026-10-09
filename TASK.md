@@ -152,6 +152,17 @@ densest difference is the magnified housing's grain). Every window from 360×740
 3440×1440 at 1-3x gets a photo file at least on-screen width × DPR (or the 1440 px
 source). Two fresh reviews (full diff, then the fixes) left no blocking findings.
 
+## Header, menu order, volume (owner requests, after the performance work)
+
+- [x] RobCo header lines smaller (0.9em to 0.7em; 0.7em to 0.6em on phones) and no
+      longer a link home, on every screen.
+- [x] Home menu order: About, Resume, Projects, Writing, Music, Photos.
+- [x] Terminal sounds 10% quieter (gain 0.65 to 0.585). Read as the effects only;
+      recordings keep volume 0.8.
+
+Checked locally in Chromium: rate (reveal order follows the new menu, 57 ms
+average step), gate2, logout, viewer and soundbug2 pass with no errors.
+
 ## Deploy on Cloudflare Workers
 
 - [x] Owner chose Workers (static assets) over Pages and Netlify: static requests
