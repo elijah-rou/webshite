@@ -108,6 +108,19 @@ function handle_first_gesture(event: Event) {
     audio.unlock();
 }
 
+// The first press used to wait about 110 ms while the audio context was built.
+// It is built while idle once the screen has printed (a long task mid-print would
+// stall the reveal), so that press only resumes it.
+function prepare_audio() {
+    const printing = document.getAnimations()
+        .filter(animation => animation.effect?.getComputedTiming().endTime !== Infinity)
+        .map(animation => animation.finished.catch(() => undefined));
+    void Promise.all(printing).then(() => {
+        if ('requestIdleCallback' in window) { requestIdleCallback(() => audio.prepare(), { timeout: 2000 }); }
+        else { setTimeout(() => audio.prepare(), 0); }
+    });
+}
+
 function handle_click(event: MouseEvent) {
     const target = event.target instanceof Element ? event.target.closest('a') : null;
     if (target?.hasAttribute('href') && !target.classList.contains('skip-link')) { void audio.play('select'); }
@@ -222,6 +235,7 @@ document.addEventListener('animationstart', handle_reveal_animation);
 document.addEventListener('animationend', handle_reveal_animation);
 window.addEventListener('resize', handle_resize);
 mount();
+prepare_audio();
 
 if (import.meta.hot) {
     import.meta.hot.dispose(() => {

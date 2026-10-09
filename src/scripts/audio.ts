@@ -16,17 +16,24 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
     const buffers = new Map<TerminalSound, AudioBuffer>();
     const decoding = new Map<TerminalSound, Promise<void>>();
 
+    // Building a context takes about 110 ms of the main thread.
+    function create_context(): AudioContext {
+        if (context) { return context; }
+        context = new AudioContext({ latencyHint: 'interactive' });
+        output = context.createGain();
+        output.gain.value = 0.65;
+        output.connect(context.destination);
+        return context;
+    }
+
     async function get_context(): Promise<AudioContext | undefined> {
         if (!enabled() || failed) { return; }
         try {
-            if (!context) {
-                context = new AudioContext({ latencyHint: 'interactive' });
-                output = context.createGain();
-                output.gain.value = 0.65;
-                output.connect(context.destination);
-            }
-            if (context.state === 'suspended') { await context.resume(); }
-            return context.state === 'running' ? context : undefined;
+            const audio = create_context();
+            // Resumed synchronously, within the key press or tap that allows sound.
+            // Safari can also report 'interrupted'.
+            if (audio.state !== 'running') { await audio.resume(); }
+            return audio.state === 'running' ? audio : undefined;
         } catch {
             failed = true;
             unavailable();
@@ -97,7 +104,14 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
     // Browsers allow sound only from a key press or tap; call this from one.
     function unlock() { void get_context(); }
 
+    // Builds the context ahead of the first key press or tap, which then only has
+    // to resume it. Browsers keep it suspended until then, so nothing can sound.
+    function prepare() {
+        if (!enabled() || failed) { return; }
+        try { create_context(); } catch { failed = true; unavailable(); }
+    }
+
     function running(): boolean { return context?.state === 'running'; }
 
-    return { play, stop, focus, unlock, running };
+    return { play, stop, focus, unlock, prepare, running };
 }
