@@ -1,5 +1,81 @@
 # Personal terminal
 
+## Performance benchmark
+
+Goal: faster loads with no change in look or behaviour. Measured first, then each
+change is re-measured with the identical method. Owner approved items 1-4, then 5-6.
+
+- [ ] 1. Housing image as AVIF/WebP, with a smaller copy for phones.
+- [ ] 2. `public/_headers`: `/_astro/*` immutable for a year; audio a shorter lifetime.
+- [ ] 3. Prefetched pages are actually used when an entry is opened.
+- [ ] 4. Photo viewer picks its image by on-screen size.
+- [ ] 5. First-click delay (profile first).
+- [ ] 6. VT323 without a fallback swap.
+
+### Method
+
+Headless Chromium (Playwright's chromium-1234 build) driven over CDP by
+`.scratch/perf/bench.mjs` (git-ignored; `summarize.mjs` prints the tables) against
+the branch preview, https://agent-fallout-terminal-webshite.elijah-rou.workers.dev.
+Before each benchmark, one unrecorded pass loads every address used (desktop and
+phone) to warm Cloudflare's edge cache. Each scenario runs 5 times, each run in a
+fresh browser profile, with `terminal-intro = seen` set before any page script, once
+unthrottled and once throttled (CDP network emulation: 150 ms latency, 1,000,000
+bytes/s down, 500,000 up). Figures are median (min-max). Desktop is 1440×1000 at 1x;
+phone is 390×844 at 3x with touch.
+
+- Home: bytes are CDP `encodedDataLength`; times are from navigation start (load
+  event, first contentful paint, housing `responseEnd`, VT323 file `responseEnd` and
+  its `document.fonts` loadingdone). "Fallback drawn" means first paint came before
+  VT323 was ready (the fonts use `font-display: swap`).
+- Repeat visit: Chrome restarted on the same profile (disk cache only), then Home
+  again; 304s are counted from the raw response status.
+- Navigation: from Home after its reveal, to About, Writing, Projects and Photos,
+  each in a fresh profile. "click" is a script click (no hover); "hover" moves the
+  real pointer onto the entry, waits 300 ms, then clicks; "keys" selects with arrow
+  keys, waits 300 ms, then presses Enter. Times are from the press (pointerdown,
+  Enter keydown or click) to `astro:before-preparation`, `astro:after-preparation`
+  (HTML in), `astro:page-load` and the first visible entry or heading.
+- Photo viewer: `/instagram/2023-04-13-ig-18042014458441146/` loaded directly, then
+  three ArrowRight steps. "File px" is the displayed file's pixel width, "needed"
+  the image's on-screen width (`getBoundingClientRect`, after the zoom transform)
+  times devicePixelRatio. Photo bytes count every photo file fetched (displayed,
+  neighbours preloaded, steps).
+- First click: real pointer clicks on Projects; pointerdown to
+  `astro:before-preparation`, for the first click after load and two later ones.
+
+### Baseline, commit f5083fa (2026-10-09)
+
+| Metric | Unthrottled | Throttled |
+| --- | --- | --- |
+| Home desktop: total / housing | 2,069 KB / 1,992 KB | same |
+| Home desktop: load event | 1,873 ms (528-2,626) | 2,514 ms (2,493-2,766) |
+| Home desktop: housing done | 1,872 ms (527-2,626) | 2,513 ms (2,492-2,766) |
+| Home desktop: first paint | 368 ms (308-448) | 480 ms (460-544) |
+| Home phone: total / housing | 2,055 KB / 1,992 KB | same |
+| Home phone: load event | 894 ms (449-2,118) | 2,634 ms (2,496-2,761) |
+| Repeat visit desktop: 304s / load | 7 of 8 requests / 368 ms (239-399) | 7 of 8 / 486 ms (483-583) |
+| `cache-control` on HTML, `/_astro/*`, `/images/*` | `public, max-age=0, must-revalidate` | |
+| Nav click, press to page-load (About/Writing/Projects/Photos) | 203 / 250 / 228 / 194 ms | 310 / 310 / 312 / 330 ms |
+| Nav click, press to before-preparation | 121-134 ms | 129-135 ms |
+| Nav hover, press to page-load | 327 / 309 / 287 / 342 ms | 387 / 404 / 393 / 395 ms |
+| Nav keys, Enter to page-load | 249 / 110 / 106 / 172 ms | 335 / 189 / 189 / 177 ms |
+| Nav: HTML fetch after the press | 36-106 ms, full 3-5 KB response | 160 ms |
+| Viewer desktop: displayed file / file px / needed | 112 KB / 1,440 / 622 | same |
+| Viewer desktop: time to show | 387 ms (159-513) | 769 ms (697-829) |
+| Viewer phone: displayed file / file px / needed | 112 KB / 1,440 / 845 | same |
+| Viewer: photo bytes, load plus 3 steps | 1,050 KB in 6 files | same |
+| Viewer: step latency, first / later | 126 ms (126-134) / 1 ms | 132 ms / 1 ms |
+| First click / second / third | 206 ms (202-219) / 2 / 2 | 207 ms (203-213) / 2 / 2 |
+| VT323 ready (desktop) | 498 ms (291-651) | 688 ms (610-898) |
+| Fallback font drawn first | 4 of 5 runs | 5 of 5 |
+
+Findings: Home also loads IBM Plex Mono (with VT323). Hover and arrow-key selection
+already prefetch the entry's HTML (Astro's `ClientRouter` turns on `prefetchAll`),
+but the router then fetches it again in full, so the prefetch saves nothing. The
+first press after a load, of any kind (click, Enter, arrow key in the viewer), is
+delayed about 130 ms before navigation or the step starts; later presses take 1-2 ms.
+
 ## Deploy on Cloudflare Workers
 
 - [x] Owner chose Workers (static assets) over Pages and Netlify: static requests
