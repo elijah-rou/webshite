@@ -19,7 +19,6 @@ const {
     title, section, description = 'Elijah Roussos: writing, projects, music and photos.', back = '/',
     hints = ['↑ ↓ SELECT', 'ENTER OPEN'],
 } = Astro.props;
-const year = new Date().getFullYear();
 ---
 <!doctype html>
 <html lang="en" data-effects="on">
@@ -55,8 +54,8 @@ const year = new Date().getFullYear();
                     <div class="screen-glass" aria-hidden="true"></div>
                     <div class="screen-scroll">
                         <header class="system-header">
-                            <a href="/" aria-label="Elijah Roussos, terminal home">RobCo UNIFIED OPERATING SYSTEM</a>
-                            <p>COPYRIGHT {year} ELIJAH ROUSSOS</p>
+                            <a href="/" aria-label="Elijah Roussos, terminal home">ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM</a>
+                            <p>COPYRIGHT 2075-2077 ROBCO INDUSTRIES</p>
                         </header>
                         <main id="content" tabindex="-1" data-section={section} data-reading={section !== 'home' ? '' : undefined}><slot /></main>
                     </div>
