@@ -1,4 +1,4 @@
-import { createSignal, For, onCleanup, onSettled, Show } from 'solid-js';
+import { createSignal, flush, For, onCleanup, onSettled, Show } from 'solid-js';
 import {
     ATTEMPTS, build_dump, guess_log, plan_guesses, ROW_WIDTH, ROWS_PER_COLUMN, seeded_random, type DumpRow,
 } from '../scripts/hack';
@@ -9,7 +9,8 @@ interface Props { seed: number; on_done: () => void }
 
 // Width in characters: two dump columns ("0xF4F0 " + row) with gaps, then the log.
 const DUMP_CHARS = 2 * (7 + ROW_WIDTH) + 2;
-const LOG_CHARS = 15;
+// Room for ">" and a 15-letter word.
+const LOG_CHARS = 16;
 // Header (with its blank lines), the dump, a blank line and the skip hint.
 const LINES = 5 + ROWS_PER_COLUMN + 2;
 const STACKED_LOG_LINES = 5;
@@ -17,6 +18,8 @@ const LINE_HEIGHT = 1.22;
 const BOOT_MS = 150;
 const AFTER_PRINT_MS = 250;
 const SELECT_MS = 350;
+// The cursor rests a little longer on the password before it is entered.
+const FOUND_MS = 650;
 const AFTER_WRONG_MS = 250;
 const AFTER_MATCH_MS = 450;
 const GRANTED_MS = 700;
@@ -25,14 +28,14 @@ function Row(props: { left: DumpRow; right: DumpRow; selected: string | null }) 
     const column = (row: DumpRow) => <>
         <span class="hack-address">{row.address}</span>{' '}
         <For each={row.segments}>{segment => segment.kind === 'word'
-            ? <span class="hack-word" data-selected={props.selected === segment.text ? 'true' : 'false'}>{segment.text}</span>
+            ? <span class="hack-word" data-selected={props.selected === segment.word ? 'true' : 'false'}>{segment.text}</span>
             : segment.text}</For>
     </>;
     return <p class="hack-line hack-row">{column(props.left)}{'  '}{column(props.right)}</p>;
 }
 
-// A Fallout 3 hack, played out on its own: the dump prints, two wrong guesses are
-// scored, the password matches and access is granted. Any key or tap skips it.
+// A Fallout 3 hack, played out on its own once the visitor logs in: the dump
+// prints, two wrong guesses are scored, the password matches and access is granted.
 export default function HackIntro(props: Props) {
     const random = seeded_random(props.seed);
     const dump = build_dump(random);
@@ -41,7 +44,8 @@ export default function HackIntro(props: Props) {
     const [attempts, set_attempts] = createSignal(ATTEMPTS);
     const [selected, set_selected] = createSignal<string | null>(null);
     const [log, set_log] = createSignal<string[]>([]);
-    const [granted, set_granted] = createSignal(false);
+    // Browsers allow sound only after a key press or tap, so the hack waits for one.
+    const [phase, set_phase] = createSignal<'waiting' | 'hacking' | 'granted'>('waiting');
     const [font_px, set_font_px] = createSignal<number | null>(null);
     const [stacked, set_stacked] = createSignal(false);
     const controller = new AbortController();
@@ -87,6 +91,7 @@ export default function HackIntro(props: Props) {
     }
 
     async function play() {
+        flush(() => set_phase('hacking'));
         await sleep(BOOT_MS);
         const lines = Array.from(root?.querySelectorAll<HTMLElement>('.hack-line') ?? []);
         lines.forEach((line, index) => print_line(line, index * REVEAL_LINE_MS));
@@ -94,7 +99,7 @@ export default function HackIntro(props: Props) {
         for (const guess of guesses) {
             set_selected(guess.word);
             void audio.play('focus');
-            await sleep(SELECT_MS);
+            await sleep(guess.correct ? FOUND_MS : SELECT_MS);
             void audio.play('select');
             for (const line of guess_log(guess)) {
                 set_log(current => [...current, line]);
@@ -106,47 +111,54 @@ export default function HackIntro(props: Props) {
             await sleep(AFTER_WRONG_MS);
         }
         await sleep(AFTER_MATCH_MS);
-        set_granted(true);
-        // The text is in place once the swap settles; print it like any other line.
-        await Promise.resolve();
+        flush(() => set_phase('granted'));
+        // The same sound that entered the password marks access granted.
+        void audio.play('select');
         const line = root?.querySelector<HTMLElement>('.hack-granted');
         if (line) { print_line(line, 0); }
         await sleep(GRANTED_MS);
         finish();
     }
 
-    // Any key or tap skips. The click that follows a tap would land on the menu
-    // that appears under it, so that one click is swallowed.
-    const swallow_click = (event: MouseEvent) => { event.preventDefault(); event.stopPropagation(); };
-    const skip = (event: Event) => {
+    // At the prompt, a key press or tap logs in and allows sound (Escape, which
+    // browsers do not count as permission for sound, skips the intro instead).
+    // Afterwards any key or tap skips. Taps are taken on click, the event that
+    // permits sound on phones, and stopped so they cannot reach the menu beneath.
+    const respond = (event: Event) => {
         if (event instanceof KeyboardEvent && ['Shift', 'Control', 'Alt', 'Meta'].includes(event.key)) { return; }
         event.preventDefault();
         event.stopPropagation();
-        if (event.type === 'pointerdown') {
-            window.addEventListener('click', swallow_click, { capture: true, once: true });
-            setTimeout(() => window.removeEventListener('click', swallow_click, { capture: true }), 600);
-        }
-        finish();
+        if (phase() !== 'waiting' || (event instanceof KeyboardEvent && event.key === 'Escape')) { finish(); return; }
+        void audio.play('select');
+        play().catch((error: unknown) => { if (!controller.signal.aborted) { throw error; } });
     };
-    window.addEventListener('keydown', skip, { capture: true });
-    window.addEventListener('pointerdown', skip, { capture: true });
+    window.addEventListener('keydown', respond, { capture: true });
+    window.addEventListener('click', respond, { capture: true });
     window.addEventListener('resize', fit);
     onCleanup(() => {
         controller.abort();
-        window.removeEventListener('keydown', skip, { capture: true });
-        window.removeEventListener('pointerdown', skip, { capture: true });
+        window.removeEventListener('keydown', respond, { capture: true });
+        window.removeEventListener('click', respond, { capture: true });
         window.removeEventListener('resize', fit);
     });
     onSettled(() => {
         fit();
         // The first fit may measure a fallback font; measure again once VT323 is in.
         void document.fonts.ready.then(() => { if (!controller.signal.aborted) { fit(); } });
-        play().catch((error: unknown) => { if (!controller.signal.aborted) { throw error; } });
+        root?.querySelectorAll<HTMLElement>('.hack-gate').forEach((line, index) => print_line(line, index * REVEAL_LINE_MS));
     });
 
     return <div ref={root} class="hack" data-stacked={stacked() ? 'true' : 'false'}
         style={{ 'font-size': font_px() === null ? undefined : `${font_px()}px` }} aria-label="Terminal login">
-        <Show when={!granted()} fallback={<p class="hack-granted">ACCESS GRANTED</p>}>
+        <Show when={phase() === 'waiting'}>
+            <p class="hack-gate">ELIJAH ROUSSOS (TM) TERMLINK PROTOCOL</p>
+            <p class="hack-gate hack-blank" aria-hidden="true">{' '}</p>
+            <p class="hack-gate">&gt;PRESS ANY KEY OR TAP TO LOG IN<span class="hack-cursor" aria-hidden="true">█</span></p>
+        </Show>
+        <Show when={phase() === 'granted'}>
+            <p class="hack-granted">ACCESS GRANTED</p>
+        </Show>
+        <Show when={phase() === 'hacking'}>
             <p class="hack-line">ELIJAH ROUSSOS (TM) TERMLINK PROTOCOL</p>
             <p class="hack-line">ENTER PASSWORD NOW</p>
             <p class="hack-line hack-blank" aria-hidden="true">{' '}</p>

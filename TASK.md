@@ -4,13 +4,21 @@
 
 - [x] On a first visit that lands on home, a Fallout 3 hack plays before the menu
       (owner request): header and memory dump print at the 60ms rate, two wrong
-      guesses are scored by likeness, ROUSSOS matches, ACCESS GRANTED, then the
+      guesses are scored by likeness, the password matches, ACCESS GRANTED, then the
       menu prints. Auto-played; any key or tap skips (the tap's click is
       swallowed so it cannot open a menu entry). Seeded puzzle logic is tested.
 - [x] Once per browser: local storage `terminal-intro`, set on the first page
       load anywhere, so a first visit to another page never shows it later.
       `/?intro` replays it. Reduced motion skips it. html[data-intro] is set in
       the head before the first paint, so the menu does not flash.
+- [x] Password is a Very Hard (13-15 letter) word, ADMINISTRATION, with 14-letter
+      decoys that wrap across rows as in the game (owner request; the game's own
+      Very Hard list could not be found to copy from). The cursor rests longer on
+      the password, and the entry sound plays again at ACCESS GRANTED.
+- [x] Sound in the intro (owner request): browsers allow it only after a key
+      press or tap, so the intro opens on ">PRESS ANY KEY OR TAP TO LOG IN"; that
+      press unlocks sound and starts the hack. Escape at the prompt skips it.
+      Taps are taken on click (the event phones accept for sound) and stopped.
 - [x] The dump font fits the screen (measured after VT323 loads); narrow screens
       put the log under the dump.
 
@@ -19,6 +27,10 @@ about 5.1s (ACCESS GRANTED at 4.4s) after the pauses were shortened (owner reque
 shows the menu directly. At 390×844 the dump is 15.4px, stacked; a tap where a
 menu entry would be skips without navigating. Enter skips without opening About.
 A first visit to /about/ then Back to home shows no intro. No errors.
+With the prompt (autoplay restricted, every sound start counted): no sound before
+the prompt; a key press starts the hack with sound (11 sounds in 1.5s, 25 by the
+menu, 5.1s); a real touch tap does the same on a phone and a second tap skips to
+the menu without opening an entry; Escape at the prompt goes to the menu.
 
 ## About placeholder with portrait
 

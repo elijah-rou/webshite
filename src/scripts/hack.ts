@@ -2,8 +2,12 @@
 // candidate passwords, two wrong guesses scored by likeness, then the password.
 // Everything here is pure and seeded, so the layout and guesses are testable.
 
-export const PASSWORD = 'ROUSSOS';
-export const DECOYS = ['CLUSTER', 'CONSOLE', 'GATEWAY', 'KERNELS', 'PROCESS', 'RUNTIME', 'SIGNALS', 'VECTORS'] as const;
+// Very Hard terminals use 13 to 15 letter words.
+export const PASSWORD = 'ADMINISTRATION';
+export const DECOYS = [
+    'CHARACTERISTIC', 'COMMUNICATIONS', 'CONSIDERATIONS', 'INTERPRETATION',
+    'INVESTIGATIONS', 'RECOMMENDATION', 'RECONSTRUCTION', 'REPRESENTATIVE',
+] as const;
 export const ROWS_PER_COLUMN = 12;
 export const ROW_WIDTH = 12;
 export const ATTEMPTS = 4;
@@ -11,6 +15,8 @@ const WRONG_GUESSES = 2;
 const WORDS_SHOWN = 8;
 const GARBAGE = '!"#$%&\'()*+,-./:;<=>?@[\\]^_{|}';
 const ADDRESS_STEP = ROW_WIDTH;
+// Garbage kept between words, so two words never touch.
+const WORD_GAP = 1;
 
 export type Random = () => number;
 
@@ -49,33 +55,52 @@ export function likeness(guess: string, password: string): number {
     return count;
 }
 
-export type Segment = { kind: 'garbage'; text: string } | { kind: 'word'; text: string };
+// A word longer than what is left of its row carries on into the next row, as in
+// the game; each piece knows the whole word it belongs to.
+export type Segment = { kind: 'garbage'; text: string } | { kind: 'word'; text: string; word: string };
 export interface DumpRow { address: string; segments: Segment[] }
 export interface Dump { columns: [DumpRow[], DumpRow[]]; words: string[] }
 
-// Two columns of ROWS_PER_COLUMN rows, each ROW_WIDTH characters of garbage with
-// at most one word, so a word never wraps between rows.
+// Two columns of ROWS_PER_COLUMN rows of ROW_WIDTH characters, read as one
+// stream of memory from the first column into the second.
 export function build_dump(random: Random): Dump {
     const words = shuffled([PASSWORD, ...shuffled(DECOYS, random).slice(0, WORDS_SHOWN - 1)], random);
     const total_rows = ROWS_PER_COLUMN * 2;
-    const word_rows = shuffled([...Array(total_rows).keys()], random).slice(0, words.length);
+    const length = total_rows * ROW_WIDTH;
+    const slack = length - words.reduce((sum, word) => sum + word.length + WORD_GAP, 0);
+    if (slack < 0) { throw new Error('The dump is too small for its words'); }
+    // Spread the spare garbage over the gaps before, between and after the words.
+    const cuts = Array.from({ length: words.length }, () => Math.floor(random() * (slack + 1))).sort((a, b) => a - b);
+    const owner: (string | null)[] = Array(length).fill(null);
+    let position = 0;
+    let previous_cut = 0;
+    words.forEach((word, index) => {
+        const cut = cuts[index] ?? 0;
+        position += cut - previous_cut + (index === 0 ? 0 : WORD_GAP);
+        previous_cut = cut;
+        for (let offset = 0; offset < word.length; offset += 1) { owner[position + offset] = word; }
+        position += word.length;
+    });
+    const characters = owner.map((word, index) => {
+        if (word === null) { return pick([...GARBAGE], random); }
+        const start = owner.indexOf(word);
+        return word[index - start] ?? '';
+    });
     const start = 0xf000 + Math.floor(random() * 0x80) * ADDRESS_STEP;
     const rows: DumpRow[] = [];
     for (let row = 0; row < total_rows; row += 1) {
         const address = `0x${(start + row * ADDRESS_STEP).toString(16).toUpperCase().padStart(4, '0')}`;
-        const garbage = (length: number) => Array.from({ length }, () => pick([...GARBAGE], random)).join('');
-        const word_index = word_rows.indexOf(row);
-        const word = words[word_index];
-        if (word === undefined) {
-            rows.push({ address, segments: [{ kind: 'garbage', text: garbage(ROW_WIDTH) }] });
-            continue;
+        const segments: Segment[] = [];
+        for (let column = 0; column < ROW_WIDTH; column += 1) {
+            const index = row * ROW_WIDTH + column;
+            const word = owner[index] ?? null;
+            const character = characters[index] ?? '';
+            const last = segments.at(-1);
+            const same = last && (last.kind === 'word' ? last.word === word : word === null);
+            if (same) { last.text += character; continue; }
+            segments.push(word === null ? { kind: 'garbage', text: character } : { kind: 'word', text: character, word });
         }
-        const offset = Math.floor(random() * (ROW_WIDTH - word.length + 1));
-        rows.push({ address, segments: [
-            { kind: 'garbage', text: garbage(offset) },
-            { kind: 'word', text: word },
-            { kind: 'garbage', text: garbage(ROW_WIDTH - word.length - offset) },
-        ] });
+        rows.push({ address, segments });
     }
     return { columns: [rows.slice(0, ROWS_PER_COLUMN), rows.slice(ROWS_PER_COLUMN)], words };
 }

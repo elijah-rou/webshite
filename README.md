@@ -67,9 +67,11 @@ Tokens last 60 days. Each sync refreshes the token in `.env.local`, so running i
 at least every 60 days keeps it valid; after that, generate a new one.
 
 The first visit to the site, if it lands on the home page, plays a Fallout 3
-style hack (`src/components/HackIntro.tsx`, puzzle logic in `src/scripts/hack.ts`):
-the memory dump prints, two wrong guesses are scored, the password matches and
-access is granted, then the menu prints. Any key or tap skips it. A
+style hack (`src/components/HackIntro.tsx`, puzzle logic in `src/scripts/hack.ts`).
+It opens on a log-in prompt, because browsers only allow sound after a key press
+or tap; that press starts it (Escape skips it). The memory dump prints, two wrong
+guesses are scored, the password matches and access is granted, then the menu
+prints. Any key or tap skips the rest. A
 `terminal-intro` entry in local storage marks the visit; `/?intro` replays it.
 Visitors who prefer reduced motion skip it.
 
