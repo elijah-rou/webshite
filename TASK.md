@@ -1,5 +1,13 @@
 # Personal terminal
 
+## Fix: blank pause after the intro
+
+Symptom (reproduced frame by frame): after skipping, or after ACCESS GRANTED, the
+header showed but the greeting took 1.44s and the menu longer. Cause: the menu's
+reveal ran before the intro's lines were removed, so they took the first 24
+steps. The reveal now runs once the intro is gone: header ~20ms, greeting ~136ms,
+first entry ~202ms after a skip, at any point in the hack.
+
 ## Logout
 
 - [x] [LOGOUT] left of [SOUND ON] goes home and replays the intro from the log-in

@@ -73,13 +73,15 @@ function play_intro(root: HTMLElement) {
     let stop_intro: (() => void) | undefined;
     const end_intro = () => {
         document.documentElement.removeAttribute('data-intro');
-        // Disposed after the current event, since the intro calls this from its own handlers.
+        // Disposed after the current event, since the intro calls this from its own
+        // handlers. The menu prints only once the intro's lines are gone; otherwise
+        // they would take the first steps of the reveal and leave the screen blank.
         queueMicrotask(() => {
             stop_intro?.();
             disposers = disposers.filter(cleanup => cleanup !== stop_intro);
             root.replaceChildren();
+            reveal();
         });
-        reveal();
     };
     stop_intro = render(() => <HackIntro seed={Math.floor(Math.random() * 2 ** 32)} on_done={end_intro} />, root);
     disposers.push(stop_intro);
