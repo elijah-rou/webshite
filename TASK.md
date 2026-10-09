@@ -61,12 +61,16 @@ while Charter ships only on Apple systems.
 - [x] Photo grid tiles appear whole, one at a time (owner request: no wipe): each
       waits for its image (up to 500ms) and follows the previous by at least
       60ms. The photo viewer's image still appears at once.
+- [x] One rate everywhere (owner request): every line, entry and tile takes a
+      60ms step in page order (the 900ms total cap that sped up longer screens is
+      gone); entries below the visible screen print with the last visible one.
 
 Acceptance (headless Chromium, opened from the home menu): Projects' 8 entries
 carry staggered delays and finish within about a second; Photos' 8 tiles likewise
 appear 60ms apart, never part-drawn, each with its image loaded (cold cache and
 throttled network, checked every frame); CRT OFF mid-reveal shows them all; the
-mock post shows no reveal; no errors.
+mock post shows no reveal; no errors. Measured gaps per screen (frame-quantised
+50-67ms): Home 57ms average, Projects 55ms, Writing 58ms, Photos 61ms.
 
 ## Instagram sync for Photos
 
