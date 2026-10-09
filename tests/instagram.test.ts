@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createServer, type Server } from 'node:http';
-import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -29,16 +29,22 @@ test('captions keep the first line without hashtags, falling back to the date', 
     assert.equal(caption_title('x'.repeat(200), '2026-10-08T10:00:00+0000').length, 80);
 });
 
-test('sync downloads new posts across pages, keeps edits, and is idempotent', async () => {
+test('sync saves every image of each post in a folder, keeps edits, and is idempotent', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'photos-'));
     let downloads = 0;
     const server = await graph((path, query) => {
         if (path === '/me/media') {
             assert.equal(query.get('access_token'), TOKEN);
+            if (!query.get('after')) { assert.match(query.get('fields') ?? '', /children\{[^}]*media_url/); }
             return query.get('after')
                 ? { body: { data: [{ id: '2', media_type: 'VIDEO', thumbnail_url: `${server.url}/img/2`, permalink: 'https://www.instagram.com/p/B/', timestamp: '2026-09-01T08:00:00+0000' }] } }
                 : { body: { data: [
-                    { id: '1', media_type: 'IMAGE', media_url: `${server.url}/img/1`, caption: 'Harbour #boats', permalink: 'https://www.instagram.com/p/A/', timestamp: '2026-10-02T08:00:00+0000' },
+                    { id: '1', media_type: 'CAROUSEL_ALBUM', caption: 'Harbour #boats', permalink: 'https://www.instagram.com/p/A/', timestamp: '2026-10-02T08:00:00+0000',
+                        children: { data: [
+                            { id: '11', media_type: 'IMAGE', media_url: `${server.url}/img/11` },
+                            { id: '12', media_type: 'VIDEO', thumbnail_url: `${server.url}/img/12` },
+                            { id: '13', media_type: 'IMAGE', media_url: `${server.url}/img/13` },
+                        ] } },
                     { id: '3', media_type: 'VIDEO', permalink: 'https://www.instagram.com/p/C/', timestamp: '2026-08-01T08:00:00+0000' },
                 ], paging: { next: `${server.url}/me/media?after=x&access_token=${TOKEN}` } } };
         }
@@ -47,18 +53,24 @@ test('sync downloads new posts across pages, keeps edits, and is idempotent', as
     });
     try {
         await writeFile(join(dir, 'photos.json'), JSON.stringify({}));
+        // Left behind by an interrupted run; replaced, never published.
+        await mkdir(join(dir, '.2026-10-02-ig-1.partial'));
+        await writeFile(join(dir, '.2026-10-02-ig-1.partial', '01.jpg'), 'stale');
         const first = await sync_photos({ token: TOKEN, photos_dir: dir, graph_url: server.url });
-        assert.deepEqual(first, { posts: 3, added: 2 });
-        assert.deepEqual((await readdir(dir)).sort(), ['2026-09-01-ig-2.jpg', '2026-10-02-ig-1.jpg', 'photos.json']);
+        assert.deepEqual(first, { posts: 3, added: 2, images: 4 });
+        assert.deepEqual((await readdir(dir)).sort(), ['2026-09-01-ig-2', '2026-10-02-ig-1', 'photos.json']);
+        assert.deepEqual((await readdir(join(dir, '2026-10-02-ig-1'))).sort(), ['01.jpg', '02.jpg', '03.jpg']);
+        assert.deepEqual(await readFile(join(dir, '2026-10-02-ig-1', '01.jpg')), JPEG);
+        assert.deepEqual(await readdir(join(dir, '2026-09-01-ig-2')), ['01.jpg']);
         const details = JSON.parse(await readFile(join(dir, 'photos.json'), 'utf8'));
-        assert.deepEqual(details['2026-10-02-ig-1.jpg'], { caption: 'Harbour', instagram: 'https://www.instagram.com/p/A/' });
-        details['2026-10-02-ig-1.jpg'].caption = 'Edited by hand';
+        assert.deepEqual(details['2026-10-02-ig-1'], { caption: 'Harbour', instagram: 'https://www.instagram.com/p/A/' });
+        details['2026-10-02-ig-1'].caption = 'Edited by hand';
         await writeFile(join(dir, 'photos.json'), JSON.stringify(details));
         const second = await sync_photos({ token: TOKEN, photos_dir: dir, graph_url: server.url });
-        assert.deepEqual(second, { posts: 3, added: 0 });
-        assert.equal(downloads, 2);
+        assert.deepEqual(second, { posts: 3, added: 0, images: 0 });
+        assert.equal(downloads, 4);
         const kept = JSON.parse(await readFile(join(dir, 'photos.json'), 'utf8'));
-        assert.equal(kept['2026-10-02-ig-1.jpg'].caption, 'Edited by hand');
+        assert.equal(kept['2026-10-02-ig-1'].caption, 'Edited by hand');
     } finally {
         await server.close();
         await rm(dir, { recursive: true });

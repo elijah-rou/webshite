@@ -1,16 +1,18 @@
 ---
 import { Image } from 'astro:assets';
 import Terminal from '../layouts/Terminal.astro';
-import { INSTAGRAM_PROFILE, read_photos } from '../lib/photos';
-const photos = read_photos();
+import { INSTAGRAM_PROFILE, read_posts } from '../lib/photos';
+const posts = read_posts();
 ---
 <Terminal title="Photos" section="photos">
     <h1>PHOTOS</h1>
-    {photos.length > 0
+    {posts.length > 0
         ? <div class="photo-grid" data-photo-grid>
-            {photos.map((photo, index) => <a href={`/instagram/${photo.id}/`} aria-label={photo.title}>
-                <Image src={photo.image} alt="" widths={[240, 480]} sizes="240px"
+            {posts.map((post, index) => <a href={`/instagram/${post.id}/`}
+                aria-label={post.images.length > 1 ? `${post.title}, ${post.images.length} images` : post.title}>
+                <Image src={post.cover} alt="" widths={[240, 480]} sizes="240px"
                     loading={index < 6 ? 'eager' : 'lazy'} />
+                {post.images.length > 1 && <span class="photo-count" aria-hidden="true">{post.images.length}</span>}
             </a>)}
         </div>
         : <p class="prose">No photos yet.</p>}

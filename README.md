@@ -28,21 +28,23 @@ Projects live in `src/content/projects/`, one Markdown file per repository with
 shows the summary; each project's page shows the GitHub link first, then the body.
 The current summaries are condensed from each repository's README.
 
-Photos come from images placed in `src/content/photos/` (JPEG, PNG, WebP or AVIF).
-Name files with a leading date, such as `2026-10-08-harbour.jpg`, to list them
-newest first; the rest of the name becomes the caption. An optional
-`src/content/photos/photos.json` maps a file name to `caption`, `alt` and its
-`instagram` post URL. The Photos screen stays at `/instagram/` and links to
-[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/). While CRT is on
-photos are tinted phosphor green.
+Photos come from `src/content/photos/` (JPEG, PNG, WebP or AVIF). Each image file
+is a post, and so is each folder of images, shown in file name order. Start names
+with a date, such as `2026-10-08-harbour.jpg`, to list them newest first; the rest
+of the name becomes the caption. An optional `src/content/photos/photos.json` maps
+a file or folder name to `caption`, `alt` and its `instagram` post URL. The Photos
+screen stays at `/instagram/` and links to
+[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/). On a photo, left
+and right arrows step through every image. Photos keep their colour under the CRT
+effects.
 
 ### Photos from Instagram
 
-`pnpm photos:sync` downloads posts from Instagram into `src/content/photos/` and
-adds each one's caption (first line, without hashtags) and post link to
-`photos.json`. Existing files and hand edits are kept, so it is safe to rerun.
-Videos contribute their cover image and albums their first image. Commit the
-results; the build itself never contacts Instagram.
+`pnpm photos:sync` downloads each Instagram post into its own folder in
+`src/content/photos/` (`01.jpg`, `02.jpg`, ... for albums) and adds its caption
+(first line, without hashtags) and post link to `photos.json`. Existing posts and
+hand edits are kept, so it is safe to rerun. Videos contribute their cover image.
+Commit the results; the build itself never contacts Instagram.
 
 It uses the Instagram API with Instagram Login, which only serves professional
 accounts. One-time setup:

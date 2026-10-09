@@ -27,5 +27,5 @@ try {
     console.log(`Token not refreshed (${error.message}). Continuing with the current token.`);
 }
 const result = await sync_photos({ token, photos_dir: 'src/content/photos', log: message => console.log(message) });
-console.log(`${result.posts} posts on Instagram; ${result.added} new photos in src/content/photos/.`);
+console.log(`${result.posts} posts on Instagram; ${result.added} new posts (${result.images} images) in src/content/photos/.`);
 if (result.added > 0) { console.log('Review src/content/photos/photos.json, then commit the new files.'); }

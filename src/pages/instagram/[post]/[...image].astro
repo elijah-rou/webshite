@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import Terminal from '../../../layouts/Terminal.astro';
+import Nav from '../../../components/Nav.astro';
+import { image_href, read_posts, type Post } from '../../../lib/photos';
+
+export function getStaticPaths() {
+    const posts = read_posts();
+    const views = posts.flatMap((post, post_index) => post.images.map((_, index) => ({ post, post_index, index })));
+    return views.map(({ post, post_index, index }, view_index) => {
+        const before = views[view_index - 1];
+        const after = views[view_index + 1];
+        return {
+            params: { post: post.id, image: index === 0 ? undefined : String(index + 1) },
+            props: {
+                post, index,
+                next_post: posts[post_index + 1], previous_post: posts[post_index - 1],
+                // Left and right step through every image, crossing into the neighbouring posts.
+                step_next: after && image_href(after.post, after.index),
+                step_previous: before && image_href(before.post, before.index),
+            },
+        };
+    });
+}
+interface Props {
+    post: Post; index: number; next_post: Post | undefined; previous_post: Post | undefined;
+    step_next: string | undefined; step_previous: string | undefined;
+}
+const { post, index, next_post, previous_post, step_next, step_previous } = Astro.props;
+const count = post.images.length;
+const image = post.images[index];
+if (!image) { throw new Error(`Post ${post.id} has no image ${index + 1}`); }
+const alt = count > 1 ? `${post.alt} (image ${index + 1} of ${count})` : post.alt;
+const items = [
+    ...(index + 1 < count ? [{ label: 'Next image', href: image_href(post, index + 1) }] : []),
+    ...(index > 0 ? [{ label: 'Previous image', href: image_href(post, index - 1) }] : []),
+    ...(next_post ? [{ label: 'Next post', href: image_href(next_post, 0) }] : []),
+    ...(previous_post ? [{ label: 'Previous post', href: image_href(previous_post, 0) }] : []),
+    ...(post.instagram ? [{ label: 'View on Instagram', href: post.instagram }] : []),
+];
+---
+<Terminal title={post.title} section="photos" back="/instagram/" description={post.alt}>
+    <figure class="photo-view" data-photo-next={step_next} data-photo-previous={step_previous}>
+        <Image src={image} alt={alt} widths={[800, 1600, 2400]} sizes="90vw" loading="eager" />
+        <figcaption>{post.title}{count > 1 && <span class="photo-count">{index + 1}/{count}</span>}</figcaption>
+    </figure>
+    {items.length > 0 && <Nav label="Photo" items={items} />}
+</Terminal>
