@@ -143,6 +143,22 @@ function handle_grid_pointer(event: PointerEvent) {
     if (tile && tile !== document.activeElement) { tile.focus({ preventScroll: true }); audio.focus(); }
 }
 
+// The footer's links (Back and the profile icons) are plain HTML, so their hover
+// and focus sounds come from here; moving within one link plays it once.
+const FOOTER_LINKS = '.screen-bottom a';
+let hovered_footer_link: Element | null = null;
+
+function handle_footer_pointer(event: PointerEvent) {
+    const link = event.target instanceof Element ? event.target.closest(FOOTER_LINKS) : null;
+    if (link === hovered_footer_link) { return; }
+    hovered_footer_link = link;
+    if (link) { audio.focus(); }
+}
+
+function handle_footer_focus(event: FocusEvent) {
+    if (event.target instanceof Element && event.target.matches(FOOTER_LINKS)) { audio.focus(); }
+}
+
 function handle_key(event: KeyboardEvent) {
     if (event.key !== 'Escape' || event.altKey || event.ctrlKey || event.metaKey) { return; }
     const back = document.querySelector<HTMLAnchorElement>('[data-back]');
@@ -184,6 +200,8 @@ for (const type of ['pointerdown', 'keydown', 'click'] as const) { document.addE
 document.addEventListener('keydown', handle_key);
 document.addEventListener('keydown', handle_grid_key);
 document.addEventListener('pointerover', handle_grid_pointer);
+document.addEventListener('pointerover', handle_footer_pointer);
+document.addEventListener('focusin', handle_footer_focus);
 document.addEventListener('visibilitychange', handle_visibility);
 document.addEventListener('animationstart', handle_reveal_animation);
 document.addEventListener('animationend', handle_reveal_animation);
@@ -201,6 +219,8 @@ if (import.meta.hot) {
         document.removeEventListener('keydown', handle_key);
         document.removeEventListener('keydown', handle_grid_key);
         document.removeEventListener('pointerover', handle_grid_pointer);
+        document.removeEventListener('pointerover', handle_footer_pointer);
+        document.removeEventListener('focusin', handle_footer_focus);
         document.removeEventListener('visibilitychange', handle_visibility);
         document.removeEventListener('animationstart', handle_reveal_animation);
         document.removeEventListener('animationend', handle_reveal_animation);
