@@ -4,6 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import housing from '../assets/terminal-housing.png';
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/vt323/400.css';
+import vt323 from '@fontsource/vt323/files/vt323-latin-400-normal.woff2?url';
 import '@fontsource/zilla-slab/400.css';
 import '@fontsource/zilla-slab/400-italic.css';
 import '@fontsource/zilla-slab/700.css';
@@ -50,6 +51,8 @@ const EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAA
         <meta name="theme-color" content="#11120e" />
         <title>{title} | Elijah Roussos</title>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <!-- The screen's font, requested with the stylesheet rather than after it. -->
+        <link rel="preload" href={vt323} as="font" type="font/woff2" crossorigin />
         <ClientRouter />
         <!-- The first visit to the site, if it starts at home, opens with the hack
              intro (/?intro replays it); set before the first paint so the menu does
