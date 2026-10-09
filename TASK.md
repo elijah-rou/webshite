@@ -60,11 +60,11 @@ while Charter ships only on Apple systems.
       prose and headings still appear at once.
 - [x] Photo grid tiles appear whole, one at a time (owner request: no wipe): each
       waits for its image (up to 500ms) and follows the previous by at least
-      80ms. The photo viewer's image still appears at once.
+      60ms. The photo viewer's image still appears at once.
 
 Acceptance (headless Chromium, opened from the home menu): Projects' 8 entries
 carry staggered delays and finish within about a second; Photos' 8 tiles likewise
-appear 80ms apart, never part-drawn, each with its image loaded (cold cache and
+appear 60ms apart, never part-drawn, each with its image loaded (cold cache and
 throttled network, checked every frame); CRT OFF mid-reveal shows them all; the
 mock post shows no reveal; no errors.
 
