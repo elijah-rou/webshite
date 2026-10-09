@@ -88,6 +88,15 @@ while Charter ships only on Apple systems.
       detail and the description as the note. Fixed a stale 100ch article limit
       and a 2ch row gap in menu entries. GitHub icon added to the profile links.
 
+## Photo captions on the grid
+
+- [x] Each Photos tile shows its caption underneath in small Zilla Slab, at most
+      two lines (owner request). Hashtags are stripped from every caption read
+      from photos.json, so hand edits cannot bring them back.
+
+Acceptance (headless Chromium): 8 captions, none with "#", 20px on 1440×1000 and
+14.2px on 390×844, long ones clamped to two lines, no overflow, no errors.
+
 ## Submenu entries print line by line
 
 - [x] Menu entries and the search line on opened screens (Writing, Projects,

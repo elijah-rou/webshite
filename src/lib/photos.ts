@@ -33,6 +33,11 @@ const details_schema = z.record(z.string(), z.object({
     instagram: z.url({ protocol: /^https$/, hostname: /^www\.instagram\.com$/ }).optional(),
 }).strict());
 
+// Captions read as plain text, so hashtags are dropped wherever they appear.
+function without_hashtags(text: string): string {
+    return text.replace(/#[\p{L}\p{N}_]+/gu, '').replace(/\s{2,}/g, ' ').trim();
+}
+
 function title_from_name(name: string): string {
     // "2026-10-08-harbour-at-dusk.jpg" becomes "harbour at dusk".
     const stem = name.replace(/\.[^.]+$/, '').replace(/^\d{4}-\d{2}-\d{2}[-_ ]?/, '');
@@ -60,7 +65,7 @@ export function read_posts(): Post[] {
             if (!id || ids.has(id)) { throw new Error(`Photo name ${name} does not give a unique URL`); }
             ids.add(id);
             const detail = details[name] ?? {};
-            const title = detail.caption ?? title_from_name(name);
+            const title = (detail.caption && without_hashtags(detail.caption)) || title_from_name(name);
             const sorted = files.sort((a, b) => a.file.localeCompare(b.file)).map(({ image }) => image);
             const cover = sorted[0];
             if (!cover) { throw new Error(`Photo folder ${name} has no images`); }
