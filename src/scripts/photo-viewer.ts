@@ -47,12 +47,12 @@ export function mount_photo_viewer(): (() => void) | null {
     // The width the image will take on screen, magnified by the zoom, so the file
     // picked from its srcset is sharp without being larger than needed. Every image
     // fits the same box: the shown image's max size, which does not depend on its file.
-    function screen_width(view: ViewerImage): number {
+    function screen_width({ width, height }: { width: number; height: number }): number {
         const style = getComputedStyle(element<HTMLImageElement>(link, 'img'));
-        const layout = Math.min(parseFloat(style.maxWidth), parseFloat(style.maxHeight) * view.width / view.height);
-        const width = Math.ceil(layout * zoom_scale());
-        if (!(width > 0)) { throw new Error(`Photo viewer measured an image width of ${width}`); }
-        return width;
+        const layout = Math.min(parseFloat(style.maxWidth), parseFloat(style.maxHeight) * width / height);
+        const on_screen = Math.ceil(layout * zoom_scale());
+        if (!(on_screen > 0)) { throw new Error(`Photo viewer measured an image width of ${on_screen}`); }
+        return on_screen;
     }
 
     function load(view: ViewerImage): HTMLImageElement {
@@ -168,6 +168,14 @@ export function mount_photo_viewer(): (() => void) | null {
     };
     document.addEventListener('keydown', on_key);
 
+    // A resize changes the zoom and the frame, so the shown image is sized again
+    // (after terminal.tsx's own resize handler has updated the zoom).
+    const on_resize = () => {
+        const shown = element<HTMLImageElement>(link, 'img');
+        shown.sizes = `${screen_width(shown)}px`;
+    };
+    window.addEventListener('resize', on_resize);
+
     const first = element<HTMLImageElement>(link, 'img');
     if (first.complete && first.naturalWidth > 0) {
         preload_neighbours();
@@ -184,6 +192,7 @@ export function mount_photo_viewer(): (() => void) | null {
     return () => {
         request += 1;
         document.removeEventListener('keydown', on_key);
+        window.removeEventListener('resize', on_resize);
         for (const step_link of targets.keys()) { step_link.removeEventListener('click', on_click); }
         preloading.clear();
     };
