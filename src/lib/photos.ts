@@ -1,8 +1,6 @@
 import type { ImageMetadata } from 'astro';
 import { z } from 'astro/zod';
 
-export const INSTAGRAM_PROFILE = 'https://www.instagram.com/eli_takes_photos/';
-
 // A post is one image file in src/content/photos/, or a folder of images shown in
 // file name order (the Instagram sync writes 01.jpg, 02.jpg, ...).
 export interface Post {
