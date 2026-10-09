@@ -1,5 +1,25 @@
 # Personal terminal
 
+## First-visit hack intro
+
+- [x] On a first visit that lands on home, a Fallout 3 hack plays before the menu
+      (owner request): header and memory dump print at the 60ms rate, two wrong
+      guesses are scored by likeness, ROUSSOS matches, ACCESS GRANTED, then the
+      menu prints. Auto-played; any key or tap skips (the tap's click is
+      swallowed so it cannot open a menu entry). Seeded puzzle logic is tested.
+- [x] Once per browser: local storage `terminal-intro`, set on the first page
+      load anywhere, so a first visit to another page never shows it later.
+      `/?intro` replays it. Reduced motion skips it. html[data-intro] is set in
+      the head before the first paint, so the menu does not flash.
+- [x] The dump font fits the screen (measured after VT323 loads); narrow screens
+      put the log under the dump.
+
+Acceptance (headless Chromium, fresh profiles): at 1440×1000 the intro runs
+about 8s (ACCESS GRANTED at 6.7s) with no overflow, then the menu prints; reload
+shows the menu directly. At 390×844 the dump is 15.4px, stacked; a tap where a
+menu entry would be skips without navigating. Enter skips without opening About.
+A first visit to /about/ then Back to home shows no intro. No errors.
+
 ## About placeholder with portrait
 
 - [x] Placeholder About copy from résumé and projects facts only (owner will

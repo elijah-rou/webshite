@@ -31,6 +31,19 @@ const year = new Date().getFullYear();
         <title>{title} | Elijah Roussos</title>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <ClientRouter />
+        <!-- The first visit to the site, if it starts at home, opens with the hack
+             intro (/?intro replays it); set before the first paint so the menu does
+             not flash. -->
+        <script is:inline define:vars={{ home: section === 'home' }}>
+            try {
+                const first = !localStorage.getItem('terminal-intro');
+                localStorage.setItem('terminal-intro', 'seen');
+                const replay = new URLSearchParams(location.search).has('intro');
+                if (home && (first || replay) && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    document.documentElement.setAttribute('data-intro', '');
+                }
+            } catch { /* Without storage the intro is skipped rather than repeated. */ }
+        </script>
     </head>
     <body transition:animate="none">
         <a class="skip-link" href="#content">Skip to content</a>

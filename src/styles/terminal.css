@@ -396,6 +396,23 @@ html[data-zoom='in'] [data-reading] .prose { font-size: max(.96em, calc(18px / v
 .skip-link { position: fixed; top: -80px; left: 16px; z-index: 10; padding: 10px; background: var(--phosphor); color: #06140b; }
 .skip-link:focus { top: 8px; }
 
+/* First visit: a Fallout 3 hack plays before the home menu (src/components/HackIntro.tsx).
+   html[data-intro] is set before the first paint and removed when the hack ends. */
+.hack-root { display: none; }
+html[data-intro] .hack-root { display: block; }
+html[data-intro] .system-header, html[data-intro] .screen-bottom, html[data-intro] main > :not(.hack-root) { display: none; }
+.hack { line-height: 1.22; white-space: pre; }
+.hack p { margin: 0; }
+.hack-body { display: flex; gap: 2ch; }
+.hack[data-stacked='true'] .hack-body { flex-direction: column; gap: 0; }
+.hack-log { display: flex; flex: 1; flex-direction: column; justify-content: flex-end; min-width: 0; overflow: hidden; }
+.hack[data-stacked='true'] .hack-log { height: calc(5 * 1.22em); }
+.hack-word[data-selected='true'] { background: var(--phosphor); color: var(--phosphor-ink); text-shadow: none; }
+.hack-cursor { animation: hack-blink 1s steps(1, end) infinite; }
+.hack-skip { margin-top: 1.22em; color: var(--muted); }
+.hack-granted { padding-top: 30%; text-align: center; font-size: 1.6em; letter-spacing: .08em; }
+@keyframes hack-blink { 50% { opacity: 0; } }
+
 /* Added per element by the client script, which removes it when the line finishes. */
 .reveal-line {
     animation: type-line var(--reveal-ms, 60ms) steps(var(--reveal-steps, 20), end) var(--reveal-delay, 0ms) both;
