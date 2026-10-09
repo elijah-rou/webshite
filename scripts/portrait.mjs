@@ -2,9 +2,8 @@
 // Usage: node scripts/portrait.mjs [source image, default src/assets/portrait-source.jpg]
 // Writes src/assets/portrait.png: 144×144 pixels in eight phosphor shades, using
 // 4×4 ordered (Bayer) dithering so it reads like an image drawn by the terminal.
-import { createRequire } from 'node:module';
-import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import sharp from 'sharp';
 
 const SIZE = Number(process.env.PORTRAIT_SIZE ?? 144);
 const SHADE_COUNT = Number(process.env.PORTRAIT_SHADES ?? 8);
@@ -16,12 +15,6 @@ const SHADES = Array.from({ length: SHADE_COUNT }, (_, index) => {
     return DARK.map((channel, c) => Math.round(channel + ((BRIGHT[c] ?? 0) - channel) * t));
 });
 const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
-
-// sharp is installed by Astro and is not a direct dependency; resolve it from pnpm's store.
-const store = join(import.meta.dirname, '..', 'node_modules', '.pnpm');
-const entry = readdirSync(store).find(name => name.startsWith('sharp@'));
-if (!entry) { throw new Error('sharp is not installed; run pnpm install'); }
-const sharp = createRequire(import.meta.url)(join(store, entry, 'node_modules', 'sharp'));
 
 const source = process.argv[2] ?? join(import.meta.dirname, '..', 'src', 'assets', 'portrait-source.jpg');
 // Square crop around the face, as fractions of the source's width and height.
