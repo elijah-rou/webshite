@@ -39,7 +39,7 @@ function Row(props: { left: DumpRow; right: DumpRow; selected: string | null }) 
 export default function HackIntro(props: Props) {
     const random = seeded_random(props.seed);
     const dump = build_dump(random);
-    const guesses = plan_guesses(dump.words, random);
+    const guesses = plan_guesses(dump, random);
     const rows = dump.columns[0].map((left, index) => ({ left, right: dump.columns[1][index] as DumpRow }));
     const [attempts, set_attempts] = createSignal(ATTEMPTS);
     const [selected, set_selected] = createSignal<string | null>(null);

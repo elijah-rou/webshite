@@ -1,12 +1,14 @@
 // The first-visit intro replays a Fallout 3 terminal hack: a memory dump hiding
 // candidate passwords, two wrong guesses scored by likeness, then the password.
-// Everything here is pure and seeded, so the layout and guesses are testable.
+// Everything here is pure and seeded, so the layout and guesses are testable;
+// each run uses a fresh seed, so the words, password and dump differ every time.
 
-// Very Hard terminals use 13 to 15 letter words.
-export const PASSWORD = 'ADMINISTRATION';
-export const DECOYS = [
-    'CHARACTERISTIC', 'COMMUNICATIONS', 'CONSIDERATIONS', 'INTERPRETATION',
-    'INVESTIGATIONS', 'RECOMMENDATION', 'RECONSTRUCTION', 'REPRESENTATIVE',
+// Very Hard terminals use 13 to 15 letter words; every word here has the same
+// length, as the game requires. Each run picks its password from them at random.
+export const WORDS = [
+    'ACCOMPLISHMENT', 'ADMINISTRATION', 'CHARACTERISTIC', 'CLASSIFICATION', 'COMMUNICATIONS',
+    'CONSIDERATIONS', 'IMPLEMENTATION', 'INFRASTRUCTURE', 'INTERPRETATION', 'INVESTIGATIONS',
+    'RECOMMENDATION', 'RECONSTRUCTION', 'REPRESENTATIVE', 'SPECIFICATIONS', 'TRANSFORMATION',
 ] as const;
 export const ROWS_PER_COLUMN = 12;
 export const ROW_WIDTH = 12;
@@ -59,12 +61,13 @@ export function likeness(guess: string, password: string): number {
 // the game; each piece knows the whole word it belongs to.
 export type Segment = { kind: 'garbage'; text: string } | { kind: 'word'; text: string; word: string };
 export interface DumpRow { address: string; segments: Segment[] }
-export interface Dump { columns: [DumpRow[], DumpRow[]]; words: string[] }
+export interface Dump { columns: [DumpRow[], DumpRow[]]; words: string[]; password: string }
 
 // Two columns of ROWS_PER_COLUMN rows of ROW_WIDTH characters, read as one
 // stream of memory from the first column into the second.
 export function build_dump(random: Random): Dump {
-    const words = shuffled([PASSWORD, ...shuffled(DECOYS, random).slice(0, WORDS_SHOWN - 1)], random);
+    const words = shuffled(WORDS, random).slice(0, WORDS_SHOWN);
+    const password = pick(words, random);
     const total_rows = ROWS_PER_COLUMN * 2;
     const length = total_rows * ROW_WIDTH;
     const slack = length - words.reduce((sum, word) => sum + word.length + WORD_GAP, 0);
@@ -102,24 +105,25 @@ export function build_dump(random: Random): Dump {
         }
         rows.push({ address, segments });
     }
-    return { columns: [rows.slice(0, ROWS_PER_COLUMN), rows.slice(ROWS_PER_COLUMN)], words };
+    return { columns: [rows.slice(0, ROWS_PER_COLUMN), rows.slice(ROWS_PER_COLUMN)], words, password };
 }
 
 export interface Guess { word: string; likeness: number; correct: boolean }
 
-// Two distinct wrong words from the dump, then the password.
-export function plan_guesses(words: readonly string[], random: Random): Guess[] {
-    if (!words.includes(PASSWORD)) { throw new Error('The dump must contain the password'); }
-    const wrong = shuffled(words.filter(word => word !== PASSWORD), random).slice(0, WRONG_GUESSES);
+// Always two wrong words from the dump, then the password; which words is random.
+export function plan_guesses(dump: Dump, random: Random): Guess[] {
+    const { words, password } = dump;
+    if (!words.includes(password)) { throw new Error('The dump must contain the password'); }
+    const wrong = shuffled(words.filter(word => word !== password), random).slice(0, WRONG_GUESSES);
     if (wrong.length !== WRONG_GUESSES) { throw new Error(`Need ${WRONG_GUESSES} decoys in the dump`); }
     return [
-        ...wrong.map(word => ({ word, likeness: likeness(word, PASSWORD), correct: false })),
-        { word: PASSWORD, likeness: PASSWORD.length, correct: true },
+        ...wrong.map(word => ({ word, likeness: likeness(word, password), correct: false })),
+        { word: password, likeness: password.length, correct: true },
     ];
 }
 
 // The lines a guess adds to the log on the right, as Fallout 3 prints them.
 export function guess_log(guess: Guess): string[] {
     if (guess.correct) { return [`>${guess.word}`, '>Exact match!', '>Please wait', '>while system', '>is accessed.']; }
-    return [`>${guess.word}`, '>Entry denied.', `>${guess.likeness}/${PASSWORD.length} correct.`];
+    return [`>${guess.word}`, '>Entry denied.', `>${guess.likeness}/${guess.word.length} correct.`];
 }
