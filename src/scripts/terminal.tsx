@@ -44,6 +44,9 @@ function mount() {
     if (menu_root) {
         menu_root.replaceChildren();
         disposers.push(render(() => <TerminalMenu items={items} label={label} searchable={searchable} />, menu_root));
+        // The first entry is highlighted without taking focus, so Enter can open it at once.
+        const highlighted = menu_root.querySelector<HTMLAnchorElement>('a[data-selected="true"]');
+        if (highlighted) { prefetch_link(highlighted); }
     }
     if (controls_root) {
         controls_root.replaceChildren();
