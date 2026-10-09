@@ -5,10 +5,14 @@ import {
 } from '../src/scripts/hack.ts';
 
 test('likeness counts letters in the same position', () => {
-    assert.equal(likeness('CONSOLE', PASSWORD), 2);
-    assert.equal(likeness('GATEWAY', PASSWORD), 0);
-    assert.equal(likeness(PASSWORD, PASSWORD), 7);
+    assert.equal(likeness('ABCD', 'ABXD'), 3);
+    assert.equal(likeness('ABCD', 'WXYZ'), 0);
+    assert.equal(likeness(PASSWORD, PASSWORD), PASSWORD.length);
     assert.throws(() => likeness('SHORT', PASSWORD));
+});
+
+test('the password is Very Hard length', () => {
+    assert.ok(PASSWORD.length >= 13 && PASSWORD.length <= 15);
 });
 
 test('every decoy has the password length and is not the password', () => {
@@ -19,7 +23,7 @@ test('every decoy has the password length and is not the password', () => {
 });
 
 test('the dump fills two columns of fixed-width rows and hides each word once', () => {
-    for (let seed = 1; seed <= 50; seed += 1) {
+    for (let seed = 1; seed <= 200; seed += 1) {
         const dump = build_dump(seeded_random(seed));
         assert.ok(dump.words.includes(PASSWORD));
         assert.equal(new Set(dump.words).size, dump.words.length);
@@ -30,9 +34,20 @@ test('the dump fills two columns of fixed-width rows and hides each word once', 
             assert.match(row.address, /^0x[0-9A-F]{4}$/);
             assert.equal(row.segments.map(segment => segment.text).join('').length, ROW_WIDTH);
         }
-        const shown = rows.flatMap(row => row.segments.filter(segment => segment.kind === 'word').map(segment => segment.text));
-        assert.deepEqual([...shown].sort(), [...dump.words].sort());
-        const garbage = rows.flatMap(row => row.segments.filter(segment => segment.kind === 'garbage')).map(segment => segment.text).join('');
+        // Read as one stream, the word pieces spell each word exactly once, in order.
+        const pieces = rows.flatMap(row => row.segments);
+        const spelled: string[] = [];
+        for (const piece of pieces) {
+            if (piece.kind !== 'word') { continue; }
+            assert.ok(piece.word.includes(piece.text));
+            if (spelled.at(-1) !== undefined && pieces[pieces.indexOf(piece) - 1]?.kind === 'word') {
+                spelled[spelled.length - 1] += piece.text;
+            } else {
+                spelled.push(piece.text);
+            }
+        }
+        assert.deepEqual(spelled, dump.words);
+        const garbage = pieces.filter(segment => segment.kind === 'garbage').map(segment => segment.text).join('');
         assert.doesNotMatch(garbage, /[A-Z0-9]/);
     }
 });
@@ -58,6 +73,6 @@ test('two wrong guesses from the dump, then the password, within the attempts', 
 });
 
 test('the log reads like Fallout 3', () => {
-    assert.deepEqual(guess_log({ word: 'CONSOLE', likeness: 2, correct: false }), ['>CONSOLE', '>Entry denied.', '>2/7 correct.']);
-    assert.deepEqual(guess_log({ word: PASSWORD, likeness: 7, correct: true }).slice(0, 2), ['>ROUSSOS', '>Exact match!']);
+    assert.deepEqual(guess_log({ word: 'CONSIDERATIONS', likeness: 3, correct: false }), ['>CONSIDERATIONS', '>Entry denied.', '>3/14 correct.']);
+    assert.deepEqual(guess_log({ word: PASSWORD, likeness: 14, correct: true }).slice(0, 2), ['>ADMINISTRATION', '>Exact match!']);
 });
