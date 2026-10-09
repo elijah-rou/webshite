@@ -4,24 +4,27 @@ import { audio } from './state';
 // without changing their text, so selection and assistive technology are unaffected.
 const REVEAL_SELECTOR = [
     '.system-header > *', 'main h1', 'main h2', 'main h3', 'main p',
-    'main li', 'main pre', 'main img', '.menu-search', '.terminal-menu a', '.screen-bottom',
+    'main li', 'main pre', 'main img', '.menu-search', '.terminal-menu a', '.photo-grid a', '.screen-bottom',
 ].join(', ');
-const READING_REVEAL_SELECTOR = '.menu-search, .terminal-menu a';
+const READING_REVEAL_SELECTOR = '.menu-search, .terminal-menu a, .photo-grid a';
 const REVEAL_TOTAL_MS = 900;
 const REVEAL_LINE_MS = 60;
+// Text prints a step per character (up to 40); a picture draws in this many steps.
+const IMAGE_REVEAL_STEPS = 12;
 
 export function reveal() {
     const screen = document.querySelector<HTMLElement>('.screen');
     if (!screen || document.documentElement.dataset.effects === 'off'
         || matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
-    // Reading pages show their text at once; their menus still print entry by entry.
+    // Reading pages show their text at once; their menus and photo grid still print entry by entry.
     const lines = Array.from(screen.querySelectorAll<HTMLElement>(REVEAL_SELECTOR))
         .filter(line => !line.closest('[data-reading]') || line.matches(READING_REVEAL_SELECTOR));
     const step_ms = Math.min(REVEAL_LINE_MS, REVEAL_TOTAL_MS / Math.max(lines.length, 1));
     lines.forEach((line, index) => {
         line.style.setProperty('--reveal-delay', `${Math.round(index * step_ms)}ms`);
         line.style.setProperty('--reveal-ms', `${Math.round(step_ms)}ms`);
-        line.style.setProperty('--reveal-steps', String(Math.min(Math.max(line.textContent?.length ?? 1, 1), 40)));
+        const steps = line.querySelector('img') ? IMAGE_REVEAL_STEPS : Math.min(Math.max(line.textContent?.length ?? 1, 1), 40);
+        line.style.setProperty('--reveal-steps', String(steps));
         line.classList.add('reveal-line');
     });
 }
