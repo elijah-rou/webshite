@@ -1,0 +1,10 @@
+# Cloudflare applies these to the static assets in dist/; they replace the default
+# "public, max-age=0, must-revalidate". Pages keep the default, so a deploy shows at once.
+
+# Build output is fingerprinted: a changed file gets a new name.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Sounds keep their names, so they are reused for a day, then revalidated.
+/audio/*
+  Cache-Control: public, max-age=86400
