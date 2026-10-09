@@ -53,6 +53,16 @@ while Charter ships only on Apple systems.
       detail and the description as the note. Fixed a stale 100ch article limit
       and a 2ch row gap in menu entries. GitHub icon added to the profile links.
 
+## Submenu entries print line by line
+
+- [x] Menu entries and the search line on opened screens (Writing, Projects,
+      Music, project pages) print one by one like the home menu (owner request);
+      prose, headings and photos still appear at once.
+
+Acceptance (headless Chromium, opened from the home menu): Projects' 8 entries
+carry staggered delays and finish within about a second; the mock post shows no
+reveal; no errors.
+
 ## Instagram sync for Photos
 
 - [x] `pnpm photos:sync`: Instagram API with Instagram Login, refreshes the token
