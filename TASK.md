@@ -15,7 +15,7 @@
       put the log under the dump.
 
 Acceptance (headless Chromium, fresh profiles): at 1440×1000 the intro runs
-about 8s (ACCESS GRANTED at 6.7s) with no overflow, then the menu prints; reload
+about 5.1s (ACCESS GRANTED at 4.4s) after the pauses were shortened (owner request; was 8s) with no overflow, then the menu prints; reload
 shows the menu directly. At 390×844 the dump is 15.4px, stacked; a tap where a
 menu entry would be skips without navigating. Enter skips without opening About.
 A first visit to /about/ then Back to home shows no intro. No errors.
