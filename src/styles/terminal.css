@@ -453,7 +453,11 @@ html[data-effects='off'] .reveal-pending { clip-path: none; }
         height: 700px;
         border-style: solid;
         border-width: 45px 35px 120px 40px;
-        border-image: url('/images/terminal-housing.png') 135 145 330 160 fill stretch;
+        /* Slices are percentages (135 145 330 160 source pixels) so they hold for either copy. */
+        border-image: var(--housing) 11.7904% 10.5531% 28.821% 11.6448% fill stretch;
+    }
+    @supports (border-image-source: image-set(url('a.avif') type('image/avif') 2x)) {
+        .monitor { border-image-source: var(--housing-set); }
     }
     .monitor-housing { display: none; }
     .screen { left: 6px; right: 7px; top: 9px; bottom: 25px; padding: 24px 16px 17px; font-size: 20px; }

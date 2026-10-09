@@ -159,7 +159,7 @@ Terminal navigation uses two WAVs reported by their uploader to come from Fallou
 with synthesized clicks as a fallback. See [audio sources](public/audio/SOURCES.md).
 
 The weathered housing is a generated image; see its prompt and provenance in
-[image sources](public/images/SOURCES.md). The screen text remains selectable HTML.
+[image sources](src/assets/SOURCES.md). The screen text remains selectable HTML.
 Static content and navigation work without JavaScript; recordings then open in the
 browser's own player.
 
