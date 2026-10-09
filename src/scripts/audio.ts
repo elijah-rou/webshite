@@ -10,6 +10,10 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
     let context: AudioContext | undefined;
     let output: GainNode | undefined;
     let failed = false;
+    // Set by a key press or tap (unlock, or play from its handler). A context built
+    // ahead of time may already run where the browser allows autoplay, but hovering
+    // and printing must stay silent until the visitor has pressed something.
+    let allowed = false;
     let epoch = 0;
     let last_focus_ms = 0;
     const sources = new Set<AudioBufferSourceNode>();
@@ -28,11 +32,11 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
 
     async function get_context(): Promise<AudioContext | undefined> {
         if (!enabled() || failed) { return; }
+        allowed = true;
         try {
             const audio = create_context();
             // Resumed synchronously, within the key press or tap that allows sound.
-            // Safari can also report 'interrupted'.
-            if (audio.state !== 'running') { await audio.resume(); }
+            if (audio.state === 'suspended') { await audio.resume(); }
             return audio.state === 'running' ? audio : undefined;
         } catch {
             failed = true;
@@ -96,7 +100,7 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
 
     function focus() {
         // Hover alone must never unlock audio.
-        if (context?.state !== 'running' || performance.now() - last_focus_ms < 90) { return; }
+        if (!running() || performance.now() - last_focus_ms < 90) { return; }
         last_focus_ms = performance.now();
         void play('focus');
     }
@@ -111,7 +115,7 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
         try { create_context(); } catch { failed = true; unavailable(); }
     }
 
-    function running(): boolean { return context?.state === 'running'; }
+    function running(): boolean { return allowed && context?.state === 'running'; }
 
     return { play, stop, focus, unlock, prepare, running };
 }
