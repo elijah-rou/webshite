@@ -14,12 +14,12 @@ const LOG_CHARS = 15;
 const LINES = 5 + ROWS_PER_COLUMN + 2;
 const STACKED_LOG_LINES = 5;
 const LINE_HEIGHT = 1.22;
-const BOOT_MS = 300;
-const AFTER_PRINT_MS = 500;
-const SELECT_MS = 650;
-const AFTER_WRONG_MS = 550;
-const AFTER_MATCH_MS = 900;
-const GRANTED_MS = 1300;
+const BOOT_MS = 150;
+const AFTER_PRINT_MS = 250;
+const SELECT_MS = 350;
+const AFTER_WRONG_MS = 250;
+const AFTER_MATCH_MS = 450;
+const GRANTED_MS = 700;
 
 function Row(props: { left: DumpRow; right: DumpRow; selected: string | null }) {
     const column = (row: DumpRow) => <>
