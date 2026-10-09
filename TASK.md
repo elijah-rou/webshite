@@ -64,6 +64,8 @@ while Charter ships only on Apple systems.
       tile per post with its image count; /instagram/<post>/<n>/ shows one image
       with a counter, a menu and left/right stepping across posts.
 - [x] Photos keep their colour under the CRT effects (owner request).
+- [x] `<` and `>` against the sides of an album image replace the Next image and
+      Previous image menu entries (owner request); hidden at the album's ends.
 - [ ] Owner: revoke the token pasted in chat (it stays valid after a refresh).
 
 Acceptance: four tests pass against a mock Graph API (pagination, video covers,

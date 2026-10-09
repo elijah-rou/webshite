@@ -31,9 +31,9 @@ const count = post.images.length;
 const image = post.images[index];
 if (!image) { throw new Error(`Post ${post.id} has no image ${index + 1}`); }
 const alt = count > 1 ? `${post.alt} (image ${index + 1} of ${count})` : post.alt;
+const previous_image = index > 0 ? image_href(post, index - 1) : undefined;
+const next_image = index + 1 < count ? image_href(post, index + 1) : undefined;
 const items = [
-    ...(index + 1 < count ? [{ label: 'Next image', href: image_href(post, index + 1) }] : []),
-    ...(index > 0 ? [{ label: 'Previous image', href: image_href(post, index - 1) }] : []),
     ...(next_post ? [{ label: 'Next post', href: image_href(next_post, 0) }] : []),
     ...(previous_post ? [{ label: 'Previous post', href: image_href(previous_post, 0) }] : []),
     ...(post.instagram ? [{ label: 'View on Instagram', href: post.instagram }] : []),
@@ -41,7 +41,13 @@ const items = [
 ---
 <Terminal title={post.title} section="photos" back="/instagram/" description={post.alt}>
     <figure class="photo-view" data-photo-next={step_next} data-photo-previous={step_previous}>
-        <Image src={image} alt={alt} widths={[800, 1600, 2400]} sizes="90vw" loading="eager" />
+        {count > 1
+            ? <div class="photo-stage">
+                {previous_image && <a class="photo-step previous" href={previous_image} aria-label="Previous image">&lt;</a>}
+                <Image src={image} alt={alt} widths={[800, 1600, 2400]} sizes="90vw" loading="eager" />
+                {next_image && <a class="photo-step next" href={next_image} aria-label="Next image">&gt;</a>}
+            </div>
+            : <Image src={image} alt={alt} widths={[800, 1600, 2400]} sizes="90vw" loading="eager" />}
         <figcaption>{post.title}{count > 1 && <span class="photo-count">{index + 1}/{count}</span>}</figcaption>
     </figure>
     {items.length > 0 && <Nav label="Photo" items={items} />}

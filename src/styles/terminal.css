@@ -309,6 +309,22 @@ html[data-effects='off'] .portrait img { filter: none; }
 .photo-view img { width: auto; max-width: 100%; height: auto; max-height: calc(100cqh - 6.5em); margin: 0 auto; object-fit: contain; }
 .photo-view figcaption { margin-top: .5em; color: var(--muted); }
 .photo-view .photo-count { margin-left: 2ch; }
+/* Albums put < and > against the sides of the image. */
+.photo-stage { position: relative; display: inline-block; max-width: calc(100% - 7ch); vertical-align: top; }
+.photo-step {
+    position: absolute;
+    top: 50%;
+    width: 1.4ch;
+    padding: .4em 0;
+    font-size: 1.6em;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    transform: translateY(-50%);
+}
+.photo-step.previous { right: calc(100% + .4ch); }
+.photo-step.next { left: calc(100% + .4ch); }
+a.photo-step:hover, a.photo-step:focus-visible { outline: none; background: var(--phosphor); color: var(--phosphor-ink); text-shadow: none; }
 
 /* Every screen opened from the home menu is a reading page (data-reading on <main>):
    Zilla Slab across the screen's width in pale
