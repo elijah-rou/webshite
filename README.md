@@ -26,6 +26,7 @@ Workers & Pages > Create > Import a repository, choose this repository, and set:
 | Production branch | `master` |
 | Build command | `npx -y pnpm@12.10.1 install --frozen-lockfile && npx -y pnpm@12.10.1 run build` |
 | Deploy command | `npx -y wrangler@4.149.0 deploy` |
+| Non-production branch deploy command | `npx wrangler preview` (the default; needs the `previews` block in `wrangler.jsonc`) |
 | Variable `SKIP_DEPENDENCY_INSTALL` | `1` (the build image's own pnpm is older than this lockfile) |
 
 Each push to `master` then builds and deploys. Single files are limited to 25 MiB,
