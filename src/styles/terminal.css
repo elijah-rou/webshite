@@ -301,7 +301,8 @@ html[data-effects='off'] .portrait img { filter: none; }
     margin-top: .35em;
     color: var(--muted);
     font-family: 'Zilla Slab', Georgia, serif;
-    font-size: .72em;
+    font-size: .64em;
+    text-align: center;
     line-height: 1.35;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
