@@ -91,6 +91,16 @@ const ROOT_STATE_ATTRIBUTES = ['data-effects', 'data-zoom', 'style'];
 
 function handle_resize() { update_zoom(false); }
 
+// The first key press, click or tap anywhere allows sound, so hovering is heard
+// from then on (hover alone cannot allow it). Escape does not count as permission
+// in browsers, and the sound button handles its own press.
+function handle_first_gesture(event: Event) {
+    if (audio.running()) { return; }
+    if (event instanceof KeyboardEvent && event.key === 'Escape') { return; }
+    if (event.target instanceof Element && event.target.closest('[data-action="sound"]')) { return; }
+    audio.unlock();
+}
+
 function handle_click(event: MouseEvent) {
     const target = event.target instanceof Element ? event.target.closest('a') : null;
     if (target?.hasAttribute('href') && !target.classList.contains('skip-link')) { void audio.play('select'); }
@@ -166,6 +176,7 @@ function before_swap(event: Event) {
 document.addEventListener('astro:page-load', mount);
 document.addEventListener('astro:before-swap', before_swap);
 document.addEventListener('click', handle_click);
+for (const type of ['pointerdown', 'keydown', 'click'] as const) { document.addEventListener(type, handle_first_gesture, { capture: true }); }
 document.addEventListener('keydown', handle_key);
 document.addEventListener('keydown', handle_grid_key);
 document.addEventListener('pointerover', handle_grid_pointer);
@@ -182,6 +193,7 @@ if (import.meta.hot) {
         document.removeEventListener('astro:page-load', mount);
         document.removeEventListener('astro:before-swap', before_swap);
         document.removeEventListener('click', handle_click);
+        for (const type of ['pointerdown', 'keydown', 'click'] as const) { document.removeEventListener(type, handle_first_gesture, { capture: true }); }
         document.removeEventListener('keydown', handle_key);
         document.removeEventListener('keydown', handle_grid_key);
         document.removeEventListener('pointerover', handle_grid_pointer);
