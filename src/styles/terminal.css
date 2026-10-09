@@ -459,7 +459,9 @@ html[data-effects='off'] .reveal-pending { clip-path: none; }
     .system-header { font-size: .7em; }
     .terminal-controls { gap: 10px; }
     .social-links { gap: .2em; }
-    .screen-bottom { gap: 8px; }
+    /* Back and the profile links on one row, the terminal buttons on the next. */
+    .screen-bottom { flex-wrap: wrap; justify-content: flex-start; gap: 2px 8px; }
+    .screen-bottom [data-terminal-controls] { flex-basis: 100%; }
     .terminal-controls button { min-height: 28px; }
     .keyboard-hint { gap: 18px; font-size: 8px; }
     .screen-scroll { padding-right: 7px; }

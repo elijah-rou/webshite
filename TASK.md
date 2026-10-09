@@ -1,5 +1,16 @@
 # Personal terminal
 
+## Logout
+
+- [x] [LOGOUT] left of [SOUND ON] goes home and replays the intro from the log-in
+      prompt (owner request); reduced motion just goes home. The intro is
+      requested before the swap, so the menu never shows first. On phones the
+      footer wraps: Back and profile links, then the three buttons.
+
+Acceptance (headless Chromium): logout from Projects, the photo viewer and home
+each lands on the prompt with 0 frames of visible menu; a key press plays the
+intro to the menu. Footer fits at 390, 360 and 1440 wide. No errors.
+
 ## First-visit hack intro
 
 - [x] On a first visit that lands on home, a Fallout 3 hack plays before the menu
