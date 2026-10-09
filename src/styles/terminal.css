@@ -117,9 +117,8 @@ html[data-zoom-animate] .terminal-station { transition: transform .55s cubic-bez
     min-height: 0;
     padding: 0 5px 8px 2px;
 }
-.system-header { margin-bottom: 1.1em; text-align: center; font-size: .9em; letter-spacing: .04em; }
-.system-header a { display: block; }
-.system-header a:hover { text-decoration: underline; }
+/* Small, so the menu rather than the banner draws the eye. */
+.system-header { margin-bottom: 1.1em; text-align: center; font-size: .7em; letter-spacing: .04em; }
 h1, h2, p { margin: 0; font: inherit; }
 h1 { margin-bottom: .6em; padding-bottom: .25em; border-bottom: 1px solid #7cf59a60; }
 h2 { margin-bottom: .6em; }
@@ -461,7 +460,7 @@ html[data-effects='off'] .reveal-pending { clip-path: none; }
     }
     .monitor-housing { display: none; }
     .screen { left: 6px; right: 7px; top: 9px; bottom: 25px; padding: 24px 16px 17px; font-size: 20px; }
-    .system-header { font-size: .7em; }
+    .system-header { font-size: .6em; }
     .terminal-controls { gap: 10px; }
     .social-links { gap: .2em; }
     /* Back and the profile links on one row, the terminal buttons on the next. */
