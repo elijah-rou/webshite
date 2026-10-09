@@ -51,8 +51,9 @@ export function mount_photo_viewer(): (() => void) | null {
         const style = getComputedStyle(element<HTMLImageElement>(link, 'img'));
         const layout = Math.min(parseFloat(style.maxWidth), parseFloat(style.maxHeight) * width / height);
         const on_screen = Math.ceil(layout * zoom_scale());
-        if (!(on_screen > 0)) { throw new Error(`Photo viewer measured an image width of ${on_screen}`); }
-        return on_screen;
+        if (!Number.isFinite(on_screen)) { throw new Error(`Photo viewer measured an image width of ${on_screen}`); }
+        // A window too small for the frame leaves no room; any file will do.
+        return Math.max(1, on_screen);
     }
 
     function load(view: ViewerImage): HTMLImageElement {
