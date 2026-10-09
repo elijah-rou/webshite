@@ -1,6 +1,6 @@
 import { createEffect } from 'solid-js';
 import { clear_reveal } from '../scripts/reveal';
-import { audio, audio_unavailable, effects, sound, toggle_effects, toggle_sound } from '../scripts/state';
+import { audio, audio_unavailable, effects, log_out, sound, toggle_effects, toggle_sound } from '../scripts/state';
 
 export default function TerminalControls() {
     createEffect(effects, enabled => {
@@ -9,6 +9,8 @@ export default function TerminalControls() {
     });
 
     return <div class="terminal-controls" role="group" aria-label="Terminal settings">
+        <button type="button" data-action="logout"
+            onClick={log_out} onPointerEnter={audio.focus} onFocus={audio.focus}>[LOGOUT]</button>
         <button type="button" data-action="sound" disabled={audio_unavailable()}
             onClick={toggle_sound} onPointerEnter={audio.focus} onFocus={audio.focus}>
             {audio_unavailable() ? '[AUDIO UNAVAILABLE]' : sound() ? '[SOUND ON]' : '[SOUND OFF]'}

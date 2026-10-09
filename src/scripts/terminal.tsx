@@ -3,7 +3,7 @@ import TerminalControls from '../components/TerminalControls';
 import TerminalMenu, { MENU_KINDS, type MenuKind } from '../components/TerminalMenu';
 import MusicStatus from '../components/MusicStatus';
 import HackIntro from '../components/HackIntro';
-import { audio, stop_track } from './state';
+import { audio, stop_track, take_intro_request } from './state';
 import { mount_photo_viewer } from './photo-viewer';
 import { handle_reveal_animation, reveal } from './reveal';
 import { update_zoom } from './zoom';
@@ -158,6 +158,8 @@ function before_swap(event: Event) {
         const value = document.documentElement.getAttribute(name);
         if (value === null) { incoming.removeAttribute(name); } else { incoming.setAttribute(name, value); }
     }
+    // Set before the swap, so the menu never shows before the intro.
+    if (take_intro_request()) { incoming.setAttribute('data-intro', ''); }
     // Recordings are controlled from the Music screen, so they stop when it is left.
     stop_track();
     // The native transition may be cancelled by a second navigation.

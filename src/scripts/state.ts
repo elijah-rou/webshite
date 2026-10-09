@@ -1,3 +1,4 @@
+import { navigate } from 'astro:transitions/client';
 import { createSignal, flush } from 'solid-js';
 import { create_audio_player } from './audio';
 
@@ -71,4 +72,20 @@ export function toggle_track(next: Track) {
     music = element;
     set_track(next);
     element.play().catch(fail);
+}
+
+// [LOGOUT] goes home and plays the first-visit intro again (not under reduced
+// motion). The request is read when the home page is swapped in.
+let intro_requested = false;
+
+export function log_out() {
+    intro_requested = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    void audio.play('select');
+    void navigate('/');
+}
+
+export function take_intro_request(): boolean {
+    const requested = intro_requested;
+    intro_requested = false;
+    return requested;
 }

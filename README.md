@@ -72,7 +72,8 @@ It opens on a log-in prompt, because browsers only allow sound after a key press
 or tap; that press starts it (Escape skips it). The memory dump prints, two wrong
 guesses are scored, the password matches and access is granted, then the menu
 prints. Any key or tap skips the rest. A
-`terminal-intro` entry in local storage marks the visit; `/?intro` replays it.
+`terminal-intro` entry in local storage marks the visit; `/?intro` or the
+[LOGOUT] button in the footer replays it.
 Visitors who prefer reduced motion skip it.
 
 Profile links (GitHub, LinkedIn, Instagram, X, Mastodon) at the bottom left of the
