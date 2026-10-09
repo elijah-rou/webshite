@@ -34,8 +34,9 @@ with a date, such as `2026-10-08-harbour.jpg`, to list them newest first; the re
 of the name becomes the caption. An optional `src/content/photos/photos.json` maps
 a file or folder name to `caption`, `alt` and its `instagram` post URL. The Photos
 screen stays at `/instagram/` and links to
-[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/). On a photo, left
-and right arrows step through every image. Photos keep their colour under the CRT
+[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/). In an album, `<`
+and `>` beside the image move within the post; the left and right arrow keys step
+through every image, crossing into the neighbouring posts. Photos keep their colour under the CRT
 effects.
 
 ### Photos from Instagram
