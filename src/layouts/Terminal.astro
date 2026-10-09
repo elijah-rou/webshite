@@ -12,8 +12,13 @@ interface Props {
     section: 'home' | 'about' | 'writing' | 'projects' | 'resume' | 'music' | 'photos';
     description?: string;
     back?: string;
+    // Key hints under the monitor; ESC BACK is added on every screen but home.
+    hints?: string[];
 }
-const { title, section, description = 'Elijah Roussos: writing, projects, music and photos.', back = '/' } = Astro.props;
+const {
+    title, section, description = 'Elijah Roussos: writing, projects, music and photos.', back = '/',
+    hints = ['↑ ↓ SELECT', 'ENTER OPEN'],
+} = Astro.props;
 const year = new Date().getFullYear();
 ---
 <!doctype html>
@@ -55,7 +60,7 @@ const year = new Date().getFullYear();
                 </div>
             </div>
             <p class="keyboard-hint" aria-hidden="true">
-                <span>↑ ↓ SELECT</span><span>ENTER OPEN</span>{section !== 'home' && <span>ESC BACK</span>}
+                {hints.map(hint => <span>{hint}</span>)}{section !== 'home' && <span>ESC BACK</span>}
             </p>
         </div>
         <script>import '../scripts/terminal.tsx';</script>

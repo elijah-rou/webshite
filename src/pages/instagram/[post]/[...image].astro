@@ -1,54 +1,73 @@
 ---
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import Terminal from '../../../layouts/Terminal.astro';
-import Nav from '../../../components/Nav.astro';
-import { image_href, read_posts, type Post } from '../../../lib/photos';
+import { image_href, instagram_image_url, read_posts, type Post } from '../../../lib/photos';
+import type { ViewerManifest } from '../../../scripts/photo-viewer';
 
 export function getStaticPaths() {
     const posts = read_posts();
-    const views = posts.flatMap((post, post_index) => post.images.map((_, index) => ({ post, post_index, index })));
-    return views.map(({ post, post_index, index }, view_index) => {
-        const before = views[view_index - 1];
-        const after = views[view_index + 1];
-        return {
-            params: { post: post.id, image: index === 0 ? undefined : String(index + 1) },
-            props: {
-                post, index,
-                next_post: posts[post_index + 1], previous_post: posts[post_index - 1],
-                // Left and right step through every image, crossing into the neighbouring posts.
-                step_next: after && image_href(after.post, after.index),
-                step_previous: before && image_href(before.post, before.index),
-            },
-        };
-    });
+    return posts.flatMap((post, post_index) => post.images.map((_, index) => ({
+        params: { post: post.id, image: index === 0 ? undefined : String(index + 1) },
+        props: { posts, post_index, index },
+    })));
 }
-interface Props {
-    post: Post; index: number; next_post: Post | undefined; previous_post: Post | undefined;
-    step_next: string | undefined; step_previous: string | undefined;
-}
-const { post, index, next_post, previous_post, step_next, step_previous } = Astro.props;
+interface Props { posts: Post[]; post_index: number; index: number }
+const { posts, post_index, index } = Astro.props;
+const SIZES = '90vw';
+const WIDTHS = [800, 1600, 2400];
+
+// Every image of every post, so the viewer steps between them without loading a page.
+const manifest: ViewerManifest = {
+    post: post_index,
+    image: index,
+    posts: await Promise.all(posts.map(async post => ({
+        title: post.title,
+        images: await Promise.all(post.images.map(async (image, image_index) => {
+            const result = await getImage({ src: image, widths: WIDTHS, sizes: SIZES });
+            return {
+                src: result.src,
+                srcset: result.srcSet.attribute,
+                width: image.width,
+                height: image.height,
+                alt: post.images.length > 1 ? `${post.alt} (image ${image_index + 1} of ${post.images.length})` : post.alt,
+                href: image_href(post, image_index),
+                instagram: instagram_image_url(post, image_index) ?? null,
+            };
+        })),
+    }))),
+};
+const post = manifest.posts[post_index];
+const view = post?.images[index];
+if (!post || !view) { throw new Error(`No image ${index + 1} in post ${post_index + 1}`); }
 const count = post.images.length;
-const image = post.images[index];
-if (!image) { throw new Error(`Post ${post.id} has no image ${index + 1}`); }
-const alt = count > 1 ? `${post.alt} (image ${index + 1} of ${count})` : post.alt;
-const previous_image = index > 0 ? image_href(post, index - 1) : undefined;
-const next_image = index + 1 < count ? image_href(post, index + 1) : undefined;
-const items = [
-    ...(next_post ? [{ label: 'Next post', href: image_href(next_post, 0) }] : []),
-    ...(previous_post ? [{ label: 'Previous post', href: image_href(previous_post, 0) }] : []),
-    ...(post.instagram ? [{ label: 'View on Instagram', href: post.instagram }] : []),
-];
+const previous_post = manifest.posts[post_index - 1]?.images[0];
+const next_post = manifest.posts[post_index + 1]?.images[0];
+const previous_image = post.images[index - 1];
+const next_image = post.images[index + 1];
 ---
-<Terminal title={post.title} section="photos" back="/instagram/" description={post.alt}>
-    <figure class="photo-view" data-photo-next={step_next} data-photo-previous={step_previous}>
-        {count > 1
-            ? <div class="photo-stage">
-                {previous_image && <a class="photo-step previous" href={previous_image} aria-label="Previous image">&lt;</a>}
-                <Image src={image} alt={alt} widths={[800, 1600, 2400]} sizes="90vw" loading="eager" />
-                {next_image && <a class="photo-step next" href={next_image} aria-label="Next image">&gt;</a>}
+<Terminal title={post.title} section="photos" back="/instagram/" description={view.alt} hints={['← → IMAGE']}>
+    <div class="photo-viewer" data-photo-viewer>
+        <div class="photo-frame">
+            <div class="photo-stage">
+                <a class="photo-step previous" href={previous_image?.href} aria-label="Previous image"
+                    hidden={!previous_image}>&lt;</a>
+                <a class="photo-link" href={view.instagram} aria-label="View on Instagram">
+                    <img src={view.src} srcset={view.srcset} sizes={SIZES} width={view.width} height={view.height}
+                        alt={view.alt} />
+                </a>
+                <a class="photo-step next" href={next_image?.href} aria-label="Next image" hidden={!next_image}>&gt;</a>
             </div>
-            : <Image src={image} alt={alt} widths={[800, 1600, 2400]} sizes="90vw" loading="eager" />}
-        <figcaption>{post.title}{count > 1 && <span class="photo-count">{index + 1}/{count}</span>}</figcaption>
-    </figure>
-    {items.length > 0 && <Nav label="Photo" items={items} />}
+            <p class="photo-loading" role="status" hidden>Loading...</p>
+        </div>
+        <p class="photo-caption">
+            <span class="photo-title" title={post.title}>{post.title}</span>
+            <span class="photo-count" hidden={count < 2}>{index + 1}/{count}</span>
+        </p>
+        <nav class="photo-posts" aria-label="Posts">
+            <a class="previous" href={previous_post?.href} aria-disabled={previous_post ? undefined : 'true'}>&lt; Previous post</a>
+            <a class="next" href={next_post?.href} aria-disabled={next_post ? undefined : 'true'}>Next post &gt;</a>
+        </nav>
+        <script is:inline type="application/json" data-photo-manifest
+            set:html={JSON.stringify(manifest).replaceAll('<', '\\u003c')} />
+    </div>
 </Terminal>

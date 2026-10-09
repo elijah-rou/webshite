@@ -34,9 +34,12 @@ with a date, such as `2026-10-08-harbour.jpg`, to list them newest first; the re
 of the name becomes the caption. An optional `src/content/photos/photos.json` maps
 a file or folder name to `caption`, `alt` and its `instagram` post URL. The Photos
 screen stays at `/instagram/` and links to
-[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/). In an album, `<`
-and `>` beside the image move within the post; the left and right arrow keys step
-through every image, crossing into the neighbouring posts. Photos keep their colour under the CRT
+[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/). The photo viewer
+fits the screen: `<` and `>` beside the image move within an album, the left and
+right arrow keys step through every image across posts, and the buttons below move
+between posts. Clicking the image opens it on Instagram. Stepping swaps the image in
+place (`src/scripts/photo-viewer.ts`) rather than loading a page; each image still
+has its own address, which the viewer keeps in the location bar. Photos keep their colour under the CRT
 effects.
 
 ### Photos from Instagram

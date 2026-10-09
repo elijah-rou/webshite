@@ -303,14 +303,36 @@ html[data-effects='off'] .portrait img { filter: none; }
 .photo-grid a:focus { outline: 2px solid var(--phosphor); }
 /* Without JavaScript, hover is the only way the pointer can highlight a thumbnail. */
 .photo-grid:not(:focus-within) a:hover { outline: 2px solid var(--phosphor); }
-.photo-grid img, .photo-view img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.screen-scroll { container-type: size; }
-.photo-view { margin: 0 0 1em; text-align: center; }
-.photo-view img { width: auto; max-width: 100%; height: auto; max-height: calc(100cqh - 6.5em); margin: 0 auto; object-fit: contain; }
-.photo-view figcaption { margin-top: .5em; color: var(--muted); }
-.photo-view .photo-count { margin-left: 2ch; }
+.photo-grid img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* The photo viewer fills the screen without scrolling: a frame of constant size
+   for the image, then the caption and the two post buttons. */
+.screen-scroll:has([data-photo-viewer]) { display: flex; flex-direction: column; overflow: hidden; }
+.screen-scroll:has([data-photo-viewer]) main { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.photo-viewer { display: flex; flex: 1; flex-direction: column; gap: .5em; min-height: 0; }
+.photo-frame { position: relative; display: grid; flex: 1; place-items: center; min-height: 0; container-type: size; }
+.photo-stage { position: relative; }
+.photo-link { display: block; }
+.photo-link img {
+    display: block;
+    width: auto;
+    max-width: calc(100cqw - 7ch);
+    height: auto;
+    max-height: 100cqh;
+    border: 1px solid #7cf59a60;
+}
+.photo-link:focus-visible { outline: 2px solid var(--phosphor); outline-offset: 2px; }
+.photo-frame[data-loading] .photo-link img { visibility: hidden; }
+.photo-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: .3em 2ch;
+    border: 1px solid #7cf59a60;
+    background: #04110ae6;
+    transform: translate(-50%, -50%);
+}
+.photo-loading[hidden] { display: none; }
 /* Albums put < and > against the sides of the image. */
-.photo-stage { position: relative; display: inline-block; max-width: calc(100% - 7ch); vertical-align: top; }
 .photo-step {
     position: absolute;
     top: 50%;
@@ -322,9 +344,24 @@ html[data-effects='off'] .portrait img { filter: none; }
     text-decoration: none;
     transform: translateY(-50%);
 }
+.photo-step[hidden] { display: none; }
 .photo-step.previous { right: calc(100% + .4ch); }
 .photo-step.next { left: calc(100% + .4ch); }
-a.photo-step:hover, a.photo-step:focus-visible { outline: none; background: var(--phosphor); color: var(--phosphor-ink); text-shadow: none; }
+/* One line, so the frame above keeps its height whatever the caption's length. */
+.photo-caption { display: flex; justify-content: center; gap: 2ch; color: var(--muted); white-space: nowrap; }
+.photo-title { overflow: hidden; min-width: 0; text-overflow: ellipsis; }
+.photo-count { flex: none; }
+.photo-count[hidden] { display: none; }
+.photo-posts { display: grid; grid-template-columns: 1fr 1fr; gap: 1ch; }
+.photo-posts a { padding: .1em 1ch; text-decoration: none; }
+.photo-posts .next { text-align: right; }
+.photo-posts a[aria-disabled='true'] { color: #7cf59a40; text-shadow: none; cursor: default; }
+a.photo-step:hover, a.photo-step:focus-visible, .photo-posts a[href]:hover, .photo-posts a[href]:focus-visible {
+    outline: none;
+    background: var(--phosphor);
+    color: var(--phosphor-ink);
+    text-shadow: none;
+}
 
 /* Every screen opened from the home menu is a reading page (data-reading on <main>):
    Zilla Slab across the screen's width in pale
