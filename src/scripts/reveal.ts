@@ -11,7 +11,7 @@ const REVEAL_TOTAL_MS = 900;
 const REVEAL_LINE_MS = 60;
 // Pictures appear whole, one at a time, each once its image is ready (or after
 // IMAGE_WAIT_MS, so an image that is slow or not yet loading cannot stall the rest).
-const IMAGE_INTERVAL_MS = 80;
+const IMAGE_INTERVAL_MS = 60;
 const IMAGE_WAIT_MS = 500;
 // Bumped by each reveal and by clear_reveal, so an older picture sequence stops.
 let picture_run = 0;
