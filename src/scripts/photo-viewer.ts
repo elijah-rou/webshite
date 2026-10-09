@@ -77,15 +77,23 @@ export function mount_photo_viewer(): (() => void) | null {
         return { post: from.post + direction, image: direction === 1 ? 0 : other.images.length - 1 };
     }
 
+    // The frame's size depends on the terminal font, so images are sized once it has
+    // loaded; measured before, they get the fallback font's smaller frame.
+    function once_fonts_load(this_request: number, then: () => void) {
+        void document.fonts.ready.then(() => { if (this_request === request) { then(); } });
+    }
+
     function preload_neighbours() {
-        for (const position of [neighbour(current, 1), neighbour(current, -1)]) {
-            const view = position && image_at(position);
-            if (!view) { continue; }
-            const image = load(view);
-            preloading.add(image);
-            const done = () => preloading.delete(image);
-            image.decode().then(done, done);
-        }
+        once_fonts_load(request, () => {
+            for (const position of [neighbour(current, 1), neighbour(current, -1)]) {
+                const view = position && image_at(position);
+                if (!view) { continue; }
+                const image = load(view);
+                preloading.add(image);
+                const done = () => preloading.delete(image);
+                image.decode().then(done, done);
+            }
+        });
     }
 
     function set_loading(text: string | null) {
@@ -116,17 +124,19 @@ export function mount_photo_viewer(): (() => void) | null {
         document.title = `${post.title}${title_suffix}`;
         history.replaceState(history.state, '', view.href);
 
-        const image = load(view);
-        const place = () => {
-            if (this_request !== request) { return; }
-            element<HTMLImageElement>(link, 'img').replaceWith(image);
-            set_loading(null);
-            preload_neighbours();
-        };
-        if (image.complete && image.naturalWidth > 0) { place(); return; }
-        set_loading('Loading...');
-        image.decode().then(place, () => {
-            if (this_request === request) { set_loading('Image failed to load.'); }
+        once_fonts_load(this_request, () => {
+            const image = load(view);
+            const place = () => {
+                if (this_request !== request) { return; }
+                element<HTMLImageElement>(link, 'img').replaceWith(image);
+                set_loading(null);
+                preload_neighbours();
+            };
+            if (image.complete && image.naturalWidth > 0) { place(); return; }
+            set_loading('Loading...');
+            image.decode().then(place, () => {
+                if (this_request === request) { set_loading('Image failed to load.'); }
+            });
         });
     }
 
