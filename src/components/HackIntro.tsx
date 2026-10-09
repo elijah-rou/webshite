@@ -17,11 +17,11 @@ const STACKED_LOG_LINES = 5;
 const LINE_HEIGHT = 1.22;
 const BOOT_MS = 150;
 const AFTER_PRINT_MS = 250;
-const SELECT_MS = 350;
+const SELECT_MS = 450;
 // The cursor rests a little longer on the password before it is entered.
-const FOUND_MS = 650;
+const FOUND_MS = 800;
 const AFTER_WRONG_MS = 250;
-const AFTER_MATCH_MS = 750;
+const AFTER_MATCH_MS = 950;
 const GRANTED_MS = 700;
 
 function Row(props: { left: DumpRow; right: DumpRow; selected: string | null }) {
