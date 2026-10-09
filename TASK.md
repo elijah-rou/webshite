@@ -60,14 +60,17 @@ while Charter ships only on Apple systems.
 - [x] Owner set up a Business app (messaging and content use case, Instagram
       Login setup, Instagram Tester role) and generated a token.
 - [x] First real sync: 8 posts, all albums; the cover of each is downloaded.
-- [ ] Owner: decide whether album images beyond the cover (68 in total) belong
-      on the Photos screen.
+- [x] Every album image (owner request): each post is a folder; the grid shows a
+      tile per post with its image count; /instagram/<post>/<n>/ shows one image
+      with a counter, a menu and left/right stepping across posts.
+- [x] Photos keep their colour under the CRT effects (owner request).
 - [ ] Owner: revoke the token pasted in chat (it stays valid after a refresh).
 
 Acceptance: four tests pass against a mock Graph API (pagination, video covers,
 posts without images, idempotent reruns, preserved caption edits, token-free
-errors, env file update). Real run on 2026-10-09: token refreshed, 8 photos and
-captions written, build renders the Photos grid.
+errors, env file update). Real run on 2026-10-09: 8 posts, 68 images. Headless
+Chromium at 1440×1000 and 390×844: no filter on images, badges 10,9,7,10,4,10,8,10,
+right arrow 1/4 to 2/4, 4/4 to the next post, left back, no overflow or errors.
 
 ## Photos, projects, resume, menu focus
 

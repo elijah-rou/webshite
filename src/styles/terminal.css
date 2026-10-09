@@ -283,14 +283,23 @@ html[data-effects='off'] .portrait img { filter: none; }
 .prose pre { overflow-x: auto; padding: .6em 2ch; font: inherit; line-height: 1.25; border: 1px solid #7cf59a40; }
 .prose img { max-width: 100%; height: auto; }
 .prose blockquote { margin-left: 0; padding-left: 2ch; border-left: 2px solid #7cf59a66; color: var(--muted); }
-/* Photos read as phosphor images while the CRT effects are on. */
+/* Photos keep their own colour; the screen's scanlines and glare still lie over them. */
 .photo-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(9em, 45%), 1fr));
     gap: .6em;
     margin-bottom: 1.2em;
 }
-.photo-grid a { display: block; aspect-ratio: 1; outline-offset: 2px; }
+.photo-grid a { position: relative; display: block; aspect-ratio: 1; outline-offset: 2px; }
+/* Albums show how many images they hold. */
+.photo-grid .photo-count {
+    position: absolute;
+    right: .3em;
+    bottom: .2em;
+    padding: 0 .4ch;
+    background: #020a04d9;
+    line-height: 1.1;
+}
 .photo-grid a:focus { outline: 2px solid var(--phosphor); }
 /* Without JavaScript, hover is the only way the pointer can highlight a thumbnail. */
 .photo-grid:not(:focus-within) a:hover { outline: 2px solid var(--phosphor); }
@@ -299,8 +308,7 @@ html[data-effects='off'] .portrait img { filter: none; }
 .photo-view { margin: 0 0 1em; text-align: center; }
 .photo-view img { width: auto; max-width: 100%; height: auto; max-height: calc(100cqh - 6.5em); margin: 0 auto; object-fit: contain; }
 .photo-view figcaption { margin-top: .5em; color: var(--muted); }
-.photo-grid img, .photo-view img { filter: grayscale(1) sepia(1) hue-rotate(68deg) saturate(2.6) brightness(.92) contrast(1.05); }
-html[data-effects='off'] .photo-grid img, html[data-effects='off'] .photo-view img { filter: none; }
+.photo-view .photo-count { margin-left: 2ch; }
 
 /* Every screen opened from the home menu is a reading page (data-reading on <main>):
    Zilla Slab across the screen's width in pale

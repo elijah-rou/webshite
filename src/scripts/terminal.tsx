@@ -1,3 +1,4 @@
+import { navigate } from 'astro:transitions/client';
 import { render } from '@solidjs/web';
 import TerminalControls from '../components/TerminalControls';
 import TerminalMenu, { MENU_KINDS, type MenuKind } from '../components/TerminalMenu';
@@ -105,6 +106,19 @@ function handle_grid_pointer(event: PointerEvent) {
     if (tile && tile !== document.activeElement) { tile.focus({ preventScroll: true }); audio.focus(); }
 }
 
+// On a photo page, left and right step through the images, crossing between posts.
+function handle_photo_step(event: KeyboardEvent) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') { return; }
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) { return; }
+    if (document.activeElement instanceof HTMLInputElement) { return; }
+    const view = document.querySelector<HTMLElement>('.photo-view');
+    const href = event.key === 'ArrowRight' ? view?.dataset['photoNext'] : view?.dataset['photoPrevious'];
+    if (!href) { return; }
+    event.preventDefault();
+    void audio.play('select');
+    void navigate(href);
+}
+
 function handle_key(event: KeyboardEvent) {
     if (event.key !== 'Escape' || event.altKey || event.ctrlKey || event.metaKey) { return; }
     const back = document.querySelector<HTMLAnchorElement>('[data-back]');
@@ -142,6 +156,7 @@ document.addEventListener('astro:before-swap', before_swap);
 document.addEventListener('click', handle_click);
 document.addEventListener('keydown', handle_key);
 document.addEventListener('keydown', handle_grid_key);
+document.addEventListener('keydown', handle_photo_step);
 document.addEventListener('pointerover', handle_grid_pointer);
 document.addEventListener('visibilitychange', handle_visibility);
 document.addEventListener('animationstart', handle_reveal_animation);
@@ -158,6 +173,7 @@ if (import.meta.hot) {
         document.removeEventListener('click', handle_click);
         document.removeEventListener('keydown', handle_key);
         document.removeEventListener('keydown', handle_grid_key);
+        document.removeEventListener('keydown', handle_photo_step);
         document.removeEventListener('pointerover', handle_grid_pointer);
         document.removeEventListener('visibilitychange', handle_visibility);
         document.removeEventListener('animationstart', handle_reveal_animation);
