@@ -92,10 +92,11 @@ export default function HackIntro(props: Props) {
 
     async function play() {
         flush(() => set_phase('hacking'));
-        await sleep(BOOT_MS);
+        // Scheduled in the same task that draws the lines, so they start hidden
+        // instead of showing whole for a moment before they print.
         const lines = Array.from(root?.querySelectorAll<HTMLElement>('.hack-line') ?? []);
-        lines.forEach((line, index) => print_line(line, index * REVEAL_LINE_MS));
-        await sleep(lines.length * REVEAL_LINE_MS + AFTER_PRINT_MS);
+        lines.forEach((line, index) => print_line(line, BOOT_MS + index * REVEAL_LINE_MS));
+        await sleep(BOOT_MS + lines.length * REVEAL_LINE_MS + AFTER_PRINT_MS);
         for (const guess of guesses) {
             set_selected(guess.word);
             void audio.play('focus');

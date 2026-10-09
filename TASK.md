@@ -1,5 +1,14 @@
 # Personal terminal
 
+## Fix: hack screen flashed before printing
+
+Symptom: after the log-in press, the whole hack screen showed for ~150ms, vanished
+and then printed line by line. Cause: the lines were drawn, then hidden only when
+their printing was scheduled after the boot pause. Printing is now scheduled in
+the same task that draws them. A per-frame check (any intro line visible, then
+hidden) reports every line flashing on the old build and none on the new one;
+the log-in prompt never flashed.
+
 ## Fix: blank pause after the intro
 
 Symptom (reproduced frame by frame): after skipping, or after ACCESS GRANTED, the
