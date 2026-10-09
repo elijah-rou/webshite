@@ -3,6 +3,7 @@
 // Each image still has its own page; the address follows along without adding
 // history entries, so Back leaves the viewer.
 import { audio } from './state';
+import { zoom_scale } from './zoom';
 
 export interface ViewerImage {
     src: string; srcset: string; width: number; height: number; alt: string; href: string; instagram: string | null;
@@ -35,7 +36,6 @@ export function mount_photo_viewer(): (() => void) | null {
     const next_image = element<HTMLAnchorElement>(root, '.photo-step.next');
     const previous_post = element<HTMLAnchorElement>(root, '.photo-posts .previous');
     const next_post = element<HTMLAnchorElement>(root, '.photo-posts .next');
-    const sizes = element<HTMLImageElement>(link, 'img').sizes;
     const title_suffix = document.title.slice(document.title.lastIndexOf(' | '));
     let current: Position = { post: manifest.post, image: manifest.image };
     let request = 0;
@@ -44,9 +44,20 @@ export function mount_photo_viewer(): (() => void) | null {
 
     const image_at = ({ post, image }: Position) => manifest.posts[post]?.images[image];
 
+    // The width the image will take on screen, magnified by the zoom, so the file
+    // picked from its srcset is sharp without being larger than needed. Every image
+    // fits the same box: the shown image's max size, which does not depend on its file.
+    function screen_width(view: ViewerImage): number {
+        const style = getComputedStyle(element<HTMLImageElement>(link, 'img'));
+        const layout = Math.min(parseFloat(style.maxWidth), parseFloat(style.maxHeight) * view.width / view.height);
+        const width = Math.ceil(layout * zoom_scale());
+        if (!(width > 0)) { throw new Error(`Photo viewer measured an image width of ${width}`); }
+        return width;
+    }
+
     function load(view: ViewerImage): HTMLImageElement {
         const image = new Image();
-        image.sizes = sizes;
+        image.sizes = `${screen_width(view)}px`;
         image.srcset = view.srcset;
         image.src = view.src;
         image.width = view.width;

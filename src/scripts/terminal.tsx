@@ -54,9 +54,10 @@ function mount() {
         status_root.replaceChildren();
         disposers.push(render(() => <MusicStatus />, status_root));
     }
+    // Before the photo viewer, which sizes images by the zoom.
+    update_zoom(true);
     const viewer = mount_photo_viewer();
     if (viewer) { disposers.push(viewer); }
-    update_zoom(true);
     const intro_root = document.querySelector<HTMLElement>('[data-intro-root]');
     if (intro_root && document.documentElement.hasAttribute('data-intro')) {
         play_intro(intro_root);
