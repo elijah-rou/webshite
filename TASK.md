@@ -1,5 +1,21 @@
 # Personal terminal
 
+## Deploy on Cloudflare Workers
+
+- [x] Owner chose Workers (static assets) over Pages and Netlify: static requests
+      free and unlimited, 3,000 build minutes a month free, 25 MiB per file.
+- [x] `wrangler.jsonc` (assets from `dist/`, 404 page) and a terminal 404 page.
+- [x] sharp declared (Node on Linux could not load it; Bun hid this locally).
+- [ ] Owner: grant `gh` the `workflow` scope so the CI branch `agent/ci-workflow`
+      can be pushed.
+- [ ] Owner: merge PR #1, then import the repository in Cloudflare with the
+      settings in README.
+
+Acceptance: `wrangler dev` (under Node; Bun hangs its proxy) served /, /about/,
+/writing/, /resume/, a photo page and audio with 200; /about and /blog redirect to
+their slash form; /does-not-exist returns 404 with the terminal page.
+`wrangler deploy --dry-run` read 436 files and found no bindings.
+
 ## Random password each run
 
 - [x] The intro's password is drawn at random from 15 fourteen-letter words each
