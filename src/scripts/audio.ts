@@ -25,7 +25,7 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
         if (context) { return context; }
         context = new AudioContext({ latencyHint: 'interactive' });
         output = context.createGain();
-        output.gain.value = 0.65;
+        output.gain.value = 0.585;
         output.connect(context.destination);
         return context;
     }
