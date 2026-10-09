@@ -4,6 +4,8 @@
 	"$schema": "https://unpkg.com/wrangler@4.149.0/config-schema.json",
 	"name": "webshite",
 	"compatibility_date": "2026-10-09",
+	// Each preview gets a public workers.dev address (also switched on in the dashboard).
+	"preview_urls": true,
 	"assets": {
 		"directory": "./dist",
 		"not_found_handling": "404-page"
