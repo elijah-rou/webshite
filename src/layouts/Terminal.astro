@@ -23,24 +23,18 @@ const {
     hints = ['↑ ↓ SELECT', 'ENTER OPEN'],
 } = Astro.props;
 
-// The housing PNG is about 2 MB; AVIF (WebP where AVIF is unsupported) is a tenth of that.
-// Phones draw it as a border image (terminal.css), at most 0.36 CSS px per source
-// pixel, so screens up to 2x get a copy at 3/4 width and 3x screens the full one.
-const PHONE_WIDTH = 1031;
-const [avif, webp, phone_avif, phone_webp] = await Promise.all([
+// The housing PNG is about 2 MB; AVIF (WebP where AVIF is unsupported) is a tenth of
+// that. Phones draw it as a border image (terminal.css) that stretches its sides
+// vertically, so they need the full size too; the border image picks the same file
+// as the <picture>, so each device downloads one.
+const [avif, webp] = await Promise.all([
     getImage({ src: housing, format: 'avif', quality: 75 }),
     getImage({ src: housing, format: 'webp', quality: 90 }),
-    getImage({ src: housing, format: 'avif', quality: 75, width: PHONE_WIDTH }),
-    getImage({ src: housing, format: 'webp', quality: 90, width: PHONE_WIDTH }),
 ]);
 const housing_style = [
     `--housing: url('${webp.src}')`,
-    `--housing-set: image-set(url('${phone_avif.src}') type('image/avif') 2x, url('${avif.src}') type('image/avif') 3x, `
-        + `url('${phone_webp.src}') type('image/webp') 2x, url('${webp.src}') type('image/webp') 3x)`,
+    `--housing-set: image-set(url('${avif.src}') type('image/avif'), url('${webp.src}') type('image/webp'))`,
 ].join('; ');
-// Hidden on phones, where the border image draws the housing; this empty GIF keeps
-// the hidden image from downloading a second copy.
-const EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 ---
 <!doctype html>
 <html lang="en" data-effects="on">
@@ -73,7 +67,6 @@ const EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAA
         <div class="terminal-station">
             <div class="monitor" style={housing_style}>
                 <picture>
-                    <source media="(max-width: 700px)" srcset={EMPTY_GIF} />
                     <source type="image/avif" srcset={avif.src} />
                     <img class="monitor-housing" src={webp.src} alt="" width={housing.width} height={housing.height}
                         fetchpriority="high" />
