@@ -33,8 +33,7 @@ is a post, and so is each folder of images, shown in file name order. Start name
 with a date, such as `2026-10-08-harbour.jpg`, to list them newest first; the rest
 of the name becomes the caption. An optional `src/content/photos/photos.json` maps
 a file or folder name to `caption`, `alt` and its `instagram` post URL. The Photos
-screen stays at `/instagram/` and links to
-[@eli_takes_photos](https://www.instagram.com/eli_takes_photos/). The photo viewer
+screen stays at `/instagram/`; its grid scrolls once it outgrows the screen. The photo viewer
 fits the screen: `<` and `>` beside the image move within an album, the left and
 right arrow keys step through every image across posts, and the buttons below move
 between posts. Clicking the image opens it on Instagram. Stepping swaps the image in

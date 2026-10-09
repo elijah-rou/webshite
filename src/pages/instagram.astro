@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Terminal from '../layouts/Terminal.astro';
-import { INSTAGRAM_PROFILE, read_posts } from '../lib/photos';
+import { read_posts } from '../lib/photos';
 const posts = read_posts();
 ---
 <Terminal title="Photos" section="photos">
@@ -16,5 +16,4 @@ const posts = read_posts();
             </a>)}
         </div>
         : <p class="prose">No photos yet.</p>}
-    <p class="prose"><a href={INSTAGRAM_PROFILE}>instagram.com/eli_takes_photos</a></p>
 </Terminal>

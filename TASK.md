@@ -72,6 +72,10 @@ while Charter ships only on Apple systems.
       scrolling: the image (thin green border) links to the image on Instagram
       (`img_index`), Previous post and Next post split the row below, greyed out
       at the ends. The address follows with replaceState, so Back leaves the viewer.
+- [x] Photos grid without the Instagram profile link (the footer icon remains);
+      the grid scrolls when it outgrows the screen. Checked with 40 tiles: PageDown,
+      wheel (phone; desktop wheel events do not scroll any page in this headless
+      setup) and arrow keys scroll it, and focused tiles stay in view with outline.
 - [ ] Owner: revoke the token pasted in chat (it stays valid after a refresh).
 
 Acceptance: four tests pass against a mock Graph API (pagination, video covers,

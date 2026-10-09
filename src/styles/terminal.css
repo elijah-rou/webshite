@@ -290,7 +290,8 @@ html[data-effects='off'] .portrait img { filter: none; }
     gap: .6em;
     margin-bottom: 1.2em;
 }
-.photo-grid a { position: relative; display: block; aspect-ratio: 1; outline-offset: 2px; }
+/* The scroll margin keeps a focused tile's outline in view when the grid scrolls to it. */
+.photo-grid a { position: relative; display: block; aspect-ratio: 1; outline-offset: 2px; scroll-margin: 6px; }
 /* Albums show how many images they hold. */
 .photo-grid .photo-count {
     position: absolute;
