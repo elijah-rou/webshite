@@ -6,10 +6,11 @@
       free and unlimited, 3,000 build minutes a month free, 25 MiB per file.
 - [x] `wrangler.jsonc` (assets from `dist/`, 404 page) and a terminal 404 page.
 - [x] sharp declared (Node on Linux could not load it; Bun hid this locally).
-- [ ] Owner: grant `gh` the `workflow` scope so the CI branch `agent/ci-workflow`
-      can be pushed.
-- [ ] Owner: merge PR #1, then import the repository in Cloudflare with the
-      settings in README.
+- [x] CI workflow pushed after the owner granted the `workflow` scope; first run
+      passed (install, check, build, 18 tests on Ubuntu, Node 22.18).
+- [x] Owner created the `webshite` Worker in Cloudflare (2026-10-09).
+- [ ] Preview build of the PR branch on Cloudflare before merging.
+- [ ] Owner: replace placeholder content in a follow-up commit, then merge PR #1.
 
 Acceptance: `wrangler dev` (under Node; Bun hangs its proxy) served /, /about/,
 /writing/, /resume/, a photo page and audio with 200; /about and /blog redirect to
