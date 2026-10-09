@@ -405,6 +405,9 @@ html[data-effects='off'] .screen-glass { display: none; }
 html[data-effects='off'] .screen,
 html[data-effects='off'] .terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) { text-shadow: none; }
 html[data-effects='off'] .reveal-line { animation: none; }
+/* Photo tiles wait hidden until the client script shows them one at a time. */
+.reveal-pending { clip-path: inset(0 100% 0 0); }
+html[data-effects='off'] .reveal-pending { clip-path: none; }
 @keyframes scan-roll { to { background-position: 0 140%; } }
 @keyframes type-line { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
 @media (hover: none) {
