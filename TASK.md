@@ -88,6 +88,24 @@ while Charter ships only on Apple systems.
       detail and the description as the note. Fixed a stale 100ch article limit
       and a 2ch row gap in menu entries. GitHub icon added to the profile links.
 
+## Fix: sound when a visit starts outside the home menu
+
+Symptom (reproduced, headless Chromium with autoplay restricted, fresh profile
+starting at /projects/): the button reads [SOUND ON] but hovering is silent, and
+clicking it turns sound off; a second click was needed to hear anything. Cause:
+browsers allow sound only after a key press or tap, hover never allows it, and
+the button toggled regardless. Home hid it, because the intro's log-in press
+allows sound.
+
+- [x] The first key press, click or tap anywhere allows sound (Escape does not
+      count in browsers), so hovering is heard from then on.
+- [x] While sound is on but not yet allowed, the sound button allows it and
+      confirms with a sound instead of turning it off.
+
+Acceptance (same reproducer): first press on the button keeps [SOUND ON], plays a
+sound, and hovering then plays; or a click on the heading, then hovering plays;
+the button then toggles off and on normally. Intro checks unchanged; no errors.
+
 ## Photo captions on the grid
 
 - [x] Each Photos tile shows its caption underneath in small Zilla Slab, at most

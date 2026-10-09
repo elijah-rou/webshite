@@ -94,5 +94,10 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
         void play('focus');
     }
 
-    return { play, stop, focus };
+    // Browsers allow sound only from a key press or tap; call this from one.
+    function unlock() { void get_context(); }
+
+    function running(): boolean { return context?.state === 'running'; }
+
+    return { play, stop, focus, unlock, running };
 }

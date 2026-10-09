@@ -26,6 +26,9 @@ export const audio = create_audio_player(sound, () => set_audio_unavailable(true
 let music: HTMLAudioElement | undefined;
 
 export function toggle_sound() {
+    // Sound is on but nothing has allowed it yet, so nothing has been heard: this
+    // press allows it, and confirms with a sound rather than turning it off.
+    if (sound() && !audio.running()) { void audio.play('select'); return; }
     const enabled = !sound();
     flush(() => set_sound(enabled));
     save_preference('sound', enabled);
