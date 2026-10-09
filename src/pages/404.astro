@@ -1,0 +1,10 @@
+---
+import Terminal from '../layouts/Terminal.astro';
+import Nav from '../components/Nav.astro';
+// Served by Cloudflare for any address with no page (wrangler.jsonc: not_found_handling).
+---
+<Terminal title="Not found" section="not-found" description="No entry at this address.">
+    <h1>ERROR 404</h1>
+    <p class="prose">No entry at this address.</p>
+    <Nav label="Not found" items={[{ label: 'Main menu', href: '/' }]} />
+</Terminal>

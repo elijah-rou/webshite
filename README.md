@@ -15,6 +15,24 @@ build, `pnpm test` for the audio synthesis and Instagram sync tests, and `pnpm p
 The test launcher supports Node.js and a Bun-backed node shim. Dependency lifecycle
 scripts are disabled; the installed platform binaries are used directly.
 
+## Deploying
+
+Cloudflare Workers serves the static build; `wrangler.jsonc` points it at `dist/`
+and serves `src/pages/404.astro` for unknown addresses. In the Cloudflare dashboard,
+Workers & Pages > Create > Import a repository, choose this repository, and set:
+
+| Setting | Value |
+| --- | --- |
+| Production branch | `master` |
+| Build command | `npx -y pnpm@12.10.1 install --frozen-lockfile && npx -y pnpm@12.10.1 run build` |
+| Deploy command | `npx -y wrangler@4.149.0 deploy` |
+| Variable `SKIP_DEPENDENCY_INSTALL` | `1` (the build image's own pnpm is older than this lockfile) |
+
+Each push to `master` then builds and deploys. Single files are limited to 25 MiB,
+so large recordings or project files belong in R2 rather than `public/music/`.
+To try the deployed behaviour locally, run `npx wrangler dev` after a build, under
+Node.js rather than Bun.
+
 ## Content
 
 Add Markdown posts to `src/content/writing/`. Frontmatter contains `title`,
