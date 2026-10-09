@@ -152,7 +152,7 @@ export default function HackIntro(props: Props) {
     return <div ref={root} class="hack" data-stacked={stacked() ? 'true' : 'false'}
         style={{ 'font-size': font_px() === null ? undefined : `${font_px()}px` }} aria-label="Terminal login">
         <Show when={phase() === 'waiting'}>
-            <p class="hack-gate">ELIJAH ROUSSOS (TM) TERMLINK PROTOCOL</p>
+            <p class="hack-gate">ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL</p>
             <p class="hack-gate hack-blank" aria-hidden="true">{' '}</p>
             <p class="hack-gate">&gt;PRESS ANY KEY OR TAP TO LOG IN<span class="hack-cursor" aria-hidden="true">█</span></p>
         </Show>
@@ -160,7 +160,7 @@ export default function HackIntro(props: Props) {
             <p class="hack-granted">ACCESS GRANTED</p>
         </Show>
         <Show when={phase() === 'hacking'}>
-            <p class="hack-line">ELIJAH ROUSSOS (TM) TERMLINK PROTOCOL</p>
+            <p class="hack-line">ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL</p>
             <p class="hack-line">ENTER PASSWORD NOW</p>
             <p class="hack-line hack-blank" aria-hidden="true">{' '}</p>
             <p class="hack-line">{attempts()} ATTEMPT(S) LEFT:{' ■'.repeat(attempts())}</p>
