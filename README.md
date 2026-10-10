@@ -1,47 +1,173 @@
-# Astro Starter Kit: Minimal
+# Personal terminal
+
+A portfolio and blog styled after Fallout 3's desktop terminals. Astro builds the
+pages; Solid 2 controls the menu, sound settings, music playback and screen zoom.
+
+Requires Node.js 22.18 or newer and pnpm 12.10.1:
 
 ```sh
-npm create astro@latest -- --template minimal
+pnpm install
+pnpm dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+Open the address printed by Astro. Run `pnpm build` for type checking and a static
+build, `pnpm test` for the audio synthesis and Instagram sync tests, and `pnpm preview` to serve the build.
+The test launcher supports Node.js and a Bun-backed node shim. Dependency lifecycle
+scripts are disabled; the installed platform binaries are used directly.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Deploying
 
-## 🚀 Project Structure
+Cloudflare Workers serves the static build; `wrangler.jsonc` points it at `dist/`
+and serves `src/pages/404.astro` for unknown addresses. In the Cloudflare dashboard,
+Workers & Pages > Create > Import a repository, choose this repository, and set:
 
-Inside of your Astro project, you'll see the following folders and files:
+| Setting | Value |
+| --- | --- |
+| Production branch | `master` |
+| Build command | `npx -y pnpm@12.10.1 install --frozen-lockfile && npx -y pnpm@12.10.1 run build` |
+| Deploy command | `npx -y wrangler@4.149.0 deploy` |
+| Non-production branch deploy command | `npx wrangler preview` (the default; needs the `previews` block in `wrangler.jsonc`) |
+| Variable `SKIP_DEPENDENCY_INSTALL` | `1` (the build image's own pnpm is older than this lockfile) |
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Each push to `master` then builds and deploys. Single files are limited to 25 MiB,
+so large recordings or project files belong in R2 rather than `public/music/`.
+To try the deployed behaviour locally, run `npx wrangler dev` after a build, under
+Node.js rather than Bun.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Content
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Add Markdown posts to `src/content/writing/`. Frontmatter contains `title`,
+`description`, `date`, optional `category`, and optional `draft: true`. Drafts are
+excluded from listings and generated routes. `/blog/` redirects to `/writing/`.
+`mock-ring-buffer.md` is a placeholder for checking layout; delete it or set
+`draft: true` before publishing.
 
-Any static assets, like images, can be placed in the `public/` directory.
+Projects live in `src/content/projects/`, one Markdown file per repository with
+`name`, `repo`, `language`, `summary` and `order` in the frontmatter. The list
+shows the summary; each project's page shows the GitHub link first, then the body.
+The current summaries are condensed from each repository's README.
 
-## 🧞 Commands
+Photos come from `src/content/photos/` (JPEG, PNG, WebP or AVIF). Each image file
+is a post, and so is each folder of images, shown in file name order. Start names
+with a date, such as `2026-10-08-harbour.jpg`, to list them newest first; the rest
+of the name becomes the caption. An optional `src/content/photos/photos.json` maps
+a file or folder name to `caption`, `alt` and its `instagram` post URL. The Photos
+screen stays at `/instagram/`; its grid scrolls once it outgrows the screen. The photo viewer
+fits the screen: `<` and `>` beside the image move within an album, the left and
+right arrow keys step through every image across posts, and the buttons below move
+between posts. Clicking the image opens it on Instagram. Stepping swaps the image in
+place (`src/scripts/photo-viewer.ts`) rather than loading a page; each image still
+has its own address, which the viewer keeps in the location bar. Photos keep their colour under the CRT
+effects.
 
-All commands are run from the root of the project, from a terminal:
+### Photos from Instagram
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+`pnpm photos:sync` downloads each Instagram post into its own folder in
+`src/content/photos/` (`01.jpg`, `02.jpg`, ... for albums) and adds its caption
+(first line, without hashtags) and post link to `photos.json`. Existing posts and
+hand edits are kept, so it is safe to rerun. Videos contribute their cover image.
+Commit the results; the build itself never contacts Instagram.
 
-## 👀 Want to learn more?
+It uses the Instagram API with Instagram Login, which only serves professional
+accounts. One-time setup:
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+1. In the Instagram app, switch @eli_takes_photos to a professional (Creator)
+   account. This is free and can be switched back.
+2. At developers.facebook.com, create a Business app with the "Manage messaging
+   and content on Instagram" use case and choose "API setup with Instagram Login"
+   (an app holds only one setup).
+3. Under App roles > Roles, add the account as an Instagram Tester and accept the
+   invite at instagram.com/accounts/manage_access/ (Tester Invites).
+4. Back in the API setup, add the account under "Generate access tokens" and
+   generate a token. No App Review is needed for your own account.
+5. Put `INSTAGRAM_ACCESS_TOKEN=<token>` in `.env.local`, which Git ignores.
+
+Tokens last 60 days. Each sync refreshes the token in `.env.local`, so running it
+at least every 60 days keeps it valid; after that, generate a new one.
+
+The first visit to the site, if it lands on the home page, plays a Fallout 3
+style hack (`src/components/HackIntro.tsx`, puzzle logic in `src/scripts/hack.ts`).
+It opens on a log-in prompt, because browsers only allow sound after a key press
+or tap; that press starts it (Escape skips it). The memory dump prints, two wrong
+guesses are scored, the password matches and access is granted, then the menu
+prints. Any key or tap skips the rest. A
+`terminal-intro` entry in local storage marks the visit; `/?intro` or the
+[LOGOUT] button in the footer replays it.
+Visitors who prefer reduced motion skip it.
+
+Profile links (GitHub, LinkedIn, Instagram, X, Mastodon) at the bottom left of the
+screen are in `src/components/SocialLinks.astro`, each drawn as a 12×12 pixel
+glyph. The GitHub and Mastodon links carry `rel="me"` for profile verification.
+
+`src/pages/about.astro` holds short placeholder copy from things Elijah has shared
+publicly, with a personnel record (name, location, education) beside the portrait. The portrait is generated by
+`node scripts/portrait.mjs [photo]` from `src/assets/portrait-source.jpg` (the
+public LinkedIn profile photo, 200×200): a crop around the face, dithered into
+eight phosphor shades at 144×144 and shown with crisp pixels. `PORTRAIT_SIZE` and
+`PORTRAIT_SHADES` override the size and shade count.
+
+`src/pages/resume.astro` holds the résumé text; the phone number and email from
+the PDF are not published.
+
+Put music files in `public/music/`. The Music screen lists them at build time,
+recordings first, using the file name without its extension as the title:
+
+| Suffix | Listed as | Selecting it |
+| --- | --- | --- |
+| `.flac`, `.mp3` | Recording | Plays or stops it in the terminal |
+| `.flp` | FL Studio project | Downloads it |
+| `.bwproject` | Bitwig project | Downloads it |
+| `.logicx.zip` | Logic Pro project | Downloads it |
+
+Logic projects are folders, so zip them first. Any other file, except dotfiles,
+stops the build with a list of supported suffixes. Large audio and project files
+are committed and deployed with the site; consider Git LFS before adding many.
+
+## Controls
+
+Writing, Projects and Music have a fuzzy search. Typing anywhere on those screens
+starts it, and `/` jumps to it. Each term must appear in an entry's title, date or
+format, or description, either as a substring or as letters in order from the
+start of a word (`rbuf` finds "ring buffer"). Numbers and dates match exactly, so
+`2026-10` finds October 2026. Post and project text also match exact words. Arrow
+keys move through results, Enter opens one, and Escape clears the search before it
+goes back. The search needs JavaScript; without it the full lists are shown.
+
+Use the mouse, Tab, or arrow keys to select an entry. Enter opens the focused entry;
+Escape goes back. The Back link stays visible when the screen content scrolls.
+Sound begins with a click or keyboard gesture. SOUND and CRT preferences persist
+when browser storage is available. Muting stops effects and the playing recording.
+CRT OFF removes scanlines, glow and the line-by-line screen reveal. Reduced-motion
+preferences also disable the reveal, the scan band and the zoom animation.
+
+On phones (700px wide or less) every screen, the home menu and the intro included,
+is shown close up and the housing is neither drawn nor downloaded.
+Elsewhere, the home menu shows the whole terminal. Opening any entry zooms in until the screen's
+content fills the window, cropping most of the glass margin and the housing; Back
+zooms out again. The header and the Back bar always stay in view. While zoomed, the screen's text is laid
+out smaller so it reads at 20 to 28px depending on the window size.
+Without JavaScript every page shows the whole terminal.
+
+Every screen opened from the home menu is a reading page (`data-reading` on
+`<main>`, set by the layout): a column at 94% of the screen's width with body text
+in Zilla Slab (about 27px on a 1440px window, at least 18px on screen) in pale
+phosphor. Menu entries keep the terminal font and selection bar; their descriptions
+are in Zilla Slab. Code uses a Latin subset of Iosevka Term Slab (see
+`src/fonts/SOURCES.md`; rebuild with `scripts/subset-iosevka.sh`). The usual CRT
+effects apply and CRT OFF removes them; the line-by-line reveal runs only on the
+home menu. Headings, links, list markers and code stay phosphor green.
+
+Terminal navigation uses two WAVs reported by their uploader to come from Fallout 3,
+with synthesized clicks as a fallback. See [audio sources](public/audio/SOURCES.md).
+
+The weathered housing is a generated image; see its prompt and provenance in
+[image sources](src/assets/SOURCES.md). The screen text remains selectable HTML.
+Static content and navigation work without JavaScript; recordings then open in the
+browser's own player.
+
+## Solid 2
+
+Solid is pinned to `2.0.0-rc.13`. Astro's official integration currently supports
+Solid 1, so this project uses Solid 2's Vite plugin and a browser mount entry.
+See [the integration decision](docs/decisions/002-solid-terminal.md) for lifecycle
+and compatibility details.

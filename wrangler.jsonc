@@ -1,0 +1,16 @@
+// Cloudflare Workers serves the static build in dist/; there is no Worker code.
+// Build and deploy settings live in the Cloudflare dashboard (see README).
+{
+	"$schema": "https://unpkg.com/wrangler@4.149.0/config-schema.json",
+	"name": "webshite",
+	"compatibility_date": "2026-10-09",
+	// Each preview gets a public workers.dev address (also switched on in the dashboard).
+	"preview_urls": true,
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "404-page"
+	},
+	// Required by `wrangler preview`, which deploys pull request branches. Empty,
+	// because previews need no settings of their own.
+	"previews": {}
+}

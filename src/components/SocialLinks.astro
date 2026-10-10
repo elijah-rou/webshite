@@ -1,0 +1,101 @@
+---
+// Profile links drawn as 12×12 pixel glyphs, so they render like terminal text.
+interface Social { label: string; href: string; rel?: string; glyph: string[] }
+const socials: Social[] = [
+    {
+        label: 'GitHub', href: 'https://github.com/elijah-rou', rel: 'me',
+        glyph: [
+            '...######...',
+            '.##########.',
+            '.##.####.##.',
+            '.#........#.',
+            '##........##',
+            '##........##',
+            '##........##',
+            '.##......##.',
+            '.#.##....##.',
+            '.##.#....##.',
+            '..###....#..',
+            '...##....#..',
+        ],
+    },
+    {
+        label: 'LinkedIn', href: 'https://www.linkedin.com/in/elijah-roussos/',
+        glyph: [
+            '.##########.',
+            '############',
+            '##.#########',
+            '############',
+            '##.##....###',
+            '##.##.##.###',
+            '##.##.##.###',
+            '##.##.##.###',
+            '##.##.##.###',
+            '############',
+            '############',
+            '.##########.',
+        ],
+    },
+    {
+        label: 'Instagram', href: 'https://www.instagram.com/eli_takes_photos/',
+        glyph: [
+            '.##########.',
+            '#..........#',
+            '#........#.#',
+            '#...####...#',
+            '#..#....#..#',
+            '#..#....#..#',
+            '#..#....#..#',
+            '#..#....#..#',
+            '#...####...#',
+            '#..........#',
+            '#..........#',
+            '.##########.',
+        ],
+    },
+    {
+        label: 'X', href: 'https://x.com/elijah_rou',
+        glyph: [
+            '##.........#',
+            '.##.......#.',
+            '..##.....#..',
+            '...##...#...',
+            '....##.#....',
+            '.....##.....',
+            '.....###....',
+            '....#..##...',
+            '...#....##..',
+            '..#......##.',
+            '.#........##',
+            '#.........##',
+        ],
+    },
+    {
+        label: 'Mastodon', href: 'https://mastodon.social/@elijah_rou', rel: 'me',
+        glyph: [
+            '..########..',
+            '.##########.',
+            '############',
+            '##.......###',
+            '##.##.##.###',
+            '##.##.##.###',
+            '##.##.##.###',
+            '##.##.##.###',
+            '############',
+            '###########.',
+            '.###........',
+            '..##........',
+        ],
+    },
+];
+
+function glyph_path(rows: string[]): string {
+    if (rows.length !== 12 || rows.some(row => row.length !== 12)) { throw new Error('Social glyphs must be 12×12'); }
+    return rows.flatMap((row, y) => [...row].flatMap((cell, x) => cell === '#' ? [`M${x} ${y}h1v1h-1z`] : [])).join('');
+}
+---
+<nav class="social-links" aria-label="Elsewhere">
+    {socials.map(({ label, href, rel, glyph }) => <a href={href} rel={rel} aria-label={label} title={label}>
+        <svg viewBox="0 0 12 12" aria-hidden="true" shape-rendering="crispEdges"><path d={glyph_path(glyph)} /></svg>
+    </a>)}
+</nav>

@@ -1,0 +1,18 @@
+---
+import Terminal from '../layouts/Terminal.astro';
+import Nav from '../components/Nav.astro';
+import { read_music_files } from '../lib/music';
+const items = read_music_files().map(file => ({
+    label: file.title,
+    href: file.href,
+    kind: file.kind === 'recording' ? 'recording' as const : 'download' as const,
+    detail: `${file.format}  ${file.size}`,
+}));
+---
+<Terminal title="Music" section="music">
+    <h1>MUSIC</h1>
+    {items.length > 0 ? <>
+        <Nav label="Music files" items={items} searchable />
+        <div data-music-status><p class="music-status"></p></div>
+    </> : <p class="prose">No files yet.</p>}
+</Terminal>

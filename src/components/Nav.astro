@@ -1,36 +1,20 @@
 ---
-
+import type { MenuKind } from './TerminalMenu';
+interface Item { label: string; href: string; kind?: MenuKind; detail?: string; note?: string; body?: string }
+// searchable adds a fuzzy search box once the client script mounts the menu.
+interface Props { items: Item[]; label?: string; searchable?: boolean }
+const { items, label = 'Main menu', searchable = false } = Astro.props;
 ---
-
-<header class="bg-black">
-  <div class="flex lg:flex-1">
-    <a href="#" class="-m-1.5 p-1.5">
-      <span class="sr-only">Elijah Roussos</span>
-      <img
-        class="h-8 w-auto"
-        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-        alt=""
-      />
-    </a>
-  </div>/div>
-  <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
-    <a href="/" class="text-sm font-semibold leading-6 text-sky-50">Home</a>
-    <a href="/about" class="text-sm font-semibold leading-6 text-sky-50"
-      >About</a
-    >
-    <a href="/blog" class="text-sm font-semibold leading-6 text-sky-50">Home</a>
-    <a href="/instagram" class="text-sm font-semibold leading-6 text-sky-50"
-      >EliTakesPhotos</a
-    >
-  </nav>
-  <div class="flex lg:flex-1 justify-end">
-    <a href="#" class="-m-1.5 p-1.5">
-      <span class="sr-only">Elijah Roussos</span>
-      <img
-        class="h-8 w-auto"
-        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-        alt=""
-      />
-    </a>
-  </div>
-</header>
+<div data-terminal-menu data-searchable={searchable ? '' : undefined}>
+    {searchable && <p class="menu-search" aria-hidden="true">SEARCH&gt; </p>}
+    <nav class="terminal-menu" aria-label={label}>
+        {items.map(({ label, href, kind = 'link', detail = '', note = '', body = '' }, index) =>
+            <a href={href} download={kind === 'download' ? '' : undefined} data-label={label}
+                data-kind={kind} data-detail={detail} data-note={note} data-body={body || undefined}
+                data-selected={index === 0}>
+                <span class="menu-label"><span aria-hidden="true">&gt; </span>{label}</span>
+                {detail && <span class="menu-detail">{detail}</span>}
+                {note && <span class="menu-note">{note}</span>}
+            </a>)}
+    </nav>
+</div>

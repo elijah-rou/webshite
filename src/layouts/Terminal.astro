@@ -1,0 +1,99 @@
+---
+import { getImage } from 'astro:assets';
+import { ClientRouter } from 'astro:transitions';
+import housing from '../assets/terminal-housing.png';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/vt323/400.css';
+import vt323 from '@fontsource/vt323/files/vt323-latin-400-normal.woff2?url';
+import '@fontsource/zilla-slab/400.css';
+import '@fontsource/zilla-slab/400-italic.css';
+import '@fontsource/zilla-slab/700.css';
+import '../styles/terminal.css';
+import SocialLinks from '../components/SocialLinks.astro';
+interface Props {
+    title: string;
+    section: 'home' | 'about' | 'writing' | 'projects' | 'resume' | 'music' | 'photos' | 'not-found';
+    description?: string;
+    back?: string;
+    // Key hints under the monitor; ESC BACK is added on every screen but home.
+    hints?: string[];
+}
+const {
+    title, section, description = 'Elijah Roussos: writing, projects, music and photos.', back = '/',
+    hints = ['↑ ↓ SELECT', 'ENTER OPEN'],
+} = Astro.props;
+
+// The housing PNG is about 2 MB; AVIF (WebP where AVIF is unsupported) is a tenth of
+// that. Phones show only the screen and never draw it.
+const [avif, webp] = await Promise.all([
+    getImage({ src: housing, format: 'avif', quality: 75 }),
+    getImage({ src: housing, format: 'webp', quality: 90 }),
+]);
+// Hidden on phones; this empty GIF keeps them from downloading the housing.
+const EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+---
+<!doctype html>
+<html lang="en" data-effects="on">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content={description} />
+        <meta name="theme-color" content="#11120e" />
+        <title>{title} | Elijah Roussos</title>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <!-- The screen's font, requested with the stylesheet rather than after it. -->
+        <link rel="preload" href={vt323} as="font" type="font/woff2" crossorigin />
+        <ClientRouter />
+        <!-- The first visit to the site, if it starts at home, opens with the hack
+             intro (/?intro replays it); set before the first paint so the menu does
+             not flash. -->
+        <script is:inline define:vars={{ home: section === 'home' }}>
+            try {
+                const first = !localStorage.getItem('terminal-intro');
+                localStorage.setItem('terminal-intro', 'seen');
+                const replay = new URLSearchParams(location.search).has('intro');
+                if (home && (first || replay) && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    document.documentElement.setAttribute('data-intro', '');
+                }
+            } catch { /* Without storage the intro is skipped rather than repeated. */ }
+        </script>
+    </head>
+    <body transition:animate="none">
+        <a class="skip-link" href="#content">Skip to content</a>
+        <div class="terminal-station">
+            <div class="monitor">
+                <picture>
+                    <source media="(max-width: 700px)" srcset={EMPTY_GIF} />
+                    <source type="image/avif" srcset={avif.src} />
+                    <img class="monitor-housing" src={webp.src} alt="" width={housing.width} height={housing.height}
+                        fetchpriority="high" />
+                </picture>
+                <div class="screen">
+                    <div class="screen-glass" aria-hidden="true"></div>
+                    <div class="screen-scroll">
+                        <header class="system-header">
+                            <p>ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM</p>
+                            <p>COPYRIGHT 2075-2077 ROBCO INDUSTRIES</p>
+                        </header>
+                        <main id="content" tabindex="-1" data-section={section} data-reading={section !== 'home' ? '' : undefined}><slot /></main>
+                    </div>
+                    <div class="screen-bottom">
+                        {section !== 'home' && <a class="back-link" data-back href={back}>&gt; Back</a>}
+                        <SocialLinks />
+                        <div data-terminal-controls>
+                            <div class="terminal-controls" aria-hidden="true">
+                                <span>[LOGOUT]</span>
+                                <span>[SOUND ON]</span>
+                                <span>[CRT ON]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="keyboard-hint" aria-hidden="true">
+                {hints.map(hint => <span>{hint}</span>)}{section !== 'home' && <span>ESC BACK</span>}
+            </p>
+        </div>
+        <script>import '../scripts/terminal.tsx';</script>
+    </body>
+</html>

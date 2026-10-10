@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+import Nav from './Nav.astro';
+import { markdown_plain_text } from '../lib/plain-text';
+const posts = (await getCollection('writing', ({ data }) => !data.draft))
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const items = posts.map(post => ({
+    label: post.data.title,
+    detail: post.data.date.toISOString().slice(0, 10),
+    href: `/writing/${post.id}/`,
+    note: post.data.description,
+    body: markdown_plain_text(post.body ?? ''),
+}));
+---
+<h1>WRITING</h1>
+{items.length > 0 ? <Nav items={items} label="Writing entries" searchable /> : <p class="prose">No entries yet.</p>}

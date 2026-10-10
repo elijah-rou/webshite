@@ -1,0 +1,487 @@
+@tailwind utilities;
+
+/* Code font: a Latin subset of Iosevka Term Slab; see src/fonts/SOURCES.md. */
+@font-face {
+    font-family: 'Iosevka Term Slab';
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/IosevkaTermSlab-Regular.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Iosevka Term Slab';
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/IosevkaTermSlab-Bold.woff2') format('woff2');
+}
+
+:root {
+    color-scheme: dark;
+    --phosphor: #7cf59a;
+    --phosphor-ink: #052010;
+    --screen: #06140b;
+    --muted: #5fb873;
+    --glow: 0 0 2px #8dffa899, 0 0 9px #3dff7a3d;
+}
+* { box-sizing: border-box; }
+html { background: #11120e; }
+body {
+    margin: 0;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: 22px 16px;
+    color: var(--phosphor);
+    background:
+        radial-gradient(ellipse at 50% 70%, #48473838, transparent 61%),
+        radial-gradient(ellipse at 50% 35%, #2b30223d, transparent 70%),
+        #11120e;
+}
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: default; opacity: .45; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 1px solid var(--phosphor); outline-offset: 3px; }
+::selection { background: var(--phosphor); color: var(--screen); }
+
+/* The housing is 1374×1145; keep the whole monitor within the viewport height. */
+.terminal-station {
+    position: relative;
+    width: min(980px, 100%, max(640px, calc((100svh - 70px) * 1.2)));
+    transform-origin: var(--zoom-origin, 50% 50%);
+}
+/* Set by the client script: every screen except the home menu is viewed close up. */
+html[data-zoom='in'] .terminal-station {
+    transform: translate(var(--zoom-x), var(--zoom-y)) scale(var(--zoom-scale));
+}
+html[data-zoom='in'] {
+    overflow: clip;
+    /* Keeps scanlines at device scale under magnification. */
+    --scan-px: calc(1px / var(--zoom-scale));
+}
+html[data-zoom='in'] body { overflow: clip; }
+html[data-zoom='in'] .screen { font-size: var(--zoom-font); }
+html[data-zoom-animate] .terminal-station { transition: transform .55s cubic-bezier(.3, .1, .2, 1); }
+.monitor {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1374 / 1145;
+    container-type: inline-size;
+    filter: drop-shadow(0 28px 25px #0009);
+}
+.monitor-housing { position: absolute; inset: 0; width: 100%; height: 100%; }
+.screen {
+    position: absolute;
+    left: 12.7%;
+    right: 11.1%;
+    top: 12%;
+    bottom: 28.4%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 3.5% 4.6% 2.5%;
+    border-radius: 8% / 10%;
+    background: radial-gradient(ellipse at 50% 42%, #113520 0%, #0a2313 45%, #04110a 82%, #020804 100%);
+    color: var(--phosphor);
+    font-family: 'VT323', monospace;
+    font-size: clamp(15px, 2.15cqi, 21px);
+    line-height: 1.22;
+    text-shadow: var(--glow);
+    box-shadow: inset 0 0 40px 8px #000b;
+}
+.screen-glass {
+    pointer-events: none;
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+    border-radius: inherit;
+    background:
+        repeating-linear-gradient(to bottom, #0000 0, #0000 calc(2 * var(--scan-px, 1px)),
+            #0003 calc(3 * var(--scan-px, 1px)), #0000 calc(4 * var(--scan-px, 1px))),
+        radial-gradient(ellipse at 67% 8%, #c1ffc009, transparent 48%);
+    box-shadow: inset 0 0 30px 14px #0008;
+}
+/* The slow bright band that rolls down Fallout 3 terminal screens. */
+.screen-glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, #0000, #9dffb00b 45%, #9dffb014 50%, #0000) 0 -40% / 100% 22% no-repeat;
+    animation: scan-roll 9s linear infinite;
+}
+.screen-scroll {
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: #4b9658 #051309;
+    scrollbar-width: thin;
+    flex: 1;
+    min-height: 0;
+    padding: 0 5px 8px 2px;
+}
+/* Small, so the menu rather than the banner draws the eye. */
+.system-header { margin-bottom: 1.1em; text-align: center; font-size: .7em; letter-spacing: .04em; }
+h1, h2, p { margin: 0; font: inherit; }
+h1 { margin-bottom: .6em; padding-bottom: .25em; border-bottom: 1px solid #7cf59a60; }
+h2 { margin-bottom: .6em; }
+#content:focus { outline: none; }
+.terminal-greeting { margin-bottom: .6em; }
+.terminal-menu { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.terminal-menu a, .back-link {
+    display: block;
+    padding: 2px 5px 3px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    border: 0;
+    border-radius: 0;
+    color: inherit;
+    background: transparent;
+    text-align: left;
+    font: inherit;
+}
+/* The selection bar follows focus, so it replaces the focus outline in menus. */
+.terminal-menu a:focus-visible { outline: none; }
+/* Keeps the two spaces between a date and a title in the writing index. */
+.terminal-menu a { width: min(18em, 100%); white-space: pre-wrap; }
+.terminal-menu a[data-selected='true'], .terminal-menu a:hover,
+.back-link:hover, .back-link:focus-visible {
+    color: var(--phosphor-ink);
+    background: var(--phosphor);
+    text-shadow: none;
+    box-shadow: 0 0 9px #6dff8f50;
+    outline-offset: 1px;
+}
+.terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) {
+    background: transparent;
+    color: inherit;
+    text-shadow: var(--glow);
+    box-shadow: none;
+}
+.screen-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 8px; }
+.screen-bottom [data-terminal-controls] { margin-left: auto; }
+.back-link { width: fit-content; white-space: nowrap; }
+.social-links { display: flex; align-items: center; gap: .55em; }
+.terminal-controls button, .terminal-controls span { white-space: nowrap; }
+.social-links a { display: block; padding: 3px; color: var(--muted); }
+.social-links svg { display: block; width: .8em; height: .8em; fill: currentColor; filter: drop-shadow(0 0 2px #6dff8f66); }
+.social-links a:hover, .social-links a:focus-visible { color: var(--phosphor); }
+html[data-effects='off'] .social-links svg { filter: none; }
+.terminal-controls { display: flex; justify-content: flex-end; gap: 15px; }
+.terminal-controls button, .terminal-controls span {
+    background: transparent;
+    color: var(--muted);
+    font-size: .72em;
+    border: 0;
+    padding: 3px 0;
+}
+/* Server-rendered placeholder that reserves space until Solid mounts the controls. */
+.terminal-controls[aria-hidden='true'] { visibility: hidden; }
+.terminal-controls button:hover:not(:disabled) { color: var(--phosphor); }
+.keyboard-hint {
+    display: flex;
+    justify-content: center;
+    gap: 26px;
+    margin: 4px 0 0;
+    color: #838273;
+    font: 10px 'IBM Plex Mono', monospace;
+    letter-spacing: .5px;
+}
+/* Menus with a detail column, such as music files, span the screen. */
+.terminal-menu a:has(.menu-detail) { display: flex; justify-content: space-between; gap: 2ch; width: 100%; }
+.menu-detail { flex: none; color: var(--muted); }
+.terminal-menu a[data-selected='true'] .menu-detail, .terminal-menu a:hover .menu-detail { color: inherit; }
+.terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) .menu-detail { color: var(--muted); }
+/* A menu entry with a note puts it on its own line under the label and detail. */
+.terminal-menu a:has(.menu-note) { display: grid; grid-template-columns: 1fr auto; gap: .15em 2ch; width: 100%; padding-bottom: 5px; }
+.menu-note { grid-column: 1 / -1; padding-left: 2ch; font-size: .85em; color: var(--muted); white-space: normal; }
+/* On reading pages, entry descriptions are prose: Zilla Slab, not the terminal face. */
+[data-reading] .menu-note { font-family: 'Zilla Slab', Georgia, serif; font-size: .78em; line-height: 1.45; text-shadow: 0 0 1px #9dffb02e; }
+[data-reading] .terminal-menu a[data-selected='true'] .menu-note, [data-reading] .terminal-menu a:hover .menu-note { text-shadow: none; }
+.terminal-menu a[data-selected='true'] .menu-note, .terminal-menu a:hover .menu-note { color: inherit; }
+.terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) .menu-note { color: var(--muted); }
+.terminal-menu:has(.menu-note) { gap: .4em; }
+.project-summary { margin-top: 1.2em; }
+.article-meta a { text-decoration: underline; text-underline-offset: .15em; }
+.resume h2:first-child { margin-top: 0; }
+.resume h3 { margin-bottom: .2em; font-size: 1.1em; }
+.resume .resume-when { margin-bottom: .6em; color: var(--muted); font-size: .9em; }
+.resume-skills { margin: 0; }
+.resume-skills dt { color: var(--muted); }
+.resume-skills dd { margin: 0 0 .8em 2ch; }
+/* Fuzzy search above searchable menus, styled as a terminal prompt. */
+.menu-search { display: flex; align-items: baseline; gap: .3ch; margin: 0 0 .7em; padding: 0 5px; color: var(--phosphor); }
+.menu-search input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    color: var(--phosphor);
+    background: transparent;
+    font: inherit;
+    text-shadow: inherit;
+    caret-color: var(--phosphor);
+    -webkit-appearance: none;
+    appearance: none;
+}
+.menu-search input::-webkit-search-cancel-button { display: none; }
+.menu-search:focus-within { background: #7cf59a14; }
+.menu-search-count { color: var(--muted); font-size: .85em; }
+/* Server-rendered placeholder that reserves the line until the client mounts the box. */
+p.menu-search { visibility: hidden; }
+.menu-empty { padding: 2px 5px; color: var(--muted); }
+/* About: a personnel record with the portrait drawn in phosphor pixels. */
+.personnel { display: grid; grid-template-columns: minmax(6em, 9em) 1fr; gap: 1.2em 1.6em; align-items: start; }
+.personnel-body { display: grid; gap: 1.1em; min-width: 0; }
+.portrait {
+    --corner: linear-gradient(var(--phosphor), var(--phosphor));
+    position: relative;
+    margin: 0;
+    padding: .45em;
+    /* Corner brackets frame the image like a terminal viewport. */
+    background:
+        var(--corner) left top / 1.2em 2px no-repeat, var(--corner) left top / 2px 1.2em no-repeat,
+        var(--corner) right top / 1.2em 2px no-repeat, var(--corner) right top / 2px 1.2em no-repeat,
+        var(--corner) left bottom / 1.2em 2px no-repeat, var(--corner) left bottom / 2px 1.2em no-repeat,
+        var(--corner) right bottom / 1.2em 2px no-repeat, var(--corner) right bottom / 2px 1.2em no-repeat;
+}
+.portrait::after {
+    content: '';
+    position: absolute;
+    inset: .45em .45em auto;
+    aspect-ratio: 1;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, #0000 0 2px, #0004 2px 3px);
+}
+.portrait img { display: block; width: 100%; height: auto; image-rendering: pixelated; filter: drop-shadow(0 0 6px #4dff7a40); }
+.portrait figcaption { margin-top: .4em; color: var(--muted); font-size: .72em; letter-spacing: .05em; }
+.personnel-record { margin: 0; display: grid; gap: .25em; }
+.personnel-record div { display: grid; grid-template-columns: 11ch 1fr; gap: 1ch; padding-bottom: .25em; border-bottom: 1px dashed #7cf59a26; }
+.personnel-record dt { color: var(--muted); }
+.personnel-record dd { margin: 0; }
+html[data-effects='off'] .portrait::after { display: none; }
+html[data-effects='off'] .portrait img { filter: none; }
+@media (max-width: 700px) {
+    /* Portrait beside the record; the text runs full width underneath. */
+    .personnel { grid-template-columns: 6.5em 1fr; gap: 1em; }
+    .personnel-body { display: contents; }
+    .personnel-body .prose { grid-column: 1 / -1; }
+    .portrait figcaption { display: none; }
+    .personnel-record div { grid-template-columns: 1fr; gap: 0; }
+}
+.music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
+.article-meta { display: flex; gap: 2ch; margin-bottom: 1.4em; color: var(--muted); font-size: .86em; }
+.prose { line-height: 1.42; overflow-wrap: anywhere; text-shadow: 0 0 2px #8dffa855; }
+.prose p, .prose ul, .prose ol, .prose pre, .prose blockquote { margin: 0 0 1em; }
+.prose h2, .prose h3 { margin: 1.6em 0 .6em; font: inherit; }
+.prose h2 { text-transform: uppercase; }
+.prose h3 { color: var(--muted); }
+.prose ul, .prose ol { padding-left: 3ch; }
+.prose li + li { margin-top: .3em; }
+.prose a { text-decoration: underline; text-underline-offset: .15em; }
+.prose code { font: inherit; }
+.prose :not(pre) > code { padding: 0 .3ch; background: #7cf59a1a; }
+.prose pre { overflow-x: auto; padding: .6em 2ch; font: inherit; line-height: 1.25; border: 1px solid #7cf59a40; }
+.prose img { max-width: 100%; height: auto; }
+.prose blockquote { margin-left: 0; padding-left: 2ch; border-left: 2px solid #7cf59a66; color: var(--muted); }
+/* Photos keep their own colour; the screen's scanlines and glare still lie over them. */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(9em, 45%), 1fr));
+    gap: .6em;
+    margin-bottom: 1.2em;
+}
+/* The scroll margin keeps a focused tile's outline in view when the grid scrolls to it. */
+.photo-grid a { display: block; scroll-margin: 6px; }
+.photo-grid a:focus { outline: none; }
+.photo-thumb { position: relative; display: block; aspect-ratio: 1; outline-offset: 2px; }
+/* The caption under each tile, small and at most two lines. */
+.photo-tile-caption {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: .35em;
+    color: var(--muted);
+    font-family: 'Zilla Slab', Georgia, serif;
+    font-size: .64em;
+    text-align: center;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+/* Albums show how many images they hold. */
+.photo-grid .photo-count {
+    position: absolute;
+    right: .3em;
+    bottom: .2em;
+    padding: 0 .4ch;
+    background: #020a04d9;
+    line-height: 1.1;
+}
+.photo-grid a:focus .photo-thumb { outline: 2px solid var(--phosphor); }
+/* Without JavaScript, hover is the only way the pointer can highlight a thumbnail. */
+.photo-grid:not(:focus-within) a:hover .photo-thumb { outline: 2px solid var(--phosphor); }
+.photo-grid img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* The photo viewer fills the screen without scrolling: a frame of constant size
+   for the image, then the caption and the two post buttons. */
+.screen-scroll:has([data-photo-viewer]) { display: flex; flex-direction: column; overflow: hidden; }
+.screen-scroll:has([data-photo-viewer]) main { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.photo-viewer { display: flex; flex: 1; flex-direction: column; gap: .5em; min-height: 0; }
+.photo-frame { position: relative; display: grid; flex: 1; place-items: center; min-height: 0; container-type: size; }
+.photo-stage { position: relative; }
+.photo-link { display: block; }
+.photo-link img {
+    display: block;
+    width: auto;
+    max-width: calc(100cqw - 7ch);
+    height: auto;
+    max-height: 100cqh;
+    border: 1px solid #7cf59a60;
+}
+.photo-link:focus-visible { outline: 2px solid var(--phosphor); outline-offset: 2px; }
+.photo-frame[data-loading] .photo-link img { visibility: hidden; }
+.photo-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: .3em 2ch;
+    border: 1px solid #7cf59a60;
+    background: #04110ae6;
+    transform: translate(-50%, -50%);
+}
+.photo-loading[hidden] { display: none; }
+/* Albums put < and > against the sides of the image. */
+.photo-step {
+    position: absolute;
+    top: 50%;
+    width: 1.4ch;
+    padding: .4em 0;
+    font-size: 1.6em;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    transform: translateY(-50%);
+}
+.photo-step[hidden] { display: none; }
+.photo-step.previous { right: calc(100% + .4ch); }
+.photo-step.next { left: calc(100% + .4ch); }
+/* One line, so the frame above keeps its height whatever the caption's length. */
+.photo-caption { display: flex; justify-content: center; gap: 2ch; color: var(--muted); white-space: nowrap; }
+.photo-title { overflow: hidden; min-width: 0; text-overflow: ellipsis; }
+.photo-count { flex: none; }
+.photo-count[hidden] { display: none; }
+.photo-posts { display: grid; grid-template-columns: 1fr 1fr; gap: 1ch; }
+.photo-posts a { padding: .1em 1ch; text-decoration: none; }
+.photo-posts .next { text-align: right; }
+.photo-posts a[aria-disabled='true'] { color: #7cf59a40; text-shadow: none; cursor: default; }
+a.photo-step:hover, a.photo-step:focus-visible, .photo-posts a[href]:hover, .photo-posts a[href]:focus-visible {
+    outline: none;
+    background: var(--phosphor);
+    color: var(--phosphor-ink);
+    text-shadow: none;
+}
+
+/* Every screen opened from the home menu is a reading page (data-reading on <main>):
+   Zilla Slab across the screen's width in pale
+   phosphor with a faint glow, under the usual CRT effects. Only menu entries
+   print line by line. Headings, links and code keep the full phosphor green. */
+/* Slightly inset from the screen's content width, centred. */
+main[data-reading] { width: 94%; margin: 0 auto; }
+[data-reading] h1 { font-size: 1.35em; color: var(--phosphor); border-bottom-color: #7cf59a40; }
+[data-reading] .prose {
+    font-family: 'Zilla Slab', Georgia, serif;
+    font-size: .96em;
+    line-height: 1.55;
+    color: #d3ecd6;
+    text-shadow: 0 0 1px #9dffb02e, 0 0 7px #3dff7a12;
+}
+html[data-effects='off'] [data-reading] .prose { text-shadow: none; }
+/* At least 17px on screen once magnified, which matters on phones. */
+html[data-zoom='in'] [data-reading] .prose { font-size: max(.96em, calc(18px / var(--zoom-scale))); }
+[data-reading] .prose pre, [data-reading] .prose code { font-family: 'Iosevka Term Slab', 'IBM Plex Mono', monospace; font-size: .8em; color: #aef2bd; }
+[data-reading] .prose pre code { font-size: 1em; }
+[data-reading] .prose pre { line-height: 1.5; border-color: #7cf59a33; background: #7cf59a0a; }
+[data-reading] .prose :not(pre) > code { background: #7cf59a14; }
+[data-reading] .prose h2, [data-reading] .prose h3 { font-family: 'VT323', monospace; font-size: 1.4em; line-height: 1.2; color: var(--phosphor); }
+[data-reading] .prose h2::before { content: '> '; }
+[data-reading] .prose h3 { text-transform: none; }
+[data-reading] .prose a { color: #8ff0a4; }
+[data-reading] .prose blockquote { color: #a9cbaf; border-left-color: #7cf59a59; }
+[data-reading] .prose ul > li::marker { content: '>  '; font-family: 'VT323', monospace; color: var(--phosphor); }
+[data-reading] .prose ol > li::marker { font-family: 'VT323', monospace; color: var(--phosphor); }
+
+.skip-link { position: fixed; top: -80px; left: 16px; z-index: 10; padding: 10px; background: var(--phosphor); color: #06140b; }
+.skip-link:focus { top: 8px; }
+
+/* First visit: a Fallout 3 hack plays before the home menu (src/components/HackIntro.tsx).
+   html[data-intro] is set before the first paint and removed when the hack ends. */
+.hack-root { display: none; }
+html[data-intro] .hack-root { display: block; }
+html[data-intro] .system-header, html[data-intro] .screen-bottom, html[data-intro] main > :not(.hack-root) { display: none; }
+.hack { line-height: 1.22; white-space: pre; }
+.hack p { margin: 0; }
+.hack-body { display: flex; gap: 2ch; }
+.hack[data-stacked='true'] .hack-body { flex-direction: column; gap: 0; }
+.hack-log { display: flex; flex: 1; flex-direction: column; justify-content: flex-end; min-width: 0; overflow: hidden; }
+/* Under the dump the log keeps its last lines in view, older ones moving up out of
+   it as in the game's log column; flex: none so the height holds in the column. */
+.hack[data-stacked='true'] .hack-log { flex: none; height: calc(5 * 1.22em); }
+.hack-word[data-selected='true'] { background: var(--phosphor); color: var(--phosphor-ink); text-shadow: none; }
+.hack-cursor { animation: hack-blink 1s steps(1, end) infinite; }
+.hack-skip { margin-top: 1.22em; color: var(--muted); }
+.hack-granted { padding-top: 30%; text-align: center; font-size: 1.6em; letter-spacing: .08em; }
+@keyframes hack-blink { 50% { opacity: 0; } }
+
+/* Added per element by the client script, which removes it when the line finishes. */
+.reveal-line {
+    animation: type-line var(--reveal-ms, 60ms) steps(var(--reveal-steps, 20), end) var(--reveal-delay, 0ms) both;
+}
+
+html[data-effects='off'] .screen-glass { display: none; }
+html[data-effects='off'] .screen,
+html[data-effects='off'] .terminal-menu:has(a:hover) a[data-selected='true']:not(:hover) { text-shadow: none; }
+html[data-effects='off'] .reveal-line { animation: none; }
+/* Photo tiles wait hidden until the client script shows them one at a time. */
+.reveal-pending { clip-path: inset(0 100% 0 0); }
+html[data-effects='off'] .reveal-pending { clip-path: none; }
+@keyframes scan-roll { to { background-position: 0 140%; } }
+@keyframes type-line { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+@media (hover: none) {
+    .keyboard-hint { display: none; }
+}
+@media (max-width: 700px) {
+    body { padding: 12px 3px; }
+    .terminal-station { width: 100%; }
+    .monitor {
+        aspect-ratio: auto;
+        height: 700px;
+        /* Phones show only the screen (zoom.ts zooms every page in), so the housing
+           is not drawn; the border keeps the screen where the zoom expects it. */
+        border: solid transparent;
+        border-width: 45px 35px 120px 40px;
+    }
+    .monitor-housing { display: none; }
+    .screen { left: 6px; right: 7px; top: 9px; bottom: 25px; padding: 24px 16px 17px; font-size: 20px; }
+    .system-header { font-size: .6em; }
+    .terminal-controls { gap: 10px; }
+    .social-links { gap: .2em; }
+    /* Back and the profile links on one row, the terminal buttons on the next. */
+    .screen-bottom { flex-wrap: wrap; justify-content: flex-start; gap: 2px 8px; }
+    .screen-bottom [data-terminal-controls] { flex-basis: 100%; }
+    .terminal-controls button { min-height: 28px; }
+    .keyboard-hint { gap: 18px; font-size: 8px; }
+    .screen-scroll { padding-right: 7px; }
+    /* The viewer's < and > sit under the photo, each filling half its width, so the
+       photo can take the screen's full width and the arrows are easy to hit. */
+    .photo-stage {
+        --photo-steps: 2.6em;
+        display: grid;
+        grid-template: 'photo photo' auto 'previous next' var(--photo-steps) / 1fr 1fr;
+        column-gap: .6ch;
+    }
+    .photo-link { grid-area: photo; }
+    .photo-link img { max-width: 100cqw; max-height: calc(100cqh - var(--photo-steps)); }
+    .photo-step { position: static; width: auto; padding: .15em 0; font-size: 1.4em; text-align: center; transform: none; }
+    .photo-step.previous { grid-area: previous; }
+    .photo-step.next { grid-area: next; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+}

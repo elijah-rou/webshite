@@ -1,0 +1,87 @@
+---
+import Terminal from '../layouts/Terminal.astro';
+// Text from E Roussos-Resume.pdf. The phone number and email are left out of the public page.
+---
+<Terminal title="Resume" section="resume" description="Eli Roussos: founding ML systems engineer.">
+    <article class="article">
+        <h1>RESUME</h1>
+        <p class="article-meta">
+            <span>New York, NY · Cape Town, ZA</span>
+            <a href="https://github.com/elijah-rou">GitHub</a>
+            <a href="https://www.linkedin.com/in/elijah-roussos/">LinkedIn</a>
+        </p>
+        <div class="prose resume">
+            <h2>Summary</h2>
+            <p>
+                Founding ML systems engineer with 5+ years of software engineering experience, including
+                4+ years building production GPU platforms and infrastructure. Set product direction and
+                led technical direction across execution, routing, serving, storage, and control-plane
+                architecture for a multi-region serverless GPU platform.
+            </p>
+
+            <h2>Experience</h2>
+            <h3>Cerebrium (YC W22): Founding Engineer</h3>
+            <p class="resume-when">Jan 2022 to May 2026 · New York, NY · Hybrid</p>
+            <ul>
+                <li>Built and operated production execution infrastructure across Python runtimes and
+                    multi-region Kubernetes/EKS clusters, supporting 5,000+ cumulative unique applications,
+                    50,000+ daily GPU runs, and a peak managed fleet of 2,000+ GPU nodes; built custom images
+                    with Packer, containerd/Nydus, NVIDIA CDI, and gVisor.</li>
+                <li>Customized a Knative Serving 1.18 fork for GPU workloads, reducing stale-endpoint 5xx
+                    responses by roughly 90% and improving p95 cold-start time from roughly 5 seconds to under
+                    1 second through lifecycle signaling, quarantine, and routing changes.</li>
+                <li>Led the storage architecture shift from EBS to an S3-backed JuiceFS POSIX filesystem with
+                    node-level and network caches plus cross-region mirrors; reduced operating costs by 90%
+                    while sustaining roughly 500 MB/s to 1 GB/s read throughput.</li>
+                <li>Defined a cross-team runtime contract by creating Cerebrium’s initial Python runtime and a
+                    Rust sidecar linked by a custom Unix-socket protocol, isolating logging, lifecycle events,
+                    and platform I/O from user code.</li>
+                <li>Bootstrapped and evolved a Go request gateway with 5 ms p99 overhead across auth and
+                    validation, HTTP/WebSocket proxying, async jobs, cancellation, run tracking, and
+                    OpenTelemetry tracing.</li>
+                <li>Led cross-team design and rollout of Turso-backed metadata and routing state across backend
+                    and gateway services, coordinating dual writes, replica-freshness gates, backfills, and
+                    rollback tooling.</li>
+                <li>Designed a read-only GPU capacity planner using Python, HiGHS MIP/LP optimization,
+                    Kubernetes state, and AWS pricing; a 30-day replay for one regional GPU fleet modeled 7.6%
+                    lower cost with zero underprovisioned planning intervals.</li>
+                <li>Built TypeScript/AWS Lambda services, React interfaces, HTMX/templ Knative dashboards, and
+                    Cerebrium’s initial Python CLI, supporting roughly 1,000 deployments/month and real-time
+                    observability for application metrics and logs.</li>
+            </ul>
+            <h3>Invictus Capital: Data Scientist</h3>
+            <p class="resume-when">Sep 2019 to Jul 2020 · Cape Town, South Africa · On-site</p>
+            <ul>
+                <li>Built latency-sensitive, multi-exchange trading systems and Kubernetes deployment
+                    infrastructure for Bitcoin arbitrage and margin-lending strategies.</li>
+            </ul>
+
+            <h2>Education</h2>
+            <h3>Cornell University: Master of Engineering, Electrical and Computer Engineering</h3>
+            <p class="resume-when">2020 to 2021 · Grade: 4.05/4.3 · Merit Scholar · AI Focus</p>
+            <ul>
+                <li><a href="/projects/ant-neuroevolution/">Ant Neuroevolution</a>: built a PyTorch
+                    multi-agent simulation and evaluated neuroevolution and reinforcement learning for
+                    pheromone-based foraging.</li>
+            </ul>
+            <h3>University of Cape Town: BSc (Hons) Computer Science · BSc Computer Science &amp; Game Development</h3>
+            <p class="resume-when">2015 to 2019 · First Class Honours</p>
+            <p>Honours thesis: Implicative Bayesian Networks.</p>
+
+            <h2>Skills</h2>
+            <dl class="resume-skills">
+                <dt>Languages</dt>
+                <dd>Go, Python (primary); TypeScript, Rust (production); Zig (recent); Elixir, C++ (prior)</dd>
+                <dt>Systems and infrastructure</dt>
+                <dd>Kubernetes, EKS, Knative, Terraform, Docker, Helm, Karpenter, AWS, S3, JuiceFS, containerd,
+                    NVIDIA Container Toolkit/CDI, gVisor</dd>
+                <dt>ML, data, and observability</dt>
+                <dd>PyTorch, PostgreSQL, Redis, RabbitMQ, DynamoDB, Turso, OpenTelemetry, Prometheus, Grafana</dd>
+            </dl>
+
+            <h2>Selected project</h2>
+            <p><a href="/projects/surfsk8s/">surfsk8s</a>: multi-cluster Kubernetes TUI with informer-backed
+                state, CRD discovery, structured filtering, and bounded rendering.</p>
+        </div>
+    </article>
+</Terminal>

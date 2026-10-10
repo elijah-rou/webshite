@@ -1,0 +1,79 @@
+---
+import { getImage } from 'astro:assets';
+import Terminal from '../../../layouts/Terminal.astro';
+import { image_href, instagram_image_url, read_posts, type Post } from '../../../lib/photos';
+import type { ViewerManifest } from '../../../scripts/photo-viewer';
+
+export function getStaticPaths() {
+    const posts = read_posts();
+    return posts.flatMap((post, post_index) => post.images.map((_, index) => ({
+        params: { post: post.id, image: index === 0 ? undefined : String(index + 1) },
+        props: { posts, post_index, index },
+    })));
+}
+interface Props { posts: Post[]; post_index: number; index: number }
+const { posts, post_index, index } = Astro.props;
+// The frame is magnified by the zoom, so the image is sized by its width on screen.
+// Measured across windows from 360×740 to 2560×1440, that is at most 90vw on phones
+// and 45vw per unit of aspect ratio elsewhere; never below its layout width, which
+// the image takes from sizes. Stepping in the viewer measures it exactly instead.
+function sizes_for(width: number, height: number): string {
+    return `(max-width: 700px) 90vw, ${Math.min(100, Math.ceil(45 * width / height))}vw`;
+}
+const WIDTHS = [480, 640, 800, 960, 1200, 1600, 2400];
+
+// Every image of every post, so the viewer steps between them without loading a page.
+const manifest: ViewerManifest = {
+    post: post_index,
+    image: index,
+    posts: await Promise.all(posts.map(async post => ({
+        title: post.title,
+        images: await Promise.all(post.images.map(async (image, image_index) => {
+            const result = await getImage({ src: image, widths: WIDTHS, sizes: sizes_for(image.width, image.height) });
+            return {
+                src: result.src,
+                srcset: result.srcSet.attribute,
+                width: image.width,
+                height: image.height,
+                alt: post.images.length > 1 ? `${post.alt} (image ${image_index + 1} of ${post.images.length})` : post.alt,
+                href: image_href(post, image_index),
+                instagram: instagram_image_url(post, image_index) ?? null,
+            };
+        })),
+    }))),
+};
+const post = manifest.posts[post_index];
+const view = post?.images[index];
+if (!post || !view) { throw new Error(`No image ${index + 1} in post ${post_index + 1}`); }
+const count = post.images.length;
+const previous_post = manifest.posts[post_index - 1]?.images[0];
+const next_post = manifest.posts[post_index + 1]?.images[0];
+const previous_image = post.images[index - 1];
+const next_image = post.images[index + 1];
+---
+<Terminal title={post.title} section="photos" back="/instagram/" description={view.alt} hints={['← → IMAGE']}>
+    <div class="photo-viewer" data-photo-viewer>
+        <div class="photo-frame">
+            <div class="photo-stage">
+                <a class="photo-step previous" href={previous_image?.href} aria-label="Previous image"
+                    hidden={!previous_image}>&lt;</a>
+                <a class="photo-link" href={view.instagram} aria-label="View on Instagram">
+                    <img src={view.src} srcset={view.srcset} sizes={sizes_for(view.width, view.height)} width={view.width} height={view.height}
+                        alt={view.alt} />
+                </a>
+                <a class="photo-step next" href={next_image?.href} aria-label="Next image" hidden={!next_image}>&gt;</a>
+            </div>
+            <p class="photo-loading" role="status" hidden>Loading...</p>
+        </div>
+        <p class="photo-caption">
+            <span class="photo-title" title={post.title}>{post.title}</span>
+            <span class="photo-count" hidden={count < 2}>{index + 1}/{count}</span>
+        </p>
+        <nav class="photo-posts" aria-label="Posts">
+            <a class="previous" href={previous_post?.href} aria-disabled={previous_post ? undefined : 'true'}>&lt; Previous post</a>
+            <a class="next" href={next_post?.href} aria-disabled={next_post ? undefined : 'true'}>Next post &gt;</a>
+        </nav>
+        <script is:inline type="application/json" data-photo-manifest
+            set:html={JSON.stringify(manifest).replaceAll('<', '\\u003c')} />
+    </div>
+</Terminal>
