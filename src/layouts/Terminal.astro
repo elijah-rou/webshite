@@ -24,17 +24,13 @@ const {
 } = Astro.props;
 
 // The housing PNG is about 2 MB; AVIF (WebP where AVIF is unsupported) is a tenth of
-// that. Phones draw it as a border image (terminal.css) that stretches its sides
-// vertically, so they need the full size too; the border image picks the same file
-// as the <picture>, so each device downloads one.
+// that. Phones show only the screen and never draw it.
 const [avif, webp] = await Promise.all([
     getImage({ src: housing, format: 'avif', quality: 75 }),
     getImage({ src: housing, format: 'webp', quality: 90 }),
 ]);
-const housing_style = [
-    `--housing: url('${webp.src}')`,
-    `--housing-set: image-set(url('${avif.src}') type('image/avif'), url('${webp.src}') type('image/webp'))`,
-].join('; ');
+// Hidden on phones; this empty GIF keeps them from downloading the housing.
+const EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 ---
 <!doctype html>
 <html lang="en" data-effects="on">
@@ -65,8 +61,9 @@ const housing_style = [
     <body transition:animate="none">
         <a class="skip-link" href="#content">Skip to content</a>
         <div class="terminal-station">
-            <div class="monitor" style={housing_style}>
+            <div class="monitor">
                 <picture>
+                    <source media="(max-width: 700px)" srcset={EMPTY_GIF} />
                     <source type="image/avif" srcset={avif.src} />
                     <img class="monitor-housing" src={webp.src} alt="" width={housing.width} height={housing.height}
                         fetchpriority="high" />

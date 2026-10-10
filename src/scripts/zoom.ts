@@ -7,6 +7,9 @@ const PADDING_KEPT = 0.4;
 const ZOOMED_TEXT_MIN_PX = 20;
 const ZOOMED_TEXT_MAX_PX = 28;
 const ZOOM_MS = 550;
+// The phone layout in terminal.css. Phones always show the screen close up, home
+// and the intro included, and draw no housing.
+const PHONE_LAYOUT = '(max-width: 700px)';
 
 let settle_timer = 0;
 
@@ -52,7 +55,7 @@ export function update_zoom(animate: boolean) {
     const screen = document.querySelector<HTMLElement>('.screen');
     const section = document.querySelector<HTMLElement>('#content')?.dataset.section;
     if (!station || !screen || !section) { return; }
-    const zoom = section === 'home' ? 'out' : 'in';
+    const zoom = section === 'home' && !matchMedia(PHONE_LAYOUT).matches ? 'out' : 'in';
     const view = measure(station, screen);
     root.style.setProperty('--zoom-scale', String(view.scale));
     root.style.setProperty('--zoom-font', `${view.font_px}px`);

@@ -450,13 +450,10 @@ html[data-effects='off'] .reveal-pending { clip-path: none; }
     .monitor {
         aspect-ratio: auto;
         height: 700px;
-        border-style: solid;
+        /* Phones show only the screen (zoom.ts zooms every page in), so the housing
+           is not drawn; the border keeps the screen where the zoom expects it. */
+        border: solid transparent;
         border-width: 45px 35px 120px 40px;
-        /* 135 145 330 160 source pixels, as percentages of the image. */
-        border-image: var(--housing) 11.7904% 10.5531% 28.821% 11.6448% fill stretch;
-    }
-    @supports (border-image-source: image-set(url('a.avif') type('image/avif'))) {
-        .monitor { border-image-source: var(--housing-set); }
     }
     .monitor-housing { display: none; }
     .screen { left: 6px; right: 7px; top: 9px; bottom: 25px; padding: 24px 16px 17px; font-size: 20px; }
