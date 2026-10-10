@@ -140,7 +140,9 @@ when browser storage is available. Muting stops effects and the playing recordin
 CRT OFF removes scanlines, glow and the line-by-line screen reveal. Reduced-motion
 preferences also disable the reveal, the scan band and the zoom animation.
 
-The home menu shows the whole terminal. Opening any entry zooms in until the screen's
+On phones (700px wide or less) every screen, the home menu and the intro included,
+is shown close up and the housing is neither drawn nor downloaded.
+Elsewhere, the home menu shows the whole terminal. Opening any entry zooms in until the screen's
 content fills the window, cropping most of the glass margin and the housing; Back
 zooms out again. The header and the Back bar always stay in view. While zoomed, the screen's text is laid
 out smaller so it reads at 20 to 28px depending on the window size.
