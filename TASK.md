@@ -152,6 +152,37 @@ densest difference is the magnified housing's grain). Every window from 360×740
 3440×1440 at 1-3x gets a photo file at least on-screen width × DPR (or the 1440 px
 source). Two fresh reviews (full diff, then the fixes) left no blocking findings.
 
+## Mobile fixes (owner report from an iPhone, 2026-10-10)
+
+- [x] Safari: sound stopped and [SOUND ON] could not be turned off. Cause (from the
+      code; not reproduced on an iPhone): the context is built before any press,
+      Safari can report it, or one it paused in the background, as 'interrupted',
+      and only 'suspended' was resumed; the sound button treated "on but not
+      running" as "not allowed yet" and never toggled. Any stopped state is now
+      resumed from a press (waiting at most 250 ms), and the button toggles once a
+      press has asked for sound. A Chromium simulation of Safari's states
+      ('interrupted', and a resume that never settles) showed both symptoms before
+      and neither after. **Owner: recheck on the iPhone.**
+- [x] Phones (700px wide or less) show only the screen on every page, home and the
+      intro included, as submenus already did; the housing is neither drawn nor
+      downloaded. Phone first visit: 66 KB (was 224 KB after the performance work).
+- [x] Intro on phones: the log under the dump was meant to show its last 5 lines but
+      `flex: 1` overrode the height, so it ran off the screen and hid the match.
+      Fixed; the newest lines stay in view, older ones move up out of it, as in the
+      game. Checked at 402×760 and 402×680.
+- [x] Photo viewer on phones: < and > sit under the photo as wider targets; the photo
+      takes the full width (landscape on 390×844: 282 to 338px). Phone sizes bound
+      76vw to 90vw (measured up to 87.4vw); no window from 360×740 to 3440×1440 at
+      1-3x gets a file narrower than the photo on screen.
+
+Verification on 9733337 (preview): CI and Cloudflare green; gate2, viewer, logout,
+footsound, soundbug2, rate and tilecap pass with no page errors (rate's Home check
+once read 0 items, a race in the script, which starts recording without waiting;
+three reruns passed). A fresh review found nothing blocking. Known: on phones the
+step links come before and after the photo in tab order although both sit under
+it; a single-photo post keeps the empty arrow row so photos do not shift; one of
+three unthrottled phone loads drew 5 frames of the fallback font.
+
 ## Header, menu order, volume (owner requests, after the performance work)
 
 - [x] RobCo header lines smaller (0.9em to 0.7em; 0.7em to 0.6em on phones) and no
