@@ -14,11 +14,11 @@ export function getStaticPaths() {
 interface Props { posts: Post[]; post_index: number; index: number }
 const { posts, post_index, index } = Astro.props;
 // The frame is magnified by the zoom, so the image is sized by its width on screen.
-// Measured across windows from 360×740 to 2560×1440, that is at most 76vw on phones
+// Measured across windows from 360×740 to 2560×1440, that is at most 90vw on phones
 // and 45vw per unit of aspect ratio elsewhere; never below its layout width, which
 // the image takes from sizes. Stepping in the viewer measures it exactly instead.
 function sizes_for(width: number, height: number): string {
-    return `(max-width: 700px) 76vw, ${Math.min(100, Math.ceil(45 * width / height))}vw`;
+    return `(max-width: 700px) 90vw, ${Math.min(100, Math.ceil(45 * width / height))}vw`;
 }
 const WIDTHS = [480, 640, 800, 960, 1200, 1600, 2400];
 

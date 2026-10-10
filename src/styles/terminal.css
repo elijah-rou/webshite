@@ -468,6 +468,18 @@ html[data-effects='off'] .reveal-pending { clip-path: none; }
     .terminal-controls button { min-height: 28px; }
     .keyboard-hint { gap: 18px; font-size: 8px; }
     .screen-scroll { padding-right: 7px; }
+    /* The viewer's < and > sit under the photo, as larger targets, so the photo can
+       take the screen's full width. */
+    .photo-stage {
+        --photo-steps: 2.6em;
+        display: grid;
+        grid-template: 'photo photo' auto 'previous next' var(--photo-steps) / 1fr 1fr;
+    }
+    .photo-link { grid-area: photo; }
+    .photo-link img { max-width: 100cqw; max-height: calc(100cqh - var(--photo-steps)); }
+    .photo-step { position: static; width: auto; padding: .15em 3ch; font-size: 1.4em; transform: none; }
+    .photo-step.previous { grid-area: previous; justify-self: start; }
+    .photo-step.next { grid-area: next; justify-self: end; }
 }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
