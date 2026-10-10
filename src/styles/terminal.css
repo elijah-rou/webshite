@@ -420,7 +420,9 @@ html[data-intro] .system-header, html[data-intro] .screen-bottom, html[data-intr
 .hack-body { display: flex; gap: 2ch; }
 .hack[data-stacked='true'] .hack-body { flex-direction: column; gap: 0; }
 .hack-log { display: flex; flex: 1; flex-direction: column; justify-content: flex-end; min-width: 0; overflow: hidden; }
-.hack[data-stacked='true'] .hack-log { height: calc(5 * 1.22em); }
+/* Under the dump the log keeps its last lines in view, older ones moving up out of
+   it as in the game's log column; flex: none so the height holds in the column. */
+.hack[data-stacked='true'] .hack-log { flex: none; height: calc(5 * 1.22em); }
 .hack-word[data-selected='true'] { background: var(--phosphor); color: var(--phosphor-ink); text-shadow: none; }
 .hack-cursor { animation: hack-blink 1s steps(1, end) infinite; }
 .hack-skip { margin-top: 1.22em; color: var(--muted); }
