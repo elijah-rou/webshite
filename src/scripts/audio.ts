@@ -1,5 +1,8 @@
 import { terminal_samples, type TerminalSound } from './synthesis';
 const VOICES_MAX = 8;
+// A resume the browser does not allow yet may never settle; sounds are dropped
+// rather than queued behind it.
+const RESUME_WAIT_MS = 250;
 const paths: Record<TerminalSound, string> = {
     focus: '/audio/ui_hacking_charscroll.wav',
     select: '/audio/ui_hacking_charenter_01.wav',
@@ -33,16 +36,23 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
     async function get_context(): Promise<AudioContext | undefined> {
         if (!enabled() || failed) { return; }
         allowed = true;
+        let audio: AudioContext;
         try {
-            const audio = create_context();
-            // Resumed synchronously, within the key press or tap that allows sound.
-            if (audio.state === 'suspended') { await audio.resume(); }
-            return audio.state === 'running' ? audio : undefined;
+            audio = create_context();
         } catch {
             failed = true;
             unavailable();
             return;
         }
+        // Resumed synchronously, within the key press or tap that allows sound. A
+        // context built before any press can be 'suspended' or, in Safari,
+        // 'interrupted'; Safari also interrupts it when the page is in the
+        // background. A refused resume is retried by the next press.
+        if (audio.state !== 'running' && audio.state !== 'closed') {
+            const resumed = audio.resume().catch(() => undefined);
+            await Promise.race([resumed, new Promise(resolve => setTimeout(resolve, RESUME_WAIT_MS))]);
+        }
+        return audio.state === 'running' ? audio : undefined;
     }
 
     async function decode_original(audio: AudioContext, kind: TerminalSound) {
@@ -117,5 +127,8 @@ export function create_audio_player(enabled: () => boolean, unavailable: () => v
 
     function running(): boolean { return allowed && context?.state === 'running'; }
 
-    return { play, stop, focus, unlock, prepare, running };
+    // Whether a key press or tap has asked for sound in this page.
+    function was_allowed(): boolean { return allowed; }
+
+    return { play, stop, focus, unlock, prepare, running, was_allowed };
 }
