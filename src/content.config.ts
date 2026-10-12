@@ -25,4 +25,15 @@ const projects = defineCollection({
     }),
 });
 
-export const collections = { writing, projects };
+// One file per talk; the body summarises it and the list shows the event.
+const talks = defineCollection({
+    loader: glob({ pattern: '*.md', base: './src/content/talks' }),
+    schema: z.object({
+        title: z.string().min(1),
+        event: z.string().min(1),
+        date: z.coerce.date(),
+        video: z.url({ protocol: /^https$/, hostname: /^www\.youtube\.com$/ }),
+    }),
+});
+
+export const collections = { writing, projects, talks };

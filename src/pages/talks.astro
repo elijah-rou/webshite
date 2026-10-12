@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content';
+import Terminal from '../layouts/Terminal.astro';
+import Nav from '../components/Nav.astro';
+import { markdown_plain_text } from '../lib/plain-text';
+const talks = (await getCollection('talks')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const items = talks.map(({ id, data, body }) => ({
+    label: data.title, href: `/talks/${id}/`, detail: data.date.toISOString().slice(0, 10), note: data.event,
+    body: markdown_plain_text(body ?? ''),
+}));
+---
+<Terminal title="Talks" section="talks">
+    <h1>TALKS</h1>
+    <Nav label="Talks" items={items} searchable />
+</Terminal>

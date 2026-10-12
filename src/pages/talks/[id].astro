@@ -1,0 +1,24 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Terminal from '../../layouts/Terminal.astro';
+import Nav from '../../components/Nav.astro';
+export async function getStaticPaths() {
+    const talks = await getCollection('talks');
+    return talks.map(talk => ({ params: { id: talk.id }, props: { talk } }));
+}
+interface Props { talk: CollectionEntry<'talks'> }
+const { talk } = Astro.props;
+const { Content } = await render(talk);
+---
+<Terminal title={talk.data.title} section="talks" back="/talks/" description={talk.data.event}>
+    <article class="article">
+        <h1>{talk.data.title}</h1>
+        <p class="article-meta">
+            <time datetime={talk.data.date.toISOString()}>{talk.data.date.toISOString().slice(0, 10)}</time>
+            <span>{talk.data.event}</span>
+        </p>
+        <Nav label="Recording" items={[{ label: 'Watch the recording', href: talk.data.video, detail: 'YOUTUBE' }]} />
+        <div class="prose project-summary"><Content /></div>
+    </article>
+</Terminal>
