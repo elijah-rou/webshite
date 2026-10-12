@@ -1,20 +1,27 @@
 ---
 import type { MenuKind } from './TerminalMenu';
-interface Item { label: string; href: string; kind?: MenuKind; detail?: string; note?: string; body?: string }
+// A disabled entry is drawn dimmed and cannot be selected or opened; its href is kept
+// so enabling it again only removes the flag.
+interface Item { label: string; href: string; kind?: MenuKind; detail?: string; note?: string; body?: string; disabled?: boolean }
 // searchable adds a fuzzy search box once the client script mounts the menu.
 interface Props { items: Item[]; label?: string; searchable?: boolean }
 const { items, label = 'Main menu', searchable = false } = Astro.props;
+const first_enabled = items.findIndex(item => !item.disabled);
 ---
 <div data-terminal-menu data-searchable={searchable ? '' : undefined}>
     {searchable && <p class="menu-search" aria-hidden="true">SEARCH&gt; </p>}
     <nav class="terminal-menu" aria-label={label}>
-        {items.map(({ label, href, kind = 'link', detail = '', note = '', body = '' }, index) =>
-            <a href={href} download={kind === 'download' ? '' : undefined} data-label={label}
-                data-kind={kind} data-detail={detail} data-note={note} data-body={body || undefined}
-                data-selected={index === 0}>
-                <span class="menu-label"><span aria-hidden="true">&gt; </span>{label}</span>
-                {detail && <span class="menu-detail">{detail}</span>}
-                {note && <span class="menu-note">{note}</span>}
-            </a>)}
+        {items.map(({ label, href, kind = 'link', detail = '', note = '', body = '', disabled = false }, index) =>
+            disabled
+                ? <span class="menu-disabled" role="link" aria-disabled="true" data-label={label} data-disabled="">
+                    <span class="menu-label"><span aria-hidden="true">&gt; </span>{label}</span>
+                </span>
+                : <a href={href} download={kind === 'download' ? '' : undefined} data-label={label}
+                    data-kind={kind} data-detail={detail} data-note={note} data-body={body || undefined}
+                    data-selected={index === first_enabled}>
+                    <span class="menu-label"><span aria-hidden="true">&gt; </span>{label}</span>
+                    {detail && <span class="menu-detail">{detail}</span>}
+                    {note && <span class="menu-note">{note}</span>}
+                </a>)}
     </nav>
 </div>

@@ -4,7 +4,8 @@ import { audio, toggle_track, track } from '../scripts/state';
 
 export const MENU_KINDS = ['link', 'recording', 'download'] as const;
 export type MenuKind = typeof MENU_KINDS[number];
-export interface MenuItem { label: string; href: string; kind: MenuKind; detail: string; note: string; body: string }
+// A disabled entry is drawn dimmed; it is never selected, focused or opened.
+export interface MenuItem { label: string; href: string; kind: MenuKind; detail: string; note: string; body: string; disabled: boolean }
 interface Props { items: MenuItem[]; label: string; searchable: boolean }
 
 export default function TerminalMenu(props: Props) {
@@ -19,6 +20,8 @@ export default function TerminalMenu(props: Props) {
             .map(index => items[index])
             .filter((item): item is MenuItem => item !== undefined);
     });
+    // The selection indexes these, in the same order as the rendered links.
+    const selectable = createMemo(() => visible().filter(item => !item.disabled));
 
     const links = () => Array.from(menu?.querySelectorAll<HTMLAnchorElement>('a') ?? []);
 
@@ -36,7 +39,7 @@ export default function TerminalMenu(props: Props) {
     }
 
     function move(key: string, from: number): number | null {
-        const count = visible().length;
+        const count = selectable().length;
         if (count === 0) { return null; }
         switch (key) {
             case 'ArrowDown': return (from + 1) % count;
@@ -125,8 +128,14 @@ export default function TerminalMenu(props: Props) {
             </label>
         </Show>
         <nav ref={menu} id="menu-results" class="terminal-menu" aria-label={props.label}>
-            <For each={visible()}>{(item, index) =>
-                <a href={item.href} download={item.kind === 'download' ? '' : undefined}
+            <For each={visible()}>{item => {
+                if (item.disabled) {
+                    return <span class="menu-disabled" role="link" aria-disabled="true">
+                        <span class="menu-label"><span aria-hidden="true">&gt; </span>{item.label}</span>
+                    </span>;
+                }
+                const index = () => selectable().indexOf(item);
+                return <a href={item.href} download={item.kind === 'download' ? '' : undefined}
                     data-label={item.label} data-selected={selected() === index() ? 'true' : 'false'}
                     onPointerEnter={() => hover(index())} onFocus={() => select(index())}
                     onClick={event => activate(item, event)}>
@@ -135,8 +144,8 @@ export default function TerminalMenu(props: Props) {
                         {item.kind === 'recording' && track()?.href === item.href ? 'PLAYING' : item.detail}
                     </span>}
                     {item.note && <span class="menu-note">{item.note}</span>}
-                </a>
-            }</For>
+                </a>;
+            }}</For>
             <Show when={visible().length === 0}>
                 <p class="menu-empty">No matches.</p>
             </Show>

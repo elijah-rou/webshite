@@ -141,6 +141,8 @@ h2 { margin-bottom: .6em; }
 .terminal-menu a:focus-visible { outline: none; }
 /* Keeps the two spaces between a date and a title in the writing index. */
 .terminal-menu a { width: min(18em, 100%); white-space: pre-wrap; }
+/* The phosphor screen has no grey, so a disabled entry is dimmed and unlit instead. */
+.menu-disabled { display: block; padding: 2px 5px 3px; max-width: 100%; color: var(--muted); opacity: .5; text-shadow: none; cursor: default; }
 .terminal-menu a[data-selected='true'], .terminal-menu a:hover,
 .back-link:hover, .back-link:focus-visible {
     color: var(--phosphor-ink);

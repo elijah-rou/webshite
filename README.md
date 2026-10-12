@@ -39,8 +39,10 @@ Node.js rather than Bun.
 Add Markdown posts to `src/content/writing/`. Frontmatter contains `title`,
 `description`, `date`, optional `category`, and optional `draft: true`. Drafts are
 excluded from listings and generated routes. `/blog/` redirects to `/writing/`.
-`mock-ring-buffer.md` is a placeholder for checking layout; delete it or set
-`draft: true` before publishing.
+
+A Home entry with `disabled: true` in `src/pages/index.astro` is drawn dimmed, cannot
+be selected or opened, and is skipped by the arrow keys. Writing and Music are
+disabled, labelled "(in construction)"; remove the flag and the suffix to open them.
 
 Projects live in `src/content/projects/`, one Markdown file per repository with
 `name`, `repo`, `language`, `summary` and `order` in the frontmatter. The list
