@@ -152,6 +152,16 @@ densest difference is the magnified housing's grain). Every window from 360×740
 3440×1440 at 1-3x gets a photo file at least on-screen width × DPR (or the 1440 px
 source). Two fresh reviews (full diff, then the fixes) left no blocking findings.
 
+## Deployment prep (owner request, 2026-10-12)
+
+- [x] Mock post `mock-ring-buffer.md` removed; `/writing/` reads "No entries yet."
+      Astro warns at build that the writing folder has no Markdown files.
+- [x] Writing and Music on Home: `disabled: true`, labelled "(in construction)".
+      Drawn at half opacity without glow, rendered as a span (no link, no prefetch),
+      skipped by arrow keys, inert to hover and click. `/writing/` and `/music/` still
+      build and answer if visited directly.
+- [ ] Owner is rewriting About.
+
 ## Mobile fixes (owner report from an iPhone, 2026-10-10)
 
 - [x] Safari: sound stopped and [SOUND ON] could not be turned off. Cause (from the

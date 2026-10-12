@@ -29,14 +29,16 @@ function mount() {
     const controls_root = document.querySelector<HTMLElement>('[data-terminal-controls]');
     const status_root = document.querySelector<HTMLElement>('[data-music-status]');
     if (controls_root && mounted_controls === controls_root) { return; }
-    const items = menu_root ? Array.from(menu_root.querySelectorAll<HTMLAnchorElement>('a'))
-        .map(link => ({
-            label: link.dataset.label ?? link.textContent?.trim() ?? '',
-            href: link.getAttribute('href') ?? '/',
-            kind: menu_kind(link.dataset.kind),
-            detail: link.dataset.detail ?? '',
-            note: link.dataset.note ?? '',
-            body: link.dataset.body ?? '',
+    // Every entry, link or disabled, carries data-label.
+    const items = menu_root ? Array.from(menu_root.querySelectorAll<HTMLElement>('[data-label]'))
+        .map(entry => ({
+            label: entry.dataset.label ?? '',
+            href: entry.getAttribute('href') ?? '',
+            kind: menu_kind(entry.dataset.kind),
+            detail: entry.dataset.detail ?? '',
+            note: entry.dataset.note ?? '',
+            body: entry.dataset.body ?? '',
+            disabled: entry.hasAttribute('data-disabled'),
         })) : [];
     const searchable = menu_root?.hasAttribute('data-searchable') ?? false;
     const label = menu_root?.querySelector('nav')?.getAttribute('aria-label') ?? 'Navigation';

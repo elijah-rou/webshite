@@ -4,9 +4,9 @@ import { audio } from './state';
 // without changing their text, so selection and assistive technology are unaffected.
 const REVEAL_SELECTOR = [
     '.system-header > *', 'main h1', 'main h2', 'main h3', 'main p',
-    'main li', 'main pre', 'main img', '.menu-search', '.terminal-menu a', '.photo-grid a', '.screen-bottom',
+    'main li', 'main pre', 'main img', '.menu-search', '.terminal-menu a', '.menu-disabled', '.photo-grid a', '.screen-bottom',
 ].join(', ');
-const READING_REVEAL_SELECTOR = '.menu-search, .terminal-menu a, .photo-grid a';
+const READING_REVEAL_SELECTOR = '.menu-search, .terminal-menu a, .menu-disabled, .photo-grid a';
 // Every screen prints at the same rate: one line, menu entry or picture per step.
 export const REVEAL_LINE_MS = 60;
 // A picture appears whole once its image is ready, waiting at most this long so an
