@@ -3,6 +3,7 @@ title: "Serverless GPUs in Production: How Cerebrium Built a Globally Efficient 
 event: KubeCon + CloudNativeCon Europe 2026, Amsterdam
 date: 2026-03-25
 video: https://www.youtube.com/watch?v=QqApwTinlUk
+poster: ./cerebrium-knative.jpg
 ---
 A Maintainer Track session, given with Dave Protasowski, a Knative maintainer.
 

@@ -165,6 +165,11 @@ source). Two fresh reviews (full diff, then the fixes) left no blocking findings
       link and a summary. First talk: KubeCon + CloudNativeCon Europe 2026
       (title, date and abstract from the kccnceu2026 schedule). Dates in
       `.article-meta` no longer break at their hyphens on phones.
+- [x] Talk recording embedded: the page shows a committed still (YouTube's
+      maxresdefault, built to 640/960/1280 WebP, tinted green) as a link to YouTube;
+      a plain click or Enter swaps in a youtube-nocookie.com player with autoplay.
+      No request reaches YouTube before play (checked over CDP at 1440×1000 and
+      390×844).
 - [ ] Owner is rewriting About.
 
 ## Mobile fixes (owner report from an iPhone, 2026-10-10)

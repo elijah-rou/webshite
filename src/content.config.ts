@@ -25,14 +25,18 @@ const projects = defineCollection({
     }),
 });
 
-// One file per talk; the body summarises it and the list shows the event.
+// One file per talk; the body summarises it and the list shows the event. The poster
+// is a still from the recording, kept here so the page makes no request to YouTube
+// until the recording is played.
 const talks = defineCollection({
     loader: glob({ pattern: '*.md', base: './src/content/talks' }),
-    schema: z.object({
+    schema: ({ image }) => z.object({
         title: z.string().min(1),
         event: z.string().min(1),
         date: z.coerce.date(),
-        video: z.url({ protocol: /^https$/, hostname: /^www\.youtube\.com$/ }),
+        video: z.url({ protocol: /^https$/, hostname: /^www\.youtube\.com$/ })
+            .refine(url => /^[\w-]{11}$/.test(new URL(url).searchParams.get('v') ?? ''), 'video needs a ?v= id'),
+        poster: image(),
     }),
 });
 
