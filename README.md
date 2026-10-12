@@ -57,6 +57,17 @@ newest first and shows the event. Each talk's page shows the poster, tinted gree
 as a link to YouTube; pressing it or Enter swaps in the player from
 youtube-nocookie.com, so YouTube is contacted only once a visitor plays it.
 
+Papers live in `src/content/papers/`, one Markdown file per paper with `title`,
+`authors`, `context` (institution and course), `year`, `pdf`, and optionally
+`supervisor`, `project` (a Projects entry id) and `demo` (an MP4 with its `width`,
+`height` and `caption`) in the frontmatter; the body is the abstract. The PDF and
+demo go in `public/papers/`, and the build fails if either is missing. The papers are
+unpublished: before adding one, remove email addresses, student numbers and marking
+cover pages. `.scratch/papers/redact.py` (run with
+`uv run --no-project --with pymupdf python -I .scratch/papers/redact.py …`) deletes
+the text rather than covering it, and fails if any remains; `.scratch/` is not
+committed, so keep a copy if you need it again.
+
 Photos come from `src/content/photos/` (JPEG, PNG, WebP or AVIF). Each image file
 is a post, and so is each folder of images, shown in file name order. Start names
 with a date, such as `2026-10-08-harbour.jpg`, to list them newest first; the rest

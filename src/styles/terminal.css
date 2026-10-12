@@ -290,6 +290,12 @@ html[data-effects='off'] .portrait img { filter: none; }
 }
 .talk-video a:hover .talk-play, .talk-video a:focus-visible .talk-play { color: var(--phosphor-ink); background: var(--phosphor); text-shadow: none; }
 .talk-video a:focus-visible { outline: none; }
+.papers-intro { margin-bottom: .8em; color: var(--muted); }
+.paper-authors { margin-bottom: 1em; }
+.paper-demo { margin: 1.2em 0 0; }
+.paper-demo video { display: block; width: min(100%, 20em); height: auto; border: 1px solid #7cf59a60; }
+.paper-demo figcaption { max-width: 36em; margin-top: .5em; color: var(--muted); font-size: .86em; }
+.paper-abstract { margin-top: 1.6em; }
 .prose { line-height: 1.42; overflow-wrap: anywhere; text-shadow: 0 0 2px #8dffa855; }
 .prose p, .prose ul, .prose ol, .prose pre, .prose blockquote { margin: 0 0 1em; }
 .prose h2, .prose h3 { margin: 1.6em 0 .6em; font: inherit; }

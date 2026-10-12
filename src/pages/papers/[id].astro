@@ -1,0 +1,42 @@
+---
+import { statSync } from 'node:fs';
+import { getCollection, getEntry, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Terminal from '../../layouts/Terminal.astro';
+import Nav from '../../components/Nav.astro';
+import { format_size } from '../../lib/file-size';
+export async function getStaticPaths() {
+    const papers = await getCollection('papers');
+    return papers.map(paper => ({ params: { id: paper.id }, props: { paper } }));
+}
+interface Props { paper: CollectionEntry<'papers'> }
+const { paper } = Astro.props;
+const { data } = paper;
+const { Content } = await render(paper);
+const project = data.project ? await getEntry(data.project) : undefined;
+// The schema checked that the file exists; Astro runs from the project root.
+const pdf_size = format_size(statSync(`public${data.pdf}`).size);
+const links = [
+    { label: 'Download the paper', href: data.pdf, kind: 'download' as const, detail: `PDF  ${pdf_size}` },
+    ...(project ? [{ label: `Project: ${project.data.name}`, href: `/projects/${project.id}/`, detail: project.data.language.toUpperCase() }] : []),
+];
+---
+<Terminal title={data.title} section="papers" back="/papers/" description={`${data.context}, ${data.year}. Unpublished.`}>
+    <article class="article">
+        <h1>{data.title}</h1>
+        <p class="article-meta">
+            <span>{data.year}</span>
+            <span>{data.context}</span>
+            <span>UNPUBLISHED</span>
+        </p>
+        <p class="paper-authors">{data.authors.join(', ')}{data.supervisor && <> · supervised by {data.supervisor}</>}</p>
+        <Nav label="Paper" items={links} />
+        {data.demo && <figure class="paper-demo">
+            <video src={`${data.demo.src}#t=0.1`} width={data.demo.width} height={data.demo.height}
+                controls muted loop playsinline preload="metadata"></video>
+            <figcaption>{data.demo.caption}</figcaption>
+        </figure>}
+        <h2 class="paper-abstract">ABSTRACT</h2>
+        <div class="prose project-summary"><Content /></div>
+    </article>
+</Terminal>

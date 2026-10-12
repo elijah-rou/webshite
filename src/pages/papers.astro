@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+import Terminal from '../layouts/Terminal.astro';
+import Nav from '../components/Nav.astro';
+import { markdown_plain_text } from '../lib/plain-text';
+const papers = (await getCollection('papers')).sort((a, b) => b.data.year - a.data.year);
+const items = papers.map(({ id, data, body }) => ({
+    label: data.title, href: `/papers/${id}/`, detail: String(data.year), note: data.context,
+    body: `${data.authors.join(' ')} ${markdown_plain_text(body ?? '')}`,
+}));
+---
+<Terminal title="Papers" section="papers">
+    <h1>PAPERS</h1>
+    <p class="prose papers-intro">Unpublished papers from university.</p>
+    <Nav label="Papers" items={items} searchable />
+</Terminal>

@@ -1,4 +1,5 @@
-import { defineCollection } from 'astro:content';
+import { existsSync } from 'node:fs';
+import { defineCollection, reference } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
@@ -40,4 +41,30 @@ const talks = defineCollection({
     }),
 });
 
-export const collections = { writing, projects, talks };
+// A path under public/papers/ that must exist, so a missing file fails the build.
+const paper_file = (extension: string) => z.string()
+    .regex(new RegExp(`^/papers/[\\w-]+\\.${extension}$`), `a /papers/<name>.${extension} path`)
+    .refine(path => existsSync(`public${path}`), { error: issue => `public${String(issue.input)} does not exist` });
+
+// One file per paper; the body is the abstract. Papers are unpublished, so each links
+// to its PDF in public/papers/ (contact details and student numbers removed).
+const papers = defineCollection({
+    loader: glob({ pattern: '*.md', base: './src/content/papers' }),
+    schema: z.object({
+        title: z.string().min(1),
+        authors: z.array(z.string().min(1)).min(1),
+        context: z.string().min(1),
+        year: z.number().int(),
+        supervisor: z.string().min(1).optional(),
+        pdf: paper_file('pdf'),
+        project: reference('projects').optional(),
+        demo: z.object({
+            src: paper_file('mp4'),
+            width: z.number().int().positive(),
+            height: z.number().int().positive(),
+            caption: z.string().min(1),
+        }).optional(),
+    }),
+});
+
+export const collections = { writing, projects, talks, papers };
