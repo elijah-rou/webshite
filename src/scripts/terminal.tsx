@@ -5,6 +5,7 @@ import MusicStatus from '../components/MusicStatus';
 import HackIntro from '../components/HackIntro';
 import { audio, stop_track, take_intro_request } from './state';
 import { mount_photo_viewer } from './photo-viewer';
+import { mount_video_embeds } from './video';
 import { prefetch_link, use_prefetched } from './prefetch';
 import { handle_reveal_animation, reveal } from './reveal';
 import { update_zoom } from './zoom';
@@ -63,6 +64,8 @@ function mount() {
     update_zoom(true);
     const viewer = mount_photo_viewer();
     if (viewer) { disposers.push(viewer); }
+    const video = mount_video_embeds();
+    if (video) { disposers.push(video); }
     const intro_root = document.querySelector<HTMLElement>('[data-intro-root]');
     if (intro_root && document.documentElement.hasAttribute('data-intro')) {
         play_intro(intro_root);
