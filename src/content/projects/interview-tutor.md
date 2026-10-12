@@ -3,7 +3,7 @@ name: interview-tutor
 repo: https://github.com/elijah-rou/interview-tutor
 language: Rust
 summary: Local algorithm practice catalog and judge with a terminal browser and editor.
-order: 5
+order: 7
 ---
 A local practice catalog and judge for algorithm interview problems, built for
 Linux.

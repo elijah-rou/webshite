@@ -3,7 +3,7 @@ name: Ant-Neuroevolution
 repo: https://github.com/elijah-rou/Ant-Neuroevolution
 language: Python
 summary: Replicating stigmergic ant foraging with multi-agent neuroevolution.
-order: 7
+order: 9
 ---
 A Cornell project testing whether evolved neural networks can learn how ants
 forage. Real ants communicate indirectly by leaving pheromone for others to

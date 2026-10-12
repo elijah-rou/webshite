@@ -3,7 +3,7 @@ name: turso-zig
 repo: https://github.com/elijah-rou/turso-zig
 language: Zig
 summary: Early Zig SDK for Turso embedded and local databases.
-order: 6
+order: 8
 ---
 An early Zig 0.16 SDK for Turso's embedded and local databases.
 

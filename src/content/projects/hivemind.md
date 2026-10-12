@@ -3,7 +3,7 @@ name: hivemind
 repo: https://github.com/elijah-rou/hivemind
 language: Zig
 summary: Deterministic workload-orchestration prototype for serverless platforms.
-order: 3
+order: 5
 ---
 A prototype of a deterministic workload-orchestration system for running
 serverless platforms. It has four parts:

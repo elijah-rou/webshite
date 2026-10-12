@@ -3,7 +3,7 @@ name: webshite
 repo: https://github.com/elijah-rou/webshite
 language: Astro
 summary: This site.
-order: 8
+order: 10
 ---
 This site. Astro builds the pages, including posts written in Markdown, and
 Solid 2 runs the terminal: menu selection, sound and CRT settings, music playback
