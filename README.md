@@ -49,6 +49,11 @@ Projects live in `src/content/projects/`, one Markdown file per repository with
 shows the summary; each project's page shows the GitHub link first, then the body.
 The current summaries are condensed from each repository's README.
 
+Talks live in `src/content/talks/`, one Markdown file per talk with `title`, `event`,
+`date` and `video` (a `https://www.youtube.com/watch?v=` address) in the
+frontmatter. The list is newest first and shows the event; each talk's page links
+to the recording, then shows the body.
+
 Photos come from `src/content/photos/` (JPEG, PNG, WebP or AVIF). Each image file
 is a post, and so is each folder of images, shown in file name order. Start names
 with a date, such as `2026-10-08-harbour.jpg`, to list them newest first; the rest

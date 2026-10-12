@@ -271,6 +271,8 @@ html[data-effects='off'] .portrait img { filter: none; }
 }
 .music-status { min-height: 1.22em; margin-top: .6em; color: var(--muted); }
 .article-meta { display: flex; gap: 2ch; margin-bottom: 1.4em; color: var(--muted); font-size: .86em; }
+/* A date never breaks at its hyphens; the text beside it wraps instead. */
+.article-meta time { flex: none; }
 .prose { line-height: 1.42; overflow-wrap: anywhere; text-shadow: 0 0 2px #8dffa855; }
 .prose p, .prose ul, .prose ol, .prose pre, .prose blockquote { margin: 0 0 1em; }
 .prose h2, .prose h3 { margin: 1.6em 0 .6em; font: inherit; }

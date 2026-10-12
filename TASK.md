@@ -160,6 +160,11 @@ source). Two fresh reviews (full diff, then the fixes) left no blocking findings
       Drawn at half opacity without glow, rendered as a span (no link, no prefetch),
       skipped by arrow keys, inert to hover and click. `/writing/` and `/music/` still
       build and answer if visited directly.
+- [x] Talks, after Projects on Home: `src/content/talks/` collection (title, event,
+      date, YouTube `video`), list at `/talks/`, a page per talk with the recording
+      link and a summary. First talk: KubeCon + CloudNativeCon Europe 2026
+      (title, date and abstract from the kccnceu2026 schedule). Dates in
+      `.article-meta` no longer break at their hyphens on phones.
 - [ ] Owner is rewriting About.
 
 ## Mobile fixes (owner report from an iPhone, 2026-10-10)
