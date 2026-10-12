@@ -170,6 +170,13 @@ source). Two fresh reviews (full diff, then the fixes) left no blocking findings
       a plain click or Enter swaps in a youtube-nocookie.com player with autoplay.
       No request reaches YouTube before play (checked over CDP at 1440×1000 and
       390×844).
+- [x] Papers, after Talks on Home: `src/content/papers/` (abstract as the body), list
+      at `/papers/`, a page per paper with a PDF download, the related project and an
+      optional demo video. The 4-author CS6680 version of the ant paper is used, not
+      the 2-author CS5787 rewrite (which credits the other two only in a footnote).
+      Emails, the UCT student number and the UCT marking cover page were removed with
+      PyMuPDF redaction; a text search of both PDFs finds none. The ant paper's year
+      (2021) comes from its repository's creation date. `/papers/*` cached a day.
 - [ ] Owner is rewriting About.
 
 ## Mobile fixes (owner report from an iPhone, 2026-10-10)

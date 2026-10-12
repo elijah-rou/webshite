@@ -8,3 +8,7 @@
 # Sounds keep their names, so they are reused for a day, then revalidated.
 /audio/*
   Cache-Control: public, max-age=86400
+
+# Papers and their demos keep their names too.
+/papers/*
+  Cache-Control: public, max-age=86400

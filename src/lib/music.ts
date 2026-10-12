@@ -1,5 +1,6 @@
 import { readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { format_size } from './file-size';
 
 export type MusicKind = 'recording' | 'project';
 export interface MusicFile { title: string; href: string; format: string; kind: MusicKind; size: string }
@@ -16,10 +17,6 @@ const FORMATS: readonly { suffix: string; label: string; kind: MusicKind }[] = [
     { suffix: '.logicx.zip', label: 'LOGIC PRO', kind: 'project' },
 ];
 
-function format_size(bytes: number): string {
-    if (bytes < 1024 * 1024) { return `${Math.max(1, Math.round(bytes / 1024))} KB`; }
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 export function read_music_files(): MusicFile[] {
     let names: string[];
