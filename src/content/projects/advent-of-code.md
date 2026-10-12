@@ -3,7 +3,7 @@ name: advent-of-code
 repo: https://github.com/elijah-rou/advent-of-code
 language: Zig
 summary: Advent of Code solutions, one language a year.
-order: 4
+order: 6
 ---
 Advent of Code solutions, using each year to learn a different language:
 
