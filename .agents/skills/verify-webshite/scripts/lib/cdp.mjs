@@ -2,7 +2,7 @@
 // profile per drive, input sent as real key and mouse events, and evidence
 // (screenshots, accessibility snapshots, console errors, requests) written as it goes.
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { accessSync, constants, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -25,9 +25,14 @@ const CHROME_CANDIDATES = [
     '/usr/bin/chromium',
 ];
 
+// An executable file, not an app bundle or other directory.
+function executable(path) {
+    try { accessSync(path, constants.X_OK); return statSync(path).isFile(); } catch { return false; }
+}
+
 export function find_chrome(explicit) {
-    if (explicit) { return existsSync(explicit) ? explicit : null; }
-    return CHROME_CANDIDATES.find(path => path && existsSync(path)) ?? null;
+    if (explicit) { return executable(explicit) ? explicit : null; }
+    return CHROME_CANDIDATES.find(path => path && executable(path)) ?? null;
 }
 
 export const VIEWPORTS = {
@@ -44,6 +49,10 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
     const proc = spawn(chrome, ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
         '--hide-scrollbars', '--no-first-run', '--no-default-browser-check', '--mute-audio', 'about:blank'],
         { stdio: 'ignore', detached: true });
+    // A spawn that fails has no PID; recording one would make Cleanup signal group 0, its own.
+    const spawned = await new Promise(resolve => { proc.once('spawn', () => resolve(null)); proc.once('error', resolve); });
+    if (spawned) { throw new Error(`Chrome did not start from ${chrome}: ${spawned.message}`); }
+    if (!Number.isInteger(proc.pid) || proc.pid <= 1) { throw new Error(`Chrome started without a usable PID (${proc.pid})`); }
     on_pid(proc.pid);
     let socket;
     for (let attempt = 0; attempt < 150 && !socket; attempt++) {
@@ -54,7 +63,10 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
         } catch { /* Chrome is still starting. */ }
         if (!socket) { await wait(100); }
     }
-    if (!socket) { process.kill(-proc.pid, 'SIGKILL'); throw new Error(`Chrome did not open its debug port ${port}`); }
+    if (!socket) {
+        try { process.kill(-proc.pid, 'SIGKILL'); } catch { /* it exited on its own */ }
+        throw new Error(`Chrome did not open its debug port ${port}${proc.exitCode !== null ? ` (it exited with ${proc.exitCode})` : ''}; is ${chrome} Chrome?`);
+    }
     await new Promise((resolve, reject) => { socket.addEventListener('open', resolve); socket.addEventListener('error', reject); });
 
     let next_id = 0;
@@ -213,9 +225,11 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
 
     const close = async () => {
         try { socket.close(); } catch { /* already closed */ }
-        if (proc.exitCode !== null || proc.signalCode !== null) { return; }
-        try { process.kill(-proc.pid, 'SIGTERM'); } catch { /* already gone */ }
-        await Promise.race([new Promise(resolve => proc.once('exit', resolve)), wait(5000)]);
+        // If the main process already exited, only its helpers can remain: no wait, straight to SIGKILL.
+        if (proc.exitCode === null && proc.signalCode === null) {
+            try { process.kill(-proc.pid, 'SIGTERM'); } catch { /* already gone */ }
+            await Promise.race([new Promise(resolve => proc.once('exit', resolve)), wait(5000)]);
+        }
         try { process.kill(-proc.pid, 'SIGKILL'); } catch { /* already gone */ }
     };
 
