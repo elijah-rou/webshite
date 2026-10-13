@@ -79,7 +79,12 @@ async function main(argv) {
     const [command, ...rest] = argv;
     if (!command || command === '--help' || command === '-h' || command === 'help') { console.log(HELP.main); return 0; }
     if (!(command in HELP) && !(command in FEATURES)) { throw new UsageError(`Unknown command "${command}".\n\n${HELP.main}`); }
-    const { values } = parseArgs({ args: rest, options: OPTIONS, strict: true });
+    let values;
+    try {
+        ({ values } = parseArgs({ args: rest, options: OPTIONS, strict: true, allowPositionals: false }));
+    } catch (error) {
+        throw new UsageError(`${error.message}\n\n${HELP[command] ?? feature_help(command)}`);
+    }
     if (values.help) { console.log(HELP[command] ?? feature_help(command)); return 0; }
     const port = values.port === undefined ? undefined : Number(values.port);
     if (port !== undefined && !Number.isInteger(port)) { throw new UsageError(`--port takes a number, not "${values.port}"`); }

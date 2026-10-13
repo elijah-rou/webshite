@@ -56,11 +56,14 @@ export default async function home_menu({ base, browser, check }) {
     check(await b.wait_for(at('/')), 'menu-back: the Back link returns Home');
     await b.screenshot('05-home-again');
 
-    // menu-phone: a tap on a phone-sized screen opens the entry.
+    // menu-phone: a touch on a phone-sized screen opens the entry. A capturing
+    // listener only observes that the event the page got was a touch.
     const phone = await browser({ viewport: 'phone' });
     if (!await open_home(phone, base, check)) { return; }
     await phone.screenshot('06-phone-home');
-    await phone.click('#menu-results a[href="/projects/"]');
+    await phone.evaluate(`document.addEventListener('touchend', e => { window.__verify_touch = e.target.closest('a')?.getAttribute('href') ?? null; }, { capture: true, once: true })`);
+    await phone.tap('#menu-results a[href="/projects/"]');
     check(await phone.wait_for(at('/projects/')), 'menu-phone: tapping Projects on a phone opens Projects');
+    check(await phone.evaluate('window.__verify_touch') === '/projects/', 'menu-phone: the page received a touch on Projects', await phone.evaluate('window.__verify_touch ?? null'));
     await phone.screenshot('07-phone-projects');
 }

@@ -7,7 +7,7 @@ This directory is the maintained source for verifying what visitors to the site 
 - The site runs at the `READY` address that `verify-webshite launch` printed for this run. The default is a build of this checkout in `$TMPDIR/webshite-verify/<RUN_ID>/dist`, served by `astro preview` on a free port on 127.0.0.1. `launch --url <address>` instead targets an already deployed site, read-only.
 - `verify-webshite doctor --run RUN_ID` ends with `DOCTOR PASS`.
 - Content is the checked-in content: eight Home entries (Writing and Music disabled), the projects in `src/content/projects/`, one talk (`cerebrium-knative`), two papers (`neuroevolution-ant-swarms`, `implicative-bayesian-networks`), and the photo posts in `src/content/photos/`, at least one of them an album.
-- Each browser is a new headless Chrome with an empty profile, at 1440×1000 unless a step says phone (390×844, touch). Except where a step says first visit, the profile is a returning visitor's: the intro has been seen (`terminal-intro` in local storage), as it is after any real first visit.
+- Each browser is a new headless Chrome with an empty profile, at 1440×1000 unless a step says phone (390×844, touch emulation, taps sent as touch events). Except where a step says first visit, the profile is a returning visitor's: the intro has been seen (`terminal-intro` in local storage), as it is after any real first visit.
 - Evidence goes to `.agents/skills/verify-webshite/evidence/<RUN_ID>/<feature>/`, which Cleanup never touches.
 - Never drive a local server this run did not start.
 
@@ -22,7 +22,7 @@ This directory is the maintained source for verifying what visitors to the site 
 ## Proof and skip reporting
 
 - Each drive writes `checks.json` (every check, its result, and details on failure), screenshots `NN-<state>.png`, accessibility snapshots `NN-<state>.aria.txt` (the URL, then role and name per node), and for each browser `requests-N.json` and `errors-N.json`.
-- Each drive also fails on any page error (uncaught exception or `console.error`) and on any failed or 5xx request to the site itself. Requests to YouTube are recorded but not judged.
+- Each drive also fails on any page error (uncaught exception or `console.error`) and on any failed, 4xx or 5xx request to the site itself. Requests to YouTube are recorded but not judged.
 - A drive ends with one line: `PASS <feature> (<n> checks)`, `FAIL <feature>: <first failed check>`, or `SKIP <feature>: <missing prerequisite>`. The only skip is a missing Chrome.
 - An entry point a feature file lists that a drive did not reach is reported as not verified. It is never covered by a different entry point.
 - The local build is `astro preview`, not Cloudflare. Response headers from `public/_headers` and Cloudflare's own 404 handling are only verified against a deployed address (`launch --url`).

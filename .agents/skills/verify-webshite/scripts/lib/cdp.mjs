@@ -8,6 +8,13 @@ import { join } from 'node:path';
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+// No DevTools command takes this long unless the page is hung; failing it lets the
+// drive report FAIL and clean up instead of waiting forever.
+const COMMAND_MS = 20000;
+
+// The browser closed or crashed; nothing more can be observed in it.
+export class BrowserGone extends Error {}
+
 // Playwright's Chrome for Testing is the browser the repository's past runs used.
 const CHROME_CANDIDATES = [
     process.env.WEBSHITE_CHROME,
@@ -55,9 +62,19 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
     const listeners = new Map();
     const errors = [];
     const requests = new Map();
+    let gone = null;
+    const lose = reason => {
+        if (gone) { return; }
+        gone = new BrowserGone(`Chrome is gone: ${reason}`);
+        for (const settle of pending.values()) { settle({ gone }); }
+        pending.clear();
+    };
+    socket.addEventListener('close', () => lose('the DevTools connection closed'));
+    proc.once('exit', (code, signal) => lose(`the process exited (${signal ?? code})`));
     socket.addEventListener('message', message => {
         const data = JSON.parse(message.data);
         if (data.id && pending.has(data.id)) { pending.get(data.id)(data); pending.delete(data.id); return; }
+        if (data.method === 'Inspector.targetCrashed') { lose('the page crashed'); return; }
         if (data.method === 'Runtime.exceptionThrown') {
             errors.push(data.params.exceptionDetails.exception?.description ?? data.params.exceptionDetails.text);
         }
@@ -67,8 +84,16 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
         for (const listener of listeners.get(data.method) ?? []) { listener(data.params); }
     });
     const send = (method, params = {}) => new Promise((resolve, reject) => {
+        if (gone) { reject(gone); return; }
         const id = ++next_id;
-        pending.set(id, reply => reply.error ? reject(new Error(`${method}: ${reply.error.message}`)) : resolve(reply.result));
+        const timer = setTimeout(() => {
+            pending.delete(id);
+            reject(new Error(`${method} got no reply in ${COMMAND_MS / 1000} s; the page may be hung`));
+        }, COMMAND_MS);
+        pending.set(id, reply => {
+            clearTimeout(timer);
+            if (reply.gone) { reject(reply.gone); } else if (reply.error) { reject(new Error(`${method}: ${reply.error.message}`)); } else { resolve(reply.result); }
+        });
         socket.send(JSON.stringify({ id, method, params }));
     });
     const on = (method, listener) => {
@@ -110,7 +135,8 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
             try {
                 value = await evaluate(expression);
             } catch (error) {
-                // A broken expression never becomes true; only page state may be pending.
+                // A broken expression or a lost browser never becomes true; only page state may be pending.
+                if (error instanceof BrowserGone) { throw error; }
                 if (/^SyntaxError/.test(error.message)) { throw new Error(`${error.message} in: ${expression}`); }
                 value = undefined;
             }
@@ -129,10 +155,10 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
 
     const type = async text => { for (const character of text) { await press(character); } };
 
-    // A real pointer click at the centre of the element the selector names, measured
-    // after the page has settled and the element is scrolled into view.
-    const click = async selector => {
-        if (!await wait_for(settled)) { throw new Error(`The page did not settle before clicking ${selector}`); }
+    // The centre of the element the selector names, measured after the page has
+    // settled and the element is scrolled into view.
+    const centre = async (selector, action) => {
+        if (!await wait_for(settled)) { throw new Error(`The page did not settle before the ${action} on ${selector}`); }
         const box = await evaluate(`(() => {
             const element = document.querySelector(${JSON.stringify(selector)});
             if (!element) { return null; }
@@ -140,10 +166,24 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
             const rect = element.getBoundingClientRect();
             return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
         })()`);
-        if (!box) { throw new Error(`Nothing matches ${selector} to click`); }
+        if (!box) { throw new Error(`Nothing matches ${selector} for the ${action}`); }
+        return box;
+    };
+
+    // A real pointer click.
+    const click = async selector => {
+        const box = await centre(selector, 'click');
         await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
         await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
         await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    };
+
+    // A real touch: touchstart and touchend, from which the browser makes the click.
+    // Needs a phone browser, which has touch emulation on.
+    const tap = async selector => {
+        const { x, y } = await centre(selector, 'tap');
+        await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+        await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     };
 
     // Moves the pointer to the top-left corner, off any menu: hovering an entry selects it.
@@ -178,5 +218,5 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
         try { process.kill(-proc.pid, 'SIGKILL'); } catch { /* already gone */ }
     };
 
-    return { pid: proc.pid, send, evaluate, wait_for, press, type, click, park_pointer, navigate, screenshot, snapshot, errors, requests, close };
+    return { pid: proc.pid, send, evaluate, wait_for, press, type, click, tap, park_pointer, navigate, screenshot, snapshot, errors, requests, close };
 }

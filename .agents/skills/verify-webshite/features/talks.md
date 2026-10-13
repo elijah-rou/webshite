@@ -33,5 +33,5 @@ Preconditions:
 
 - After the player appears it has focus, and keys go to YouTube's frame, so Escape on the page does nothing. Use `> Back`.
 - The player loads YouTube's own scripts and requests, some of which headless Chrome blocks. They are logged in `requests-N.json` but never fail the drive; only requests to the site itself do.
-- `03-playing.png` shows YouTube's player only if this machine can reach YouTube; the drive waits up to 10 seconds for the player page. Offline, it shows an empty green frame and the checks still pass, because they prove the swap, not YouTube.
+- `03-playing.png` shows YouTube's player only if this machine can reach YouTube; the drive waits up to 10 seconds for the player page to be requested, then 3 seconds for it to draw. Offline, it shows an empty green frame and the checks still pass, because they prove the swap, not YouTube.
 - The privacy check compares host names. A poster served from YouTube (instead of the committed still) would fail it, which is the intent.
