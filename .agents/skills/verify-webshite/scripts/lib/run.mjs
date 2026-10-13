@@ -62,7 +62,16 @@ export function free_port() {
     });
 }
 
-function alive(pgid) { try { process.kill(-pgid, 0); return true; } catch { return false; } }
+// Only real process groups: -0 or -1 would signal this CLI's own group or every process.
+function group(pgid) {
+    if (!Number.isInteger(pgid) || pgid <= 1) { throw new Error(`Refusing to signal process group ${pgid}`); }
+    return -pgid;
+}
+
+function alive(pgid) {
+    if (!Number.isInteger(pgid) || pgid <= 1) { return false; }
+    try { process.kill(group(pgid), 0); return true; } catch { return false; }
+}
 
 // PIDs listening on the port, with their process groups.
 function listeners(port) {
@@ -78,9 +87,9 @@ async function get(url) {
 
 async function stop_group(pgid) {
     if (!alive(pgid)) { return; }
-    process.kill(-pgid, 'SIGTERM');
+    process.kill(group(pgid), 'SIGTERM');
     for (let i = 0; i < 50 && alive(pgid); i++) { await wait(100); }
-    if (alive(pgid)) { process.kill(-pgid, 'SIGKILL'); }
+    if (alive(pgid)) { process.kill(group(pgid), 'SIGKILL'); }
 }
 
 export const new_run_id = () => `ws-${new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)}-${process.pid}`;
@@ -225,7 +234,7 @@ export async function drive({ run, feature, chrome, steps }) {
         console.log(`SKIP ${feature}: Chrome not found; pass --chrome PATH or set WEBSHITE_CHROME`);
         return 'skip';
     }
-    if (state.mode === 'local' && !alive(state.server)) {
+    if (!state.base || (state.mode === 'local' && !alive(state.server))) {
         console.log(`FAIL ${feature}: this run's server is not running; run doctor, or launch a new run`);
         return 'fail';
     }
