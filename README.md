@@ -29,7 +29,12 @@ Workers & Pages > Create > Import a repository, choose this repository, and set:
 | Non-production branch deploy command | `npx wrangler preview` (the default; needs the `previews` block in `wrangler.jsonc`) |
 | Variable `SKIP_DEPENDENCY_INSTALL` | `1` (the build image's own pnpm is older than this lockfile) |
 
-Each push to `master` then builds and deploys. Single files are limited to 25 MiB,
+Each push to `master` then builds and deploys. The site is at https://eliroussos.com,
+a Custom Domain in `wrangler.jsonc` on a zone in the same Cloudflare account (the
+domain is registered with Cloudflare Registrar). `www.eliroussos.com` has a proxied
+`AAAA 100::` record and a redirect rule in the zone that sends it to the bare domain
+with a 301; neither lives in this repository. The workers.dev address stays on.
+Single files are limited to 25 MiB,
 so large recordings or project files belong in R2 rather than `public/music/`.
 To try the deployed behaviour locally, run `npx wrangler dev` after a build, under
 Node.js rather than Bun.

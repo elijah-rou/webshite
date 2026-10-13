@@ -178,6 +178,13 @@ source). Two fresh reviews (full diff, then the fixes) left no blocking findings
       PyMuPDF redaction; a text search of both PDFs finds none. The ant paper's year
       (2021) comes from its repository's creation date. `/papers/*` cached a day.
 - [ ] Owner is rewriting About.
+- [x] Domain: owner registered eliroussos.com with Cloudflare Registrar (2026-10-13,
+      1 year, auto-renew off, WHOIS redaction). Attached to the `webshite` Worker as a
+      Custom Domain through the API, and declared in `wrangler.jsonc` so deploys keep
+      it; `workers_dev: true` keeps the workers.dev address, which routes would
+      otherwise switch off. www: proxied `AAAA 100::` plus a zone redirect rule (301
+      to the bare domain, path and query kept).
+- [ ] Owner: decide on auto-renew for eliroussos.com (expires 2027-10-13).
 
 ## Mobile fixes (owner report from an iPhone, 2026-10-10)
 
