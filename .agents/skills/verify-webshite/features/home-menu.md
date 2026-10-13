@@ -35,7 +35,7 @@ Preconditions:
 - **Open and return.** Enter opens `/papers/` (`04-papers-by-enter.png`); Escape returns to `/`.
 - **Disabled.** Clicking the Writing entry leaves the address at `/`.
 - **Pointer.** Clicking `Talks` opens `/talks/`; clicking `> Back` returns to `/` (`05-home-again.png`).
-- **Phone.** At 390×844 with touch, tapping `Projects` opens `/projects/` (`06-phone-home.png`, `07-phone-projects.png`).
+- **Phone.** At 390×844 with touch emulation, a tap (touchstart and touchend, no mouse events) on `Projects` opens `/projects/`, and the page saw that `touchend` on the Projects link (`06-phone-home.png`, `07-phone-projects.png`).
 
 ## Gotchas
 

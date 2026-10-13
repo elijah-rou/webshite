@@ -14,7 +14,7 @@ export default async function photos({ base, browser, check }) {
     check(await b.wait_for(at('/instagram/', `document.querySelectorAll('[data-photo-grid] a').length > 0`)), 'photo-grid: Photos opens the grid');
     const tiles = await b.evaluate(`[...document.querySelectorAll('[data-photo-grid] a')].map(a => [a.getAttribute('href'), a.getAttribute('aria-label')])`);
     check(tiles.length >= 2, 'photo-grid: the grid has posts', tiles.length);
-    check(await b.wait_for(`[...document.querySelectorAll('[data-photo-grid] img')].slice(0, 6).every(i => i.complete && i.naturalWidth > 0)`),
+    check(await b.wait_for(`(() => { const shown = [...document.querySelectorAll('[data-photo-grid] img')].slice(0, 6); return shown.length > 0 && shown.every(i => i.complete && i.naturalWidth > 0); })()`),
         'photo-grid: the first thumbnails loaded');
     await b.snapshot('01-grid');
     await b.screenshot('01-grid');

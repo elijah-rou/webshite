@@ -32,8 +32,9 @@ export default async function talks({ base, browser, check }) {
     check(src?.startsWith('https://www.youtube-nocookie.com/embed/QqApwTinlUk') && src.includes('autoplay=1'), 'talk-play-key: Enter swaps in the youtube-nocookie player', src);
     check(await b.evaluate(`!${POSTER}`), 'talk-play-key: the poster link is gone');
     // The player itself comes from YouTube; give it time so the screenshot shows it.
-    // Its absence (no network) is not the site's failure, so it is not a check.
-    const embed = () => [...b.requests.values()].find(r => r.url.startsWith('https://www.youtube-nocookie.com/embed/') && r.status);
+    // Its absence (no network) is not the site's failure, so it is not a check. The
+    // frame loads out of process, so its request is seen but its status is not.
+    const embed = () => [...b.requests.values()].find(r => r.url.startsWith('https://www.youtube-nocookie.com/embed/'));
     for (let i = 0; i < 100 && !embed(); i++) { await new Promise(r => setTimeout(r, 100)); }
     if (embed()) { await new Promise(r => setTimeout(r, 3000)); }
     await b.screenshot('03-playing');

@@ -44,11 +44,11 @@ It checks that:
 
 - the server's process group is alive;
 - the port is held only by that process group;
-- the checkout's HEAD and uncommitted product changes (everything outside `.agents/`) still match the build, so a stale build is never driven;
+- the checkout's HEAD, tracked changes (binary files included) and untracked files' contents, everything outside `.agents/`, still match the build, so a stale build is not driven;
 - `/` answers 200 with the Home title and an unknown address answers 404;
-- Chrome is found.
+It also reports whether Chrome is found. A missing Chrome is a `skip` line, not a failure: the instance is fine, and every drive will SKIP.
 
-For a `--url` run, only the HTTP and Chrome checks apply. It ends with `DOCTOR PASS <run> <address>` or `DOCTOR FAIL`, exits 1 on failure, and writes `doctor.txt`. Run it before the first drive and after any failure. After editing product files, launch a new run rather than driving the stale one.
+For a `--url` run, only the HTTP checks and the Chrome line apply. It ends with `DOCTOR PASS <run> <address>` or `DOCTOR FAIL`, exits 1 on failure, and writes `doctor.txt`. Run it before the first drive and after any failure. After editing product files, launch a new run rather than driving the stale one.
 
 ## Drive
 
@@ -87,7 +87,8 @@ Proof standards:
 - Drive the real visitor path: key presses and pointer events through Chrome, starting from Home where the feature file says so. Never call the app's functions or set its state. The one exception is the returning-visitor flag (`terminal-intro` in local storage), which a real first visit sets. The intro itself is driven from a new profile.
 - Capture the action and the resulting state: the address, the highlighted entry, the element that appeared or went away, plus a screenshot and an accessibility snapshot of each proved state.
 - Check side effects as well as what is visible. For example: the PDF is fetched and its type and size checked; no YouTube request is made before play; stepping photos adds no history entries; the address follows the image.
-- Every drive also fails on page errors and on failed or 5xx requests to the site.
+- Every drive also fails on page errors and on failed, 4xx or 5xx requests to the site.
+- A DevTools command that gets no reply in 20 seconds (a hung page) or a browser that closes or crashes fails the drive, which still prints its result line and closes its browsers.
 - No mocks. The local server is the repo's own build and `astro preview`. Neither `_headers` nor Cloudflare's 404 handling runs there; prove those against a deployed address with `--url`, and say which target the proof used.
 - An entry point a feature file lists that a drive did not reach is reported as not verified, never covered by another entry point.
 

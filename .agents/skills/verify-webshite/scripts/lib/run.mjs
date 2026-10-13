@@ -34,13 +34,19 @@ export function read_state(run) {
 const write_state = state => writeFileSync(state_path(state.run), JSON.stringify(state, null, 2));
 function update_state(run, change) { const state = read_state(run); change(state); write_state(state); return state; }
 
-// The checkout's product files: HEAD plus any uncommitted change outside .agents/.
+// The checkout's product files: HEAD, every change to tracked files (binary ones
+// included), and the contents of untracked files, all outside .agents/.
 function revision() {
-    const git = (...args) => execFileSync('git', args, { cwd: REPO, encoding: 'utf8' });
-    const head = git('rev-parse', 'HEAD').trim();
-    const status = git('status', '--porcelain', '--', '.', ':!.agents');
-    const diff = git('diff', 'HEAD', '--', '.', ':!.agents');
-    return { head, dirty: status.trim() !== '', digest: createHash('sha256').update(status).update(diff).digest('hex').slice(0, 16) };
+    const git = (args, input) => execFileSync('git', args, { cwd: REPO, encoding: 'utf8', input, maxBuffer: 256 * 1024 * 1024 });
+    const head = git(['rev-parse', 'HEAD']).trim();
+    const status = git(['status', '--porcelain', '--untracked-files=all', '--', '.', ':!.agents']);
+    const diff = git(['diff', '--binary', 'HEAD', '--', '.', ':!.agents']);
+    const untracked = git(['ls-files', '--others', '--exclude-standard', '--', '.', ':!.agents']).split('\n').filter(Boolean);
+    const contents = untracked.length ? git(['hash-object', '--stdin-paths'], untracked.join('\n')) : '';
+    return {
+        head, dirty: status.trim() !== '',
+        digest: createHash('sha256').update(status).update(diff).update(contents).digest('hex').slice(0, 16),
+    };
 }
 
 export function free_port() {
@@ -156,8 +162,9 @@ export async function doctor({ run, chrome }) {
     } catch (error) {
         check(false, `${state.base} answers HTTP (${error.message})`);
     }
+    // Chrome is a prerequisite of the drives, not of the instance: without it they SKIP.
     const browser = find_chrome(chrome);
-    check(browser !== null, `Chrome found (${browser ?? 'none; pass --chrome PATH or set WEBSHITE_CHROME'})`);
+    lines.push(browser ? `ok   Chrome found (${browser})` : 'skip Chrome not found, so every drive will SKIP; pass --chrome PATH or set WEBSHITE_CHROME');
     const failed = lines.filter(line => line.startsWith('FAIL')).length;
     lines.push(failed ? `DOCTOR FAIL ${run}: ${failed} check(s) failed` : `DOCTOR PASS ${run} ${state.base}`);
     writeFileSync(join(evidence_dir(run), 'doctor.txt'), `${lines.join('\n')}\n`);
@@ -238,10 +245,10 @@ export async function drive({ run, feature, chrome, steps }) {
             check(b.errors.length === 0, `no page errors in a ${b === opened[0] ? 'first' : 'later'} browser`, b.errors);
             // The site's own requests only; YouTube's player makes its own, some blocked.
             const failed = [...b.requests.values()].filter(r => r.url.startsWith(state.base)
-                && ((r.failed && !r.failed.includes('ERR_ABORTED')) || (r.status ?? 0) >= 500));
+                && ((r.failed && !r.failed.includes('ERR_ABORTED')) || (r.status ?? 0) >= 400));
             writeFileSync(join(evidence, `requests-${opened.indexOf(b)}.json`), JSON.stringify([...b.requests.values()], null, 2));
             writeFileSync(join(evidence, `errors-${opened.indexOf(b)}.json`), JSON.stringify(b.errors, null, 2));
-            check(failed.length === 0, 'no failed requests', failed.map(r => `${r.status ?? r.failed} ${r.url}`));
+            check(failed.length === 0, 'no failed or 4xx/5xx requests to the site', failed.map(r => `${r.status ?? r.failed} ${r.url}`));
             await b.close();
             update_state(run, s => { s.browsers = s.browsers.filter(pid => pid !== b.pid); });
         }
