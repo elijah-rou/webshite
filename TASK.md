@@ -176,7 +176,9 @@ source). Two fresh reviews (full diff, then the fixes) left no blocking findings
       the 2-author CS5787 rewrite (which credits the other two only in a footnote).
       Emails, the UCT student number and the UCT marking cover page were removed with
       PyMuPDF redaction; a text search of both PDFs finds none. The ant paper's year
-      (2021) comes from its repository's creation date. `/papers/*` cached a day.
+      (2021) comes from its repository's creation date. PDFs and the demo video
+      are cached a day; the papers' pages keep the default. (Until 2026-10-13 a
+      `/papers/*` rule cached the pages for a day too.)
 - [ ] Owner is rewriting About.
 
 ## Mobile fixes (owner report from an iPhone, 2026-10-10)
