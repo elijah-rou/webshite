@@ -64,7 +64,7 @@ One target per mapped feature. Each opens new headless Chrome browsers, drives t
 
 The browser is found from `--chrome PATH`, then `WEBSHITE_CHROME`, then Playwright's `chromium-1234` Chrome for Testing, then system Chrome or Chromium. Without one, every feature reports `SKIP <feature>: Chrome not found`. Drives can be repeated in the same run; each browser gets a new profile.
 
-For an unattended full pass, `all` launches a new run, runs Doctor and every feature, and cleans up even after a failure. It ends with `SUMMARY pass=N fail=N skip=N` and exits 0 only if nothing failed:
+For an unattended full pass, `all` launches a new run, runs Doctor and every feature, and cleans up even after a failure. It ends with `SUMMARY pass=N fail=N skip=N`. It exits 0 only if every feature passed, 1 if anything failed, and 3 if nothing failed but a feature was skipped (no Chrome), so an unattended run never reports success for checks it did not make:
 
 ```sh
 .agents/skills/verify-webshite/scripts/verify-webshite all

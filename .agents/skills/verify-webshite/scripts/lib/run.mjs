@@ -3,7 +3,7 @@
 // evidence in the skill's evidence/<run>/, which Cleanup never removes.
 import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, mkdtempSync, openSync, readdirSync, readFileSync, readlinkSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -41,12 +41,16 @@ function revision() {
     const head = git(['rev-parse', 'HEAD']).trim();
     const status = git(['status', '--porcelain', '--untracked-files=all', '--', '.', ':!.agents']);
     const diff = git(['diff', '--binary', 'HEAD', '--', '.', ':!.agents']);
-    const untracked = git(['ls-files', '--others', '--exclude-standard', '--', '.', ':!.agents']).split('\n').filter(Boolean);
-    const contents = untracked.length ? git(['hash-object', '--stdin-paths'], untracked.join('\n')) : '';
-    return {
-        head, dirty: status.trim() !== '',
-        digest: createHash('sha256').update(status).update(diff).update(contents).digest('hex').slice(0, 16),
-    };
+    const hash = createHash('sha256').update(status).update(diff);
+    // A link counts by its target; a nested repository ("dir/") only by its status line.
+    const untracked = git(['ls-files', '-z', '--others', '--exclude-standard', '--', '.', ':!.agents']).split('\0').filter(Boolean);
+    for (const path of untracked) {
+        const full = join(REPO, path);
+        const info = lstatSync(full);
+        hash.update(`\0${path}\0`);
+        if (info.isSymbolicLink()) { hash.update(`-> ${readlinkSync(full)}`); } else if (info.isFile()) { hash.update(readFileSync(full)); }
+    }
+    return { head, dirty: status.trim() !== '', digest: hash.digest('hex').slice(0, 16) };
 }
 
 export function free_port() {
@@ -83,6 +87,16 @@ export const new_run_id = () => `ws-${new Date().toISOString().replace(/[-:]/g, 
 
 export async function launch({ run = new_run_id(), port, url }) {
     if (existsSync(run_dir(run))) { throw new UsageError(`Run ${run} already exists; pick another --run or clean it up first.`); }
+    try {
+        return await start(run, port, url);
+    } catch (error) {
+        // Kept as evidence, so a failed launch can still be cleaned up and explained.
+        if (existsSync(join(evidence_dir(run), 'launch'))) { writeFileSync(join(evidence_dir(run), 'launch', 'error.txt'), `${error.stack ?? error}\n`); }
+        throw error;
+    }
+}
+
+async function start(run, port, url) {
     const evidence = evidence_dir(run);
     mkdirSync(join(evidence, 'launch'), { recursive: true });
     mkdirSync(run_dir(run), { recursive: true });
@@ -143,7 +157,9 @@ export async function doctor({ run, chrome }) {
     const state = read_state(run);
     const lines = [];
     const check = (ok, what) => { lines.push(`${ok ? 'ok  ' : 'FAIL'} ${what}`); return ok; };
-    if (state.mode === 'local') {
+    if (!state.base || (state.mode === 'local' && !state.server)) {
+        check(false, `launch completed (see launch/error.txt); clean up and launch a new run`);
+    } else if (state.mode === 'local') {
         check(state.server !== null && alive(state.server), `server process group ${state.server} is running`);
         const owners = listeners(state.port);
         check(owners.length > 0 && owners.every(owner => owner.pgid === state.server),
@@ -154,13 +170,15 @@ export async function doctor({ run, chrome }) {
     } else {
         lines.push(`info remote target ${state.base}; no process to check`);
     }
-    try {
-        const home = await get(`${state.base}/`);
-        check(home.status === 200 && home.body.includes(HOME_TITLE), `GET / answers 200 with the Home title (${home.status})`);
-        const missing = await get(`${state.base}/verify-no-such-page/`);
-        check(missing.status === 404, `an unknown address answers 404 (${missing.status})`);
-    } catch (error) {
-        check(false, `${state.base} answers HTTP (${error.message})`);
+    if (state.base) {
+        try {
+            const home = await get(`${state.base}/`);
+            check(home.status === 200 && home.body.includes(HOME_TITLE), `GET / answers 200 with the Home title (${home.status})`);
+            const missing = await get(`${state.base}/verify-no-such-page/`);
+            check(missing.status === 404, `an unknown address answers 404 (${missing.status})`);
+        } catch (error) {
+            check(false, `${state.base} answers HTTP (${error.message})`);
+        }
     }
     // Chrome is a prerequisite of the drives, not of the instance: without it they SKIP.
     const browser = find_chrome(chrome);
@@ -187,7 +205,7 @@ export async function cleanup({ run }) {
     const files = list_files(evidence);
     writeFileSync(join(evidence, 'surviving-evidence.txt'), `${files.map(file => relative(evidence, file)).join('\n')}\n`);
     if (files.length === 0) { throw new Error(`no evidence survived in ${evidence}`); }
-    console.log(`CLEANUP PASS ${run}: stopped ${state.mode === 'local' ? `server ${state.server}` : 'nothing (remote)'}${state.browsers.length ? ` and browsers ${state.browsers.join(', ')}` : ''}; ${files.length} evidence files kept in ${relative(REPO, evidence)}`);
+    console.log(`CLEANUP PASS ${run}: stopped ${state.server ? `server ${state.server}` : `no server (${state.mode === 'local' ? 'launch did not start one' : 'remote'})`}${state.browsers.length ? ` and browsers ${state.browsers.join(', ')}` : ''}; ${files.length} evidence files kept in ${relative(REPO, evidence)}`);
 }
 
 function list_files(dir) {

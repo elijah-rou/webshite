@@ -55,7 +55,8 @@ Example:
     all: `Usage: ${CLI} all [--port N] [--url URL] [--chrome PATH]
 
 Launches a new run, runs doctor and every feature, then cleans up even after a failure.
-Ends with "SUMMARY pass=N fail=N skip=N"; exits 0 only if no feature failed.
+Ends with "SUMMARY pass=N fail=N skip=N". Exits 0 only if every feature passed,
+1 if anything failed, and 3 if nothing failed but a feature was skipped (no Chrome).
 
 Examples:
   ${CLI} all
@@ -126,7 +127,9 @@ async function all({ port, url, chrome }) {
         }
     }
     console.log(`SUMMARY pass=${counts.pass} fail=${counts.fail} skip=${counts.skip}`);
-    return counts.fail === 0 ? 0 : 1;
+    // An unattended pass that skipped a feature proved less than it claims: not 0.
+    if (counts.fail > 0) { return 1; }
+    return counts.skip > 0 ? 3 : 0;
 }
 
 main(process.argv.slice(2)).then(code => process.exit(code), error => {

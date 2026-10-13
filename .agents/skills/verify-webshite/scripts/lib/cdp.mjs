@@ -213,6 +213,7 @@ export async function open_browser({ chrome, profile, port, evidence, viewport, 
 
     const close = async () => {
         try { socket.close(); } catch { /* already closed */ }
+        if (proc.exitCode !== null || proc.signalCode !== null) { return; }
         try { process.kill(-proc.pid, 'SIGTERM'); } catch { /* already gone */ }
         await Promise.race([new Promise(resolve => proc.once('exit', resolve)), wait(5000)]);
         try { process.kill(-proc.pid, 'SIGKILL'); } catch { /* already gone */ }
