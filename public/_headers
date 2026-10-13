@@ -9,6 +9,10 @@
 /audio/*
   Cache-Control: public, max-age=86400
 
-# Papers and their demos keep their names too.
-/papers/*
+# Papers and their demos keep their names too. Matched by suffix, because the
+# papers' own pages also live under /papers/ and must keep the default.
+/papers/*.pdf
+  Cache-Control: public, max-age=86400
+
+/papers/*.mp4
   Cache-Control: public, max-age=86400
