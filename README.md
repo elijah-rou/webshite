@@ -34,8 +34,9 @@ a Custom Domain in `wrangler.jsonc` on a zone in the same Cloudflare account (th
 domain is registered with Cloudflare Registrar). `www.eliroussos.com` has a proxied
 `AAAA 100::` record and a redirect rule in the zone that sends it to the bare domain
 with a 301; neither lives in this repository. The workers.dev address stays on.
-Single files are limited to 25 MiB,
-so large recordings or project files belong in R2 rather than `public/music/`.
+Another Custom Domain added only in the dashboard is removed by the next deploy;
+add it to `wrangler.jsonc` instead. Single files are limited to 25 MiB, so large
+recordings or project files belong in R2 rather than `public/music/`.
 To try the deployed behaviour locally, run `npx wrangler dev` after a build, under
 Node.js rather than Bun.
 

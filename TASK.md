@@ -180,8 +180,9 @@ source). Two fresh reviews (full diff, then the fixes) left no blocking findings
 - [ ] Owner is rewriting About.
 - [x] Domain: owner registered eliroussos.com with Cloudflare Registrar (2026-10-13,
       1 year, auto-renew off, WHOIS redaction). Attached to the `webshite` Worker as a
-      Custom Domain through the API, and declared in `wrangler.jsonc` so deploys keep
-      it; `workers_dev: true` keeps the workers.dev address, which routes would
+      Custom Domain through the API, and declared in `wrangler.jsonc`: each deploy
+      reasserts it and replaces any other Custom Domain on the Worker, so the file is
+      the record. `workers_dev: true` keeps the workers.dev address, which routes would
       otherwise switch off. www: proxied `AAAA 100::` plus a zone redirect rule (301
       to the bare domain, path and query kept).
 - [ ] Owner: decide on auto-renew for eliroussos.com (expires 2027-10-13).
